@@ -19,6 +19,7 @@
     <mapping class="system.model.RoomType"/>
     <mapping class="system.model.ActualStatus"/>
     <mapping class="system.model.Room"/>
+    <mapping class="system.model.Stead"/>
 
   </session-factory>
 </hibernate-configuration>

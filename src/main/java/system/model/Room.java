@@ -17,13 +17,8 @@ public class Room {
     @Column(name = "flattype", nullable = false)
     private int FLATTYPE;
 
-//    private String ROOMNUMBER;
-//    private int ROOMTYPE;
-
     @Column(name = "regioncode", nullable = false)
     private String REGIONCODE;
-
-//    private String POSTALCODE;
 
     @Column(name = "updatedate", nullable = false)
     private String UPDATEDATE;
@@ -34,9 +29,6 @@ public class Room {
     @Column(name = "roomid", nullable = false)
     private String ROOMID;
 
-//    private String PREVID;
-//    private String NEXTID;
-
     @Column(name = "startdate", nullable = false)
     private String STARTDATE;
 
@@ -46,14 +38,8 @@ public class Room {
     @Column(name = "livestatus", nullable = false)
     private int LIVESTATUS;
 
-//    private String NORMDOC;
-
     @Column(name = "operstatus", nullable = false)
     private int OPERSTATUS;
-
-//    private String CADNUM;
-//    private String ROOMCADNUM;
-
 
     public String getROOMGUID() {
         return ROOMGUID;
