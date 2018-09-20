@@ -7,6 +7,9 @@ import javax.persistence.*;
 public class Stead {
 
     @Id
+    @Column(name = "id", nullable = false)
+    private int id;
+
     @Column(name = "steadguid", nullable = false)
     private String STEADGUID;
 
@@ -27,6 +30,14 @@ public class Stead {
 
     @Column(name = "divtype", nullable = false)
     private int DIVTYPE;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getSTEADGUID() {
         return STEADGUID;

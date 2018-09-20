@@ -5,7 +5,7 @@ import org.hibernate.cfg.Configuration;
 
 public class HibernateSessionFactory {
 
-    public static SessionFactory factory;
+    private static SessionFactory factory;
 
     public static synchronized SessionFactory getSessionFactory() {
         if (factory == null) {
