@@ -1,8 +1,5 @@
 package system.service;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 public class Main {
 
     private String[] paths = {
@@ -14,21 +11,25 @@ public class Main {
 
 
     public static void main(String[] args){
-        long startTime = System.currentTimeMillis();
+//        long startTime = System.currentTimeMillis();
+//        Main main = new Main();
+//        try {
+//            SAXParserFactory factory = SAXParserFactory.newInstance();
+//            SAXParser saxParser = factory.newSAXParser();
+//            for (String path:main.paths) {
+//                MySAXParser mySAXParser = new MySAXParser(path);
+//                saxParser.parse("D:\\Fias\\20180917\\" + path, mySAXParser);
+//                System.out.println();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(System.currentTimeMillis() - startTime);
 
-        Main main = new Main();
-        try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser saxParser = factory.newSAXParser();
-            for (String path:main.paths) {
-                MySAXParser mySAXParser = new MySAXParser(path);
-                saxParser.parse("D:\\20180917\\" + path, mySAXParser);
-                System.out.println();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Downloader downloader = new Downloader();
+        Unrarrer unrarrer = new Unrarrer();
 
-        System.out.println(System.currentTimeMillis() - startTime);
+        downloader.downloadDelta();
+        unrarrer.unRarDelta();
     }
 }

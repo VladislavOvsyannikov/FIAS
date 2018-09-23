@@ -12,11 +12,10 @@ public class MySAXParser extends DefaultHandler {
     private GenericDao genericDao = new GenericDao();
 
     private String xmlFile;
-    private Object object = null;
 
-    private int counter = 0;
     private int length = 100_000;
-    private Object[] objects = new Object[length];
+    private int counter;
+    private Object[] objects;
 
 
     public MySAXParser(String xmlFile) {
@@ -25,12 +24,14 @@ public class MySAXParser extends DefaultHandler {
 
     public void startDocument(){
         System.out.println("Start parse "+xmlFile);
+        objects = new Object[length];
+        counter = 0;
     }
 
     public void startElement(String uri, String localName, String qName, Attributes attributes){
         if (Arrays.stream(models).anyMatch(qName::equals)) {
             counter++;
-            object = ReflectionHelper.createInstance(qName);
+            Object object = ReflectionHelper.createInstance(qName);
             ReflectionHelper.setFieldValue(object, "id", String.valueOf(counter));
             for (int i=0; i<attributes.getLength(); i++) {
                 String field = attributes.getLocalName(i);
