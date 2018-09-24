@@ -12,15 +12,16 @@ import javax.persistence.EntityTransaction;
 public class GenericDao<T> {
 
     public void save(T entity){
-        Session session = HibernateSessionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
+        EntityManager entityManager = HibernateEntityManagerFactory.getEntityManagerFactory().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
         try {
-            session.save(entity);
-            session.getTransaction().commit();
-        } catch (Exception e){
-            e.getMessage();
+            entityManager.persist(entity);
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        session.close();
+        entityTransaction.commit();
+        entityManager.close();
     }
 
     public void saveOrUpdate(T entity){
@@ -37,9 +38,7 @@ public class GenericDao<T> {
         try {
             entityTransaction.begin();
             for (int i = 0; i < entities.length; i++) {
-                if (i > 0 && i % 20 == 0) {
-//                    entityTransaction.commit();
-//                    entityTransaction.begin();
+                if (i > 0 && i % 200 == 0) {
                     entityManager.flush();
                     entityManager.clear();
                 }

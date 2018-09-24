@@ -2,6 +2,10 @@ package system.model;
 
 import javax.persistence.*;
 
+/**
+ * Сведения о земельных участках
+ */
+
 @Entity
 @Table(name = "stead", schema = "fias")
 public class Stead {
@@ -13,23 +17,91 @@ public class Stead {
     @Column(name = "steadguid", nullable = false)
     private String STEADGUID;
 
-    @Column(name = "regioncode", nullable = false)
+    //Номер земельного участка
+    @Column(name = "number")
+    private String NUMBER;
+
+    //Почтовый индекс
+    @Column(name = "postalcode")
+    private String POSTALCODE;
+
+    //Код региона
+    @Column(name = "regioncode")
     private String REGIONCODE;
 
-//    @Column(name = "updatedate", nullable = false)
+//    //Код ИФНС ФЛ
+//    @Column(name = "ifnsfl")
+//    private String IFNSFL;
+//
+//    //Код территориального участка ИФНС ФЛ
+//    @Column(name = "terrifnsfl")
+//    private String TERRIFNSFL;
+//
+//    //Код ИФНС ЮЛ
+//    @Column(name = "ifnsul")
+//    private String IFNSUL;
+//
+//    //Код территориального участка ИФНС ЮЛ
+//    @Column(name = "terrifnsul")
+//    private String TERRIFNSUL;
+//
+//    //OKATO
+//    @Column(name = "okato")
+//    private String OKATO;
+//
+//    //OKTMO
+//    @Column(name = "oktmo")
+//    private String OKTMO;
+
+//    //Дата  внесения записи
+//    @Column(name = "updatedate")
 //    private String UPDATEDATE;
 
-//    @Column(name = "operstatus", nullable = false)
+    //Идентификатор объекта родительского объекта
+    @Column(name = "parentguid")
+    private String PARENTGUID;
+
+//    //Уникальный идентификатор записи
+//    @Column(name = "steadid", nullable = false)
+//    private String STEADID;
+//
+//    //Идентификатор записи связывания с предыдушей исторической записью
+//    @Column(name = "previd")
+//    private String PREVID;
+//
+//    //Идентификатор записи  связывания с последующей исторической записью
+//    @Column(name = "nextid")
+//    private String NEXTID;
+
+//    //Причина появления записи
+//    @Column(name = "operstatus")
 //    private int OPERSTATUS;
-
-//    @Column(name = "startdate", nullable = false)
+//
+//    //Начало действия записи
+//    @Column(name = "startdate")
 //    private String STARTDATE;
-
-//    @Column(name = "enddate", nullable = false)
+//
+//    //Окончание действия записи
+//    @Column(name = "enddate")
 //    private String ENDDATE;
 
-    @Column(name = "divtype", nullable = false)
-    private int DIVTYPE;
+//    //Внешний ключ на нормативный документ
+//    @Column(name = "normdoc")
+//    private String NORMDOC;
+
+    //Признак действующего адресного объекта
+    @Column(name = "livestatus")
+    private int LIVESTATUS;
+
+//    //Кадастровый номер
+//    @Column(name = "cadnum")
+//    private int CADNUM;
+//
+//    //Тип адресации
+//    @Column(name = "divtype")
+//    private int DIVTYPE;
+
+
 
     public int getId() {
         return id;
@@ -47,6 +119,22 @@ public class Stead {
         this.STEADGUID = STEADGUID;
     }
 
+    public String getNUMBER() {
+        return NUMBER;
+    }
+
+    public void setNUMBER(String NUMBER) {
+        this.NUMBER = NUMBER;
+    }
+
+    public String getPOSTALCODE() {
+        return POSTALCODE;
+    }
+
+    public void setPOSTALCODE(String POSTALCODE) {
+        this.POSTALCODE = POSTALCODE;
+    }
+
     public String getREGIONCODE() {
         return REGIONCODE;
     }
@@ -55,12 +143,20 @@ public class Stead {
         this.REGIONCODE = REGIONCODE;
     }
 
-    public int getDIVTYPE() {
-        return DIVTYPE;
+    public String getPARENTGUID() {
+        return PARENTGUID;
     }
 
-    public void setDIVTYPE(int DIVTYPE) {
-        this.DIVTYPE = DIVTYPE;
+    public void setPARENTGUID(String PARENTGUID) {
+        this.PARENTGUID = PARENTGUID;
+    }
+
+    public int getLIVESTATUS() {
+        return LIVESTATUS;
+    }
+
+    public void setLIVESTATUS(int LIVESTATUS) {
+        this.LIVESTATUS = LIVESTATUS;
     }
 }
 

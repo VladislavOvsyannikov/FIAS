@@ -1,11 +1,15 @@
 package system.model;
 
-
 import javax.persistence.*;
 
+/**
+ * Статус актуальности
+ * 0 – Не актуальный
+ * 1 – Актуальный
+ */
 
 @Entity
-@Table(name = "actualstatus", schema = "fias")
+@Table(name = "actual_status", schema = "fias")
 public class ActualStatus {
 
     @Id
@@ -14,6 +18,8 @@ public class ActualStatus {
 
     @Column(name = "name", nullable = false)
     private String NAME;
+
+
 
     public int getACTSTATID() {
         return ACTSTATID;
@@ -26,13 +32,5 @@ public class ActualStatus {
     }
     public void setNAME(String NAME) {
         this.NAME = NAME;
-    }
-
-    @Override
-    public String toString() {
-        return "ActualStatus{" +
-                "ACTSTATID=" + ACTSTATID +
-                ", NAME='" + NAME + '\'' +
-                '}';
     }
 }

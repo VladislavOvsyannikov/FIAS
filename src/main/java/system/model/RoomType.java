@@ -2,8 +2,15 @@ package system.model;
 
 import javax.persistence.*;
 
+/**
+ * Типы комнат
+ * 0 – Не определено
+ * 1 – Комната
+ * 2 - Помещение
+ */
+
 @Entity
-@Table(name = "roomtype", schema = "fias")
+@Table(name = "room_type", schema = "fias")
 public class RoomType {
 
     @Id
@@ -13,25 +20,21 @@ public class RoomType {
     @Column(name = "name", nullable = false)
     private String NAME;
 
+
+
     public int getRMTYPEID() {
         return RMTYPEID;
     }
+
     public void setRMTYPEID(int RMTYPEID) {
         this.RMTYPEID = RMTYPEID;
     }
+
     public String getNAME() {
         return NAME;
     }
+
     public void setNAME(String NAME) {
         this.NAME = NAME;
-    }
-
-
-    @Override
-    public String toString() {
-        return "RoomType{" +
-                "RMTYPEID=" + RMTYPEID +
-                ", NAME='" + NAME + '\'' +
-                '}';
     }
 }

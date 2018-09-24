@@ -1,45 +1,99 @@
 package system.model;
 
 import javax.persistence.*;
-import java.util.Date;
+
+/**
+ * Сведения о помещениях
+ */
 
 @Entity
 @Table(name = "room", schema = "fias")
 public class Room {
 
     @Id
+    @Column(name = "id", nullable = false)
+    private int id;
+
     @Column(name = "roomguid", nullable = false)
     private String ROOMGUID;
 
-    @Column(name = "flatnumber", nullable = false)
+    //Номер помещения или офиса
+    @Column(name = "flatnumber")
     private String FLATNUMBER;
 
-    @Column(name = "flattype", nullable = false)
+    //Тип помещения
+    @Column(name = "flattype")
     private int FLATTYPE;
 
-    @Column(name = "regioncode", nullable = false)
+    //Тип комнаты
+    @Column(name = "roomtype")
+    private int ROOMTYPE;
+
+    //Код региона
+    @Column(name = "regioncode")
     private String REGIONCODE;
 
-    @Column(name = "updatedate", nullable = false)
-    private String UPDATEDATE;
+    //Почтовый индекс
+    @Column(name = "postalcode")
+    private String POSTALCODE;
 
-    @Column(name = "houseid", nullable = false)
+//    //Дата внесения записи
+//    @Column(name = "updatedate")
+//    private String UPDATEDATE;
+
+    //Идентификатор родительского объекта (дома)
+    @Column(name = "houseguid")
     private String HOUSEGUID;
 
-    @Column(name = "roomid", nullable = false)
-    private String ROOMID;
+//    //Уникальный идентификатор записи
+//    @Column(name = "roomid", nullable = false)
+//    private String ROOMID;
+//
+//    //Идентификатор записи связывания с предыдушей исторической записью
+//    @Column(name = "previd")
+//    private String PREVID;
+//
+//    //Идентификатор записи  связывания с последующей исторической записью
+//    @Column(name = "nextid")
+//    private String NEXTID;
+//
+//    //Начало действия записи
+//    @Column(name = "startdate")
+//    private String STARTDATE;
+//
+//    //Окончание действия записи
+//    @Column(name = "enddate")
+//    private String ENDDATE;
 
-    @Column(name = "startdate", nullable = false)
-    private String STARTDATE;
-
-    @Column(name = "enddate", nullable = false)
-    private String ENDDATE;
-
-    @Column(name = "livestatus", nullable = false)
+    //Признак действующего адресного объекта
+    @Column(name = "livestatus")
     private int LIVESTATUS;
 
-    @Column(name = "operstatus", nullable = false)
-    private int OPERSTATUS;
+//    //Внешний ключ на нормативный документ
+//    @Column(name = "normdoc")
+//    private String NORMDOC;
+//
+//    //Причина появления записи
+//    @Column(name = "operstatus")
+//    private int OPERSTATUS;
+//
+//    //Кадастровый номер помещения
+//    @Column(name = "cadnum")
+//    private String CADNUM;
+//
+//    //Кадастровый номер комнаты в помещении
+//    @Column(name = "roomcadnum")
+//    private String ROOMCADNUM;
+
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getROOMGUID() {
         return ROOMGUID;
@@ -65,6 +119,14 @@ public class Room {
         this.FLATTYPE = FLATTYPE;
     }
 
+    public int getROOMTYPE() {
+        return ROOMTYPE;
+    }
+
+    public void setROOMTYPE(int ROOMTYPE) {
+        this.ROOMTYPE = ROOMTYPE;
+    }
+
     public String getREGIONCODE() {
         return REGIONCODE;
     }
@@ -73,12 +135,12 @@ public class Room {
         this.REGIONCODE = REGIONCODE;
     }
 
-    public String getUPDATEDATE() {
-        return UPDATEDATE;
+    public String getPOSTALCODE() {
+        return POSTALCODE;
     }
 
-    public void setUPDATEDATE(String UPDATEDATE) {
-        this.UPDATEDATE = UPDATEDATE;
+    public void setPOSTALCODE(String POSTALCODE) {
+        this.POSTALCODE = POSTALCODE;
     }
 
     public String getHOUSEGUID() {
@@ -89,60 +151,11 @@ public class Room {
         this.HOUSEGUID = HOUSEGUID;
     }
 
-    public String getROOMID() {
-        return ROOMID;
-    }
-
-    public void setROOMID(String ROOMID) {
-        this.ROOMID = ROOMID;
-    }
-
-    public String getSTARTDATE() {
-        return STARTDATE;
-    }
-
-    public void setSTARTDATE(String STARTDATE) {
-        this.STARTDATE = STARTDATE;
-    }
-
-    public String getENDDATE() {
-        return ENDDATE;
-    }
-
-    public void setENDDATE(String ENDDATE) {
-        this.ENDDATE = ENDDATE;
-    }
-
     public int getLIVESTATUS() {
         return LIVESTATUS;
     }
 
     public void setLIVESTATUS(int LIVESTATUS) {
         this.LIVESTATUS = LIVESTATUS;
-    }
-
-    public int getOPERSTATUS() {
-        return OPERSTATUS;
-    }
-
-    public void setOPERSTATUS(int OPERSTATUS) {
-        this.OPERSTATUS = OPERSTATUS;
-    }
-
-    @Override
-    public String toString() {
-        return "Room{" +
-                "ROOMGUID='" + ROOMGUID + '\'' +
-                ", FLATNUMBER='" + FLATNUMBER + '\'' +
-                ", FLATTYPE=" + FLATTYPE +
-                ", REGIONCODE='" + REGIONCODE + '\'' +
-                ", UPDATEDATE='" + UPDATEDATE + '\'' +
-                ", HOUSEGUID='" + HOUSEGUID + '\'' +
-                ", ROOMID='" + ROOMID + '\'' +
-                ", STARTDATE='" + STARTDATE + '\'' +
-                ", ENDDATE='" + ENDDATE + '\'' +
-                ", LIVESTATUS=" + LIVESTATUS +
-                ", OPERSTATUS=" + OPERSTATUS +
-                '}';
     }
 }
