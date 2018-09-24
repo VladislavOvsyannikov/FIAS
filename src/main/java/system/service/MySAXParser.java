@@ -18,6 +18,7 @@ public class MySAXParser extends DefaultHandler {
     private int length = 100_000;
     private int counter;
     private Object[] objects;
+    private boolean bool = true;
 
     MySAXParser(String xmlFile) {
         this.xmlFile = xmlFile;
@@ -44,7 +45,19 @@ public class MySAXParser extends DefaultHandler {
             if (t == -1) t = objects.length - 1;
             objects[t] = object;
             if (t == objects.length - 1) {
-                genericDao.saveBatch(objects);
+                while (!bool){
+                    try {
+                        Thread.currentThread().sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Object[] entities = objects;
+                new Thread(() -> {
+                    bool = false;
+                    genericDao.saveBatch(entities);
+                    bool = true;
+                }).start();
                 objects = new Object[length];
             }
         }
@@ -52,6 +65,13 @@ public class MySAXParser extends DefaultHandler {
 
     public void endDocument() {
         if (counter > 0 && counter % objects.length != 0) {
+            while (!bool){
+                try {
+                    Thread.currentThread().sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             genericDao.saveBatch(objects);
         }
         System.out.println("Stop parse " + xmlFile);
