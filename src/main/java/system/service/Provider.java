@@ -16,12 +16,12 @@ import java.util.List;
 @Service("provider")
 public class Provider implements AuthenticationProvider {
 
-//    private FiasService fiasService;
-//
-//    @Autowired
-//    public void setClickerService(FiasService fiasService) {
-//        this.fiasService = fiasService;
-//    }
+    private FiasService fiasService;
+
+    @Autowired
+    public void setFiasService(FiasService fiasService) {
+        this.fiasService = fiasService;
+    }
 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String login = authentication.getName();

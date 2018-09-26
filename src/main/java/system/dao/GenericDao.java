@@ -1,15 +1,18 @@
 package system.dao;
 
-import org.hibernate.Session;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import system.service.HibernateEntityManagerFactory;
-import system.service.HibernateSessionFactory;
+import system.service.Installer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
 
 @Repository
 public class GenericDao<T> {
+
+    private static final Logger logger = Logger.getLogger(GenericDao.class);
 
     public void save(T entity){
         EntityManager entityManager = HibernateEntityManagerFactory.getEntityManagerFactory().createEntityManager();
@@ -17,19 +20,17 @@ public class GenericDao<T> {
         entityTransaction.begin();
         try {
             entityManager.persist(entity);
-        }catch (Exception e){
-            e.printStackTrace();
+            entityTransaction.commit();
+        }catch (RuntimeException e){
+            if (entityTransaction.isActive()) {
+                entityTransaction.rollback();
+            }
+            logger.error(e.getMessage());
         }
-        entityTransaction.commit();
         entityManager.close();
     }
 
     public void saveOrUpdate(T entity){
-        Session session = HibernateSessionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.saveOrUpdate(entity);
-        session.getTransaction().commit();
-        session.close();
     }
 
     public void saveBatch(T[] entities){
@@ -51,9 +52,22 @@ public class GenericDao<T> {
             if (entityTransaction.isActive()) {
                 entityTransaction.rollback();
             }
-            throw e;
+            logger.error(e.getMessage());
         } finally {
             entityManager.close();
         }
+    }
+
+    public T getEntity(String q, Class c){
+        T t = null;
+        EntityManager entityManager = HibernateEntityManagerFactory.getEntityManagerFactory().createEntityManager();
+        Query query = entityManager.createNativeQuery(q, c);
+        try {
+            t = (T) query.getResultList().get(0);
+        }catch (Exception e){
+            e.getMessage();
+        }
+        entityManager.close();
+        return t;
     }
 }

@@ -1,12 +1,18 @@
 package system.service;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
 import system.dao.GenericDao;
 
 import java.util.Arrays;
 
+
 public class MySAXParser extends DefaultHandler {
+
+    private static final Logger logger = Logger.getLogger(MySAXParser.class);
+
+    private int length = 100_000;
 
     private String[] models = {"ActualStatus","AddressObjectType","CenterStatus","CurrentStatus",
             "EstateStatus","FlatType","House","HouseStateStatus","IntervalStatus",",NormativeDocument",
@@ -14,18 +20,16 @@ public class MySAXParser extends DefaultHandler {
     private GenericDao genericDao = new GenericDao();
 
     private String xmlFile;
-
-    private int length = 100_000;
     private int counter;
     private Object[] objects;
-    private boolean bool = true;
+    private boolean isSaveBatchEnd = true;
 
     MySAXParser(String xmlFile) {
         this.xmlFile = xmlFile;
     }
 
     public void startDocument() {
-        System.out.println("Start parse " + xmlFile);
+        logger.info("Start parse " + xmlFile);
         objects = new Object[length];
         counter = 0;
     }
@@ -36,7 +40,7 @@ public class MySAXParser extends DefaultHandler {
             for (int i = 0; i < attributes.getLength(); i++) {
                 String field = attributes.getLocalName(i);
                 String value = attributes.getValue(i);
-//                if (field.equals("LIVESTATUS") && value.equals("0")) return;
+                if (field.equals("LIVESTATUS") && value.equals("0")) return;
                 ReflectionHelper.setFieldValue(object, field, value);
             }
             counter++;
@@ -45,18 +49,18 @@ public class MySAXParser extends DefaultHandler {
             if (t == -1) t = objects.length - 1;
             objects[t] = object;
             if (t == objects.length - 1) {
-                while (!bool){
+                while (!isSaveBatchEnd){
                     try {
                         Thread.currentThread().sleep(1000);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                 }
                 Object[] entities = objects;
                 new Thread(() -> {
-                    bool = false;
+                    isSaveBatchEnd = false;
                     genericDao.saveBatch(entities);
-                    bool = true;
+                    isSaveBatchEnd = true;
                 }).start();
                 objects = new Object[length];
             }
@@ -65,16 +69,16 @@ public class MySAXParser extends DefaultHandler {
 
     public void endDocument() {
         if (counter > 0 && counter % objects.length != 0) {
-            while (!bool){
+            while (!isSaveBatchEnd){
                 try {
                     Thread.currentThread().sleep(1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
             genericDao.saveBatch(objects);
         }
-        System.out.println("Stop parse " + xmlFile);
-        System.out.println(counter);
+        logger.info("Stop parse " + xmlFile);
+        logger.info("Saved "+counter+" objects");
     }
 }

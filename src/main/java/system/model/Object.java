@@ -11,8 +11,12 @@ import javax.persistence.*;
 public class Object{
 
     @Id
-    @Column(name = "id", nullable = false)
-    private int id;
+    @Column(name = "aoid", nullable = false)
+    private String AOID;
+
+//    @Id
+//    @Column(name = "id", nullable = false)
+//    private int id;
 
     @Column(name = "aoguid", nullable = false)
     private String AOGUID;
@@ -109,10 +113,6 @@ public class Object{
     @Column(name = "parentguid")
     private String PARENTGUID;
 
-//    //Уникальный идентификатор записи
-//    @Column(name = "aoid")
-//    private String aoid;
-
 //    //Идентификатор записи связывания с предыдушей исторической записью
 //    @Column(name = "previd")
 //    private String PREVID;
@@ -166,20 +166,20 @@ public class Object{
 //    private int DIVTYPE;
 
 
+    public String getAoid() {
+        return AOID;
+    }
+
+    public void setAoid(String AOID) {
+        this.AOID = AOID;
+    }
+
     public String getSHORTNAME() {
         return SHORTNAME;
     }
 
     public void setSHORTNAME(String SHORTNAME) {
         this.SHORTNAME = SHORTNAME;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getAOGUID() {

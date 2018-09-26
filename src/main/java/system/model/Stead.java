@@ -14,6 +14,10 @@ public class Stead {
     @Column(name = "id", nullable = false)
     private int id;
 
+//    //Уникальный идентификатор записи
+//    @Column(name = "steadid", nullable = false)
+//    private String STEADID;
+
     @Column(name = "steadguid", nullable = false)
     private String STEADGUID;
 
@@ -61,10 +65,6 @@ public class Stead {
     @Column(name = "parentguid")
     private String PARENTGUID;
 
-//    //Уникальный идентификатор записи
-//    @Column(name = "steadid", nullable = false)
-//    private String STEADID;
-//
 //    //Идентификатор записи связывания с предыдушей исторической записью
 //    @Column(name = "previd")
 //    private String PREVID;

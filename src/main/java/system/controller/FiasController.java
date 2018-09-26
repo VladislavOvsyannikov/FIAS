@@ -8,8 +8,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class FiasController {
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
-    public String home() {
+    public String admin() {
         return "/admin.html";
     }
 
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    public String user() {
+        return "/user.html";
+    }
 }

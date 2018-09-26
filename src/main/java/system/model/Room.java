@@ -14,6 +14,10 @@ public class Room {
     @Column(name = "id", nullable = false)
     private int id;
 
+//    //Уникальный идентификатор записи
+//    @Column(name = "roomid", nullable = false)
+//    private String ROOMID;
+
     @Column(name = "roomguid", nullable = false)
     private String ROOMGUID;
 
@@ -45,10 +49,6 @@ public class Room {
     @Column(name = "houseguid")
     private String HOUSEGUID;
 
-//    //Уникальный идентификатор записи
-//    @Column(name = "roomid", nullable = false)
-//    private String ROOMID;
-//
 //    //Идентификатор записи связывания с предыдушей исторической записью
 //    @Column(name = "previd")
 //    private String PREVID;

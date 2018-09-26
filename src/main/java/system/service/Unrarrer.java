@@ -1,34 +1,47 @@
 package system.service;
 
 import com.github.junrar.extract.ExtractArchive;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 
+@Service
 public class Unrarrer {
 
-    private String path = "D:\\Fias\\";
+    private static final Logger logger = Logger.getLogger(Unrarrer.class);
+
     private String lastVersion = new Downloader().getLastVersion();
 
-    public void unRarDelta(){
+    public void unrarLastDelta(String path){
         String fileName = "delta"+lastVersion;
-        unRarFile(fileName);
+        unRarFile(path, fileName);
     }
 
-    public void unRarComplete(){
+    public void unrarDeltaByVersion(String path, String version){
+        String fileName = "delta"+version;
+        unRarFile(path, fileName);
+    }
+
+    public void unrarLastComplete(String path){
         String fileName = "complete"+lastVersion;
-        unRarFile(fileName);
+        unRarFile(path, fileName);
     }
 
-    private void unRarFile(String fileName){
-        System.out.println("Start unrar "+fileName+".rar");
+    private void unRarFile(String path, String fileName){
+        logger.info("Start unrar "+fileName+".rar");
         File rar = new File(path+fileName+".rar");
         if (rar.exists()) {
-            File folder = new File(path + fileName);
-            if (!folder.exists()) folder.mkdir();
-            new ExtractArchive().extractArchive(rar, folder);
-            System.out.println("Unrar is complete");
+            try {
+                File folder = new File(path + fileName);
+                if (!folder.exists()) folder.mkdir();
+                new ExtractArchive().extractArchive(rar, folder);
+                logger.info("Unrar is completed");
+            } catch(Exception e){
+                logger.error(e.getMessage());
+            }
         }else {
-            System.out.println("File not found");
+            logger.warn("File not found");
         }
     }
 

@@ -14,6 +14,10 @@ public class House {
     @Column(name = "id", nullable = false)
     private int id;
 
+//    //Уникальный идентификатор записи дома
+//    @Column(name = "houseid")
+//    private String HOUSEID;
+
     //Код региона
     @Column(name = "regioncode")
     private String REGIONCODE;
@@ -70,10 +74,6 @@ public class House {
     @Column(name = "strstatus")
     private int STRSTATUS;
 
-//    //Уникальный идентификатор записи дома
-//    @Column(name = "houseid")
-//    private String HOUSEID;
-
     //Глобальный уникальный идентификатор дома
     @Column(name = "houseguid", nullable = false)
     private String HOUSEGUID;
@@ -91,7 +91,7 @@ public class House {
 //    private String ENDDATE;
 
     //Состояние дома
-    @Column(name = "statstatus", nullable = false)
+    @Column(name = "statstatus")
     private int STATSTATUS;
 
 //    //Внешний ключ на нормативный документ

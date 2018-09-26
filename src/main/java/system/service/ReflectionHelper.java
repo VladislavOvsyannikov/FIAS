@@ -1,14 +1,18 @@
 package system.service;
 
+import org.apache.log4j.Logger;
+
 import java.lang.reflect.Field;
 
 public class ReflectionHelper {
+
+    private static final Logger logger = Logger.getLogger(ReflectionHelper.class);
 
     public static Object createInstance(String className) {
         try {
             return Class.forName("system.model."+className).newInstance();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return null;
     }
@@ -26,7 +30,7 @@ public class ReflectionHelper {
 
             field.setAccessible(false);
         } catch (Exception e) {
-//            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 }

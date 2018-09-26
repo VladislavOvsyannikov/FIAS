@@ -22,6 +22,10 @@ public class AddressObjectType {
     @Column(name = "socrname", nullable = false)
     private String SOCRNAME;
 
+    //Краткое наименование типа объекта
+    @Column(name = "scname")
+    private String SCNAME;
+
 
 
     public String getKOD_T_ST() {
@@ -46,5 +50,13 @@ public class AddressObjectType {
 
     public void setSOCRNAME(String SOCRNAME) {
         this.SOCRNAME = SOCRNAME;
+    }
+
+    public String getSCNAME() {
+        return SCNAME;
+    }
+
+    public void setSCNAME(String SCNAME) {
+        this.SCNAME = SCNAME;
     }
 }

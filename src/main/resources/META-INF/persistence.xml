@@ -23,6 +23,7 @@
         <class>system.model.RoomType</class>
         <class>system.model.Stead</class>
         <class>system.model.StructureStatus</class>
+        <class>system.model.Version</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57Dialect"/>

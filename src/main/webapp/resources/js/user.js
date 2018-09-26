@@ -1,10 +1,10 @@
-var clicker = angular.module('clicker', []);
+var user = angular.module('user', []);
 var config = {headers: {'Content-Type': 'application/json;charset=utf-8;'}};
 
 var counter = 0;
 var message = "Please login after registration";
 
-clicker.controller('getController', function ($scope, $http, $location, $window) {
+user.controller('getController', function ($scope, $http, $location, $window) {
 
     $scope.getUsername = function () {
         var url = "getUsername";
@@ -46,7 +46,7 @@ clicker.controller('getController', function ($scope, $http, $location, $window)
 
 });
 
-clicker.controller('postController', function ($scope, $http, $location, $window) {
+user.controller('postController', function ($scope, $http, $location, $window) {
 
     $scope.click = function () {
         var url = "click";
