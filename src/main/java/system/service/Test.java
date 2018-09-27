@@ -7,8 +7,9 @@ public class Test {
     public static void main(String[] args){
         Test test = new Test();
 
-        test.fiasService.checkUpdate();
-        test.fiasService.downloadLastDelta();
-        test.fiasService.unrarLastDelta();
+//        test.fiasService.checkUpdate();
+//        test.fiasService.downloadLastDelta();
+//        test.fiasService.unrarLastDelta();
+        test.fiasService.installLastComplete();
     }
 }

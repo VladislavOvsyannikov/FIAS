@@ -52,7 +52,7 @@ public class Downloader {
     private void downloadFile(String path, String url, String fileName) {
         File file = new File(path+fileName);
         if(!file.exists()) {
-            System.out.println("Start download " + fileName);
+            logger.info("Start download " + fileName);
             try {
                 ReadableByteChannel rbc = Channels.newChannel(new URL(url).openStream());
                 FileOutputStream fos = new FileOutputStream(path + fileName);

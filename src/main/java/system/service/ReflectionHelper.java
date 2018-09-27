@@ -21,16 +21,12 @@ public class ReflectionHelper {
         try {
             Field field = object.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
-
             if (field.getType().equals(String.class)) {
                 field.set(object, value);
             } else if (field.getType().equals(int.class)) {
                 field.set(object, Integer.decode(value));
             }
-
             field.setAccessible(false);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+        } catch (Exception ignored) {}
     }
 }

@@ -7,24 +7,48 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(name = "house", schema = "fias")
+@Table(name = "house", schema = "fias", indexes = {
+        @Index(columnList = "aoguid", name = "parentguidhouse")})
 public class House {
 
+//    @Column(name = "id", nullable = false)
+//    private int id;
+
     @Id
-    @Column(name = "id", nullable = false)
-    private int id;
+    @Column(name = "houseid", nullable = false, unique = true, length = 32)
+    private String HOUSEID;
 
-//    //Уникальный идентификатор записи дома
-//    @Column(name = "houseid")
-//    private String HOUSEID;
+    //Глобальный уникальный идентификатор дома
+    @Column(name = "houseguid", nullable = false, length = 32)
+    private String HOUSEGUID;
 
-    //Код региона
-    @Column(name = "regioncode")
-    private String REGIONCODE;
+    //Guid записи родительского объекта (улицы, города, населенного пункта и т.п.)
+    @Column(name = "aoguid", length = 32)
+    private String AOGUID;
 
-    //Почтовый индекс
-    @Column(name = "postalcode")
-    private String POSTALCODE;
+    //Состояние дома
+    @Column(name = "statstatus", length = 2)
+    private int STATSTATUS;
+
+    //Номер дома
+    @Column(name = "housenum", length = 50)
+    private String HOUSENUM;
+
+    //Номер корпуса
+    @Column(name = "buildnum", length = 50)
+    private String BUILDNUM;
+
+    //Номер строения
+    @Column(name = "strucnum", length = 50)
+    private String STRUCNUM;
+
+//    //Код региона
+//    @Column(name = "regioncode")
+//    private String REGIONCODE;
+//
+//    //Почтовый индекс
+//    @Column(name = "postalcode")
+//    private String POSTALCODE;
 
 //    //Код ИФНС ФЛ
 //    @Column(name = "ifnsfl")
@@ -54,33 +78,13 @@ public class House {
 //    @Column(name = "updatedate")
 //    private String UPDATEDATE;
 
-    //Номер дома
-    @Column(name = "housenum")
-    private String HOUSENUM;
+//    //Признак владения
+//    @Column(name = "eststatus")
+//    private int ESTSTATUS;
 
-    //Признак владения
-    @Column(name = "eststatus")
-    private int ESTSTATUS;
-
-    //Номер корпуса
-    @Column(name = "buildnum")
-    private String BUILDNUM;
-
-    //Номер строения
-    @Column(name = "strucnum")
-    private String STRUCNUM;
-
-    //Признак строения
-    @Column(name = "strstatus")
-    private int STRSTATUS;
-
-    //Глобальный уникальный идентификатор дома
-    @Column(name = "houseguid", nullable = false)
-    private String HOUSEGUID;
-
-    //Guid записи родительского объекта (улицы, города, населенного пункта и т.п.)
-    @Column(name = "aoguid", nullable = false)
-    private String AOGUID;
+//    //Признак строения
+//    @Column(name = "strstatus")
+//    private int STRSTATUS;
 
 //    //Начало действия записи
 //    @Column(name = "startdate")
@@ -89,10 +93,6 @@ public class House {
 //    //Окончание действия записи
 //    @Column(name = "enddate")
 //    private String ENDDATE;
-
-    //Состояние дома
-    @Column(name = "statstatus")
-    private int STATSTATUS;
 
 //    //Внешний ключ на нормативный документ
 //    @Column(name = "normdoc")
@@ -111,70 +111,12 @@ public class House {
 //    private int DIVTYPE;
 
 
-
-
-    public int getId() {
-        return id;
+    public String getHOUSEID() {
+        return HOUSEID;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getREGIONCODE() {
-        return REGIONCODE;
-    }
-
-    public void setREGIONCODE(String REGIONCODE) {
-        this.REGIONCODE = REGIONCODE;
-    }
-
-    public String getPOSTALCODE() {
-        return POSTALCODE;
-    }
-
-    public void setPOSTALCODE(String POSTALCODE) {
-        this.POSTALCODE = POSTALCODE;
-    }
-
-    public String getHOUSENUM() {
-        return HOUSENUM;
-    }
-
-    public void setHOUSENUM(String HOUSENUM) {
-        this.HOUSENUM = HOUSENUM;
-    }
-
-    public int getESTSTATUS() {
-        return ESTSTATUS;
-    }
-
-    public void setESTSTATUS(int ESTSTATUS) {
-        this.ESTSTATUS = ESTSTATUS;
-    }
-
-    public String getBUILDNUM() {
-        return BUILDNUM;
-    }
-
-    public void setBUILDNUM(String BUILDNUM) {
-        this.BUILDNUM = BUILDNUM;
-    }
-
-    public String getSTRUCNUM() {
-        return STRUCNUM;
-    }
-
-    public void setSTRUCNUM(String STRUCNUM) {
-        this.STRUCNUM = STRUCNUM;
-    }
-
-    public int getSTRSTATUS() {
-        return STRSTATUS;
-    }
-
-    public void setSTRSTATUS(int STRSTATUS) {
-        this.STRSTATUS = STRSTATUS;
+    public void setHOUSEID(String HOUSEID) {
+        this.HOUSEID = HOUSEID;
     }
 
     public String getHOUSEGUID() {
@@ -191,6 +133,30 @@ public class House {
 
     public void setAOGUID(String AOGUID) {
         this.AOGUID = AOGUID;
+    }
+
+    public String getHOUSENUM() {
+        return HOUSENUM;
+    }
+
+    public void setHOUSENUM(String HOUSENUM) {
+        this.HOUSENUM = HOUSENUM;
+    }
+
+    public String getBUILDNUM() {
+        return BUILDNUM;
+    }
+
+    public void setBUILDNUM(String BUILDNUM) {
+        this.BUILDNUM = BUILDNUM;
+    }
+
+    public String getSTRUCNUM() {
+        return STRUCNUM;
+    }
+
+    public void setSTRUCNUM(String STRUCNUM) {
+        this.STRUCNUM = STRUCNUM;
     }
 
     public int getSTATSTATUS() {

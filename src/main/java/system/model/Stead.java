@@ -7,31 +7,39 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(name = "stead", schema = "fias")
+@Table(name = "stead", schema = "fias", indexes = {
+        @Index(columnList = "parentguid", name = "parentguidstead")})
 public class Stead {
 
+//    @Column(name = "id", nullable = false)
+//    private int id;
+
     @Id
-    @Column(name = "id", nullable = false)
-    private int id;
+    @Column(name = "steadid", nullable = false, unique = true, length = 32)
+    private String STEADID;
 
-//    //Уникальный идентификатор записи
-//    @Column(name = "steadid", nullable = false)
-//    private String STEADID;
-
-    @Column(name = "steadguid", nullable = false)
+    @Column(name = "steadguid", nullable = false, length = 32)
     private String STEADGUID;
+
+    //Идентификатор объекта родительского объекта
+    @Column(name = "parentguid", length = 32)
+    private String PARENTGUID;
+
+    //Признак действующего адресного объекта
+    @Column(name = "livestatus", length = 1)
+    private int LIVESTATUS;
 
     //Номер земельного участка
     @Column(name = "number")
     private String NUMBER;
 
-    //Почтовый индекс
-    @Column(name = "postalcode")
-    private String POSTALCODE;
+//    //Почтовый индекс
+//    @Column(name = "postalcode")
+//    private String POSTALCODE;
 
-    //Код региона
-    @Column(name = "regioncode")
-    private String REGIONCODE;
+//    //Код региона
+//    @Column(name = "regioncode")
+//    private String REGIONCODE;
 
 //    //Код ИФНС ФЛ
 //    @Column(name = "ifnsfl")
@@ -61,10 +69,6 @@ public class Stead {
 //    @Column(name = "updatedate")
 //    private String UPDATEDATE;
 
-    //Идентификатор объекта родительского объекта
-    @Column(name = "parentguid")
-    private String PARENTGUID;
-
 //    //Идентификатор записи связывания с предыдушей исторической записью
 //    @Column(name = "previd")
 //    private String PREVID;
@@ -89,10 +93,6 @@ public class Stead {
 //    @Column(name = "normdoc")
 //    private String NORMDOC;
 
-    //Признак действующего адресного объекта
-    @Column(name = "livestatus")
-    private int LIVESTATUS;
-
 //    //Кадастровый номер
 //    @Column(name = "cadnum")
 //    private int CADNUM;
@@ -102,13 +102,12 @@ public class Stead {
 //    private int DIVTYPE;
 
 
-
-    public int getId() {
-        return id;
+    public String getSTEADID() {
+        return STEADID;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setSTEADID(String STEADID) {
+        this.STEADID = STEADID;
     }
 
     public String getSTEADGUID() {
@@ -117,30 +116,6 @@ public class Stead {
 
     public void setSTEADGUID(String STEADGUID) {
         this.STEADGUID = STEADGUID;
-    }
-
-    public String getNUMBER() {
-        return NUMBER;
-    }
-
-    public void setNUMBER(String NUMBER) {
-        this.NUMBER = NUMBER;
-    }
-
-    public String getPOSTALCODE() {
-        return POSTALCODE;
-    }
-
-    public void setPOSTALCODE(String POSTALCODE) {
-        this.POSTALCODE = POSTALCODE;
-    }
-
-    public String getREGIONCODE() {
-        return REGIONCODE;
-    }
-
-    public void setREGIONCODE(String REGIONCODE) {
-        this.REGIONCODE = REGIONCODE;
     }
 
     public String getPARENTGUID() {
@@ -157,6 +132,14 @@ public class Stead {
 
     public void setLIVESTATUS(int LIVESTATUS) {
         this.LIVESTATUS = LIVESTATUS;
+    }
+
+    public String getNUMBER() {
+        return NUMBER;
+    }
+
+    public void setNUMBER(String NUMBER) {
+        this.NUMBER = NUMBER;
     }
 }
 

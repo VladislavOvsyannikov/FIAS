@@ -7,47 +7,52 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(name = "room", schema = "fias")
+@Table(name = "room", schema = "fias", indexes = {
+        @Index(columnList = "houseguid", name = "houseguidroom")})
 public class Room {
 
+//    @Id
+//    @Column(name = "id", nullable = false)
+//    private int id;
+
     @Id
-    @Column(name = "id", nullable = false)
-    private int id;
+    @Column(name = "roomid", nullable = false, unique = true, length = 32)
+    private String ROOMID;
 
-//    //Уникальный идентификатор записи
-//    @Column(name = "roomid", nullable = false)
-//    private String ROOMID;
-
-    @Column(name = "roomguid", nullable = false)
+    @Column(name = "roomguid", nullable = false, length = 32)
     private String ROOMGUID;
 
-    //Номер помещения или офиса
-    @Column(name = "flatnumber")
-    private String FLATNUMBER;
+    //Идентификатор родительского объекта (дома)
+    @Column(name = "houseguid", length = 32)
+    private String HOUSEGUID;
+
+    //Признак действующего адресного объекта
+    @Column(name = "livestatus", length = 1)
+    private int LIVESTATUS;
 
     //Тип помещения
-    @Column(name = "flattype")
+    @Column(name = "flattype", length = 1)
     private int FLATTYPE;
 
-    //Тип комнаты
-    @Column(name = "roomtype")
-    private int ROOMTYPE;
+    //Номер помещения или офиса
+    @Column(name = "flatnumber", length = 100)
+    private String FLATNUMBER;
 
-    //Код региона
-    @Column(name = "regioncode")
-    private String REGIONCODE;
+//    //Почтовый индекс
+//    @Column(name = "postalcode")
+//    private String POSTALCODE;
 
-    //Почтовый индекс
-    @Column(name = "postalcode")
-    private String POSTALCODE;
+//    //Тип комнаты
+//    @Column(name = "roomtype")
+//    private int ROOMTYPE;
+
+//    //Код региона
+//    @Column(name = "regioncode")
+//    private String REGIONCODE;
 
 //    //Дата внесения записи
 //    @Column(name = "updatedate")
 //    private String UPDATEDATE;
-
-    //Идентификатор родительского объекта (дома)
-    @Column(name = "houseguid")
-    private String HOUSEGUID;
 
 //    //Идентификатор записи связывания с предыдушей исторической записью
 //    @Column(name = "previd")
@@ -65,10 +70,6 @@ public class Room {
 //    @Column(name = "enddate")
 //    private String ENDDATE;
 
-    //Признак действующего адресного объекта
-    @Column(name = "livestatus")
-    private int LIVESTATUS;
-
 //    //Внешний ключ на нормативный документ
 //    @Column(name = "normdoc")
 //    private String NORMDOC;
@@ -85,14 +86,12 @@ public class Room {
 //    @Column(name = "roomcadnum")
 //    private String ROOMCADNUM;
 
-
-
-    public int getId() {
-        return id;
+    public String getROOMID() {
+        return ROOMID;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setROOMID(String ROOMID) {
+        this.ROOMID = ROOMID;
     }
 
     public String getROOMGUID() {
@@ -103,46 +102,6 @@ public class Room {
         this.ROOMGUID = ROOMGUID;
     }
 
-    public String getFLATNUMBER() {
-        return FLATNUMBER;
-    }
-
-    public void setFLATNUMBER(String FLATNUMBER) {
-        this.FLATNUMBER = FLATNUMBER;
-    }
-
-    public int getFLATTYPE() {
-        return FLATTYPE;
-    }
-
-    public void setFLATTYPE(int FLATTYPE) {
-        this.FLATTYPE = FLATTYPE;
-    }
-
-    public int getROOMTYPE() {
-        return ROOMTYPE;
-    }
-
-    public void setROOMTYPE(int ROOMTYPE) {
-        this.ROOMTYPE = ROOMTYPE;
-    }
-
-    public String getREGIONCODE() {
-        return REGIONCODE;
-    }
-
-    public void setREGIONCODE(String REGIONCODE) {
-        this.REGIONCODE = REGIONCODE;
-    }
-
-    public String getPOSTALCODE() {
-        return POSTALCODE;
-    }
-
-    public void setPOSTALCODE(String POSTALCODE) {
-        this.POSTALCODE = POSTALCODE;
-    }
-
     public String getHOUSEGUID() {
         return HOUSEGUID;
     }
@@ -151,11 +110,27 @@ public class Room {
         this.HOUSEGUID = HOUSEGUID;
     }
 
+    public String getFLATNUMBER() {
+        return FLATNUMBER;
+    }
+
+    public void setFLATNUMBER(String FLATNUMBER) {
+        this.FLATNUMBER = FLATNUMBER;
+    }
+
     public int getLIVESTATUS() {
         return LIVESTATUS;
     }
 
     public void setLIVESTATUS(int LIVESTATUS) {
         this.LIVESTATUS = LIVESTATUS;
+    }
+
+    public int getFLATTYPE() {
+        return FLATTYPE;
+    }
+
+    public void setFLATTYPE(int FLATTYPE) {
+        this.FLATTYPE = FLATTYPE;
     }
 }

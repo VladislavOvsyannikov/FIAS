@@ -39,7 +39,7 @@ public class GenericDao<T> {
         try {
             entityTransaction.begin();
             for (int i = 0; i < entities.length; i++) {
-                if (i > 0 && i % 200 == 0) {
+                if (i > 0 && i % 1000 == 0) {
                     entityManager.flush();
                     entityManager.clear();
                 }

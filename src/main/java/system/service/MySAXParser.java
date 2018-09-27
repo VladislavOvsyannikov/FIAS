@@ -17,6 +17,7 @@ public class MySAXParser extends DefaultHandler {
     private String[] models = {"ActualStatus","AddressObjectType","CenterStatus","CurrentStatus",
             "EstateStatus","FlatType","House","HouseStateStatus","IntervalStatus",",NormativeDocument",
             "NormativeDocumentType","Object","OperationStatus","Room","RoomType","Stead","StructureStatus"};
+    private String[] numbersOfNoExistHouses = {"2","3","15","16","18","27","34","35","38","39"};
     private GenericDao genericDao = new GenericDao();
 
     private String xmlFile;
@@ -41,10 +42,12 @@ public class MySAXParser extends DefaultHandler {
                 String field = attributes.getLocalName(i);
                 String value = attributes.getValue(i);
                 if (field.equals("LIVESTATUS") && value.equals("0")) return;
+                if (field.equals("STATSTATUS") && (Arrays.stream(numbersOfNoExistHouses).anyMatch(value::equals))) return;
+                if (field.endsWith("ID")) value = value.replaceAll("-","");
                 ReflectionHelper.setFieldValue(object, field, value);
             }
             counter++;
-            ReflectionHelper.setFieldValue(object, "id", String.valueOf(counter));
+//            ReflectionHelper.setFieldValue(object, "id", String.valueOf(counter));
             int t = (counter % objects.length) - 1;
             if (t == -1) t = objects.length - 1;
             objects[t] = object;
@@ -57,8 +60,8 @@ public class MySAXParser extends DefaultHandler {
                     }
                 }
                 Object[] entities = objects;
+                isSaveBatchEnd = false;
                 new Thread(() -> {
-                    isSaveBatchEnd = false;
                     genericDao.saveBatch(entities);
                     isSaveBatchEnd = true;
                 }).start();

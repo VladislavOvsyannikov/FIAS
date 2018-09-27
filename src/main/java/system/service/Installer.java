@@ -32,7 +32,8 @@ public class Installer {
 
 
     public void installLastComplete(String mainPath){
-        String lastVersion = downloader.getLastVersion();
+//        String lastVersion = downloader.getLastVersion();
+        String lastVersion = "20180917";
         String path = mainPath+"complete"+lastVersion;
         File folder = new File(path);
         if (folder.exists()) {
@@ -42,17 +43,18 @@ public class Installer {
                 SAXParser saxParser = factory.newSAXParser();
                 for (File file : files) {
                     String fileName = file.getName();
-                    if (!fileName.contains("_DEL_")&&!fileName.contains("_NORMDOC_")) {
+//                    if (!fileName.contains("_DEL_")&&!fileName.contains("_NORMDOC_")) {
+                    if(fileName.contains("AS_STEAD_20180916_37eaf347-7140-4f4f-8d30-2466d6fc9b55.XML")){
                         MySAXParser mySAXParser = new MySAXParser(fileName);
-                        saxParser.parse(mainPath + path, mySAXParser);
+                        saxParser.parse(file, mySAXParser);
                     }
                 }
-                Version version = new Version();
-                version.setVersion(lastVersion);
-                genericDao.save(version);
+//                Version version = new Version();
+//                version.setVersion(lastVersion);
+//                genericDao.save(version);
                 logger.info("Install is completed");
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         } else logger.warn("Folder not found or new version exists");
     }
