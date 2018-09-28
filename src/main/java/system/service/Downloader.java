@@ -16,37 +16,17 @@ public class Downloader {
 
     private static final Logger logger = Logger.getLogger(Downloader.class);
 
-    public void downloadLastDelta(String path){
-        String lastVersion = getLastVersion();
-        String fileName = "delta"+lastVersion+".rar";
-        String lastDeltaXmlUrl = "https://fias.nalog.ru/Public/Downloads/"+lastVersion+"/fias_delta_xml.rar";
-        downloadFile(path, lastDeltaXmlUrl, fileName);
-    }
 
-    public void downloadDeltaByVersion(String path, String version){
-        String fileName = "delta"+version+".rar";
-        String url = "https://fias.nalog.ru/Public/Downloads/"+version+"/fias_delta_xml.rar";
-        downloadFile(path, url, fileName);
-    }
-
-    public void downloadLastComplete(String path){
-        String lastVersion = getLastVersion();
+    public void downloadLastComplete(String path, String lastVersion){
         String fileName = "complete"+lastVersion+".rar";
         String lastCompleteXmlUrl = "https://fias.nalog.ru/Public/Downloads/"+lastVersion+"/fias_xml.rar";
         downloadFile(path, lastCompleteXmlUrl, fileName);
     }
 
-    public String getLastVersion(){
-        StringBuilder res = new StringBuilder();
-        try {
-            URL url = new URL("https://fias.nalog.ru/Public/Downloads/Actual/VerDate.txt");
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-            String[] strings = in.readLine().split("\\.");
-            for (int i=strings.length-1; i>=0; i--) res.append(strings[i]);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-        return res.toString();
+    public void downloadDeltaByVersion(String path, String deltaVersion){
+        String fileName = "delta"+deltaVersion+".rar";
+        String url = "https://fias.nalog.ru/Public/Downloads/"+deltaVersion+"/fias_delta_xml.rar";
+        downloadFile(path, url, fileName);
     }
 
     private void downloadFile(String path, String url, String fileName) {

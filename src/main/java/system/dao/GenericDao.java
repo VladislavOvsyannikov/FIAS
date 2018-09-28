@@ -14,24 +14,6 @@ public class GenericDao<T> {
 
     private static final Logger logger = Logger.getLogger(GenericDao.class);
 
-    public void save(T entity){
-        EntityManager entityManager = HibernateEntityManagerFactory.getEntityManagerFactory().createEntityManager();
-        EntityTransaction entityTransaction = entityManager.getTransaction();
-        entityTransaction.begin();
-        try {
-            entityManager.persist(entity);
-            entityTransaction.commit();
-        }catch (RuntimeException e){
-            if (entityTransaction.isActive()) {
-                entityTransaction.rollback();
-            }
-            logger.error(e.getMessage());
-        }
-        entityManager.close();
-    }
-
-    public void saveOrUpdate(T entity){
-    }
 
     public void saveBatch(T[] entities){
         EntityManager entityManager = HibernateEntityManagerFactory.getEntityManagerFactory().createEntityManager();
@@ -56,6 +38,47 @@ public class GenericDao<T> {
         } finally {
             entityManager.close();
         }
+    }
+
+    public void saveOrUpdateBatch(T[] entities){
+        EntityManager entityManager = HibernateEntityManagerFactory.getEntityManagerFactory().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        try {
+            entityTransaction.begin();
+            for (int i = 0; i < entities.length; i++) {
+                if (i > 0 && i % 1000 == 0) {
+                    entityManager.flush();
+                    entityManager.clear();
+                }
+                if (entities[i]!=null) {
+                    entityManager.merge(entities[i]);
+                }
+            }
+            entityTransaction.commit();
+        } catch (RuntimeException e) {
+            if (entityTransaction.isActive()) {
+                entityTransaction.rollback();
+            }
+            logger.error(e.getMessage());
+        } finally {
+            entityManager.close();
+        }
+    }
+
+    public void save(T entity){
+        EntityManager entityManager = HibernateEntityManagerFactory.getEntityManagerFactory().createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
+        try {
+            entityManager.persist(entity);
+            entityTransaction.commit();
+        }catch (RuntimeException e){
+            if (entityTransaction.isActive()) {
+                entityTransaction.rollback();
+            }
+            logger.error(e.getMessage());
+        }
+        entityManager.close();
     }
 
     public T getEntity(String q, Class c){

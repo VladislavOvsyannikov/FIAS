@@ -8,8 +8,7 @@ public class Test {
         Test test = new Test();
 
 //        test.fiasService.checkUpdate();
-//        test.fiasService.downloadLastDelta();
-//        test.fiasService.unrarLastDelta();
-        test.fiasService.installLastComplete();
+//        test.fiasService.installLastComplete();
+          test.fiasService.installDeltaByVersion();
     }
 }

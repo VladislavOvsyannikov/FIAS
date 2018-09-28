@@ -16,14 +16,7 @@ public class Installer {
 
     private static final Logger logger = Logger.getLogger(Installer.class);
 
-    private Downloader downloader = new Downloader();
-
     private GenericDao genericDao = new GenericDao();
-
-    @Autowired
-    public void setDownloader(Downloader downloader) {
-        this.downloader = downloader;
-    }
 
     @Autowired
     public void setGenericDao(GenericDao genericDao) {
@@ -31,22 +24,29 @@ public class Installer {
     }
 
 
-    public void installLastComplete(String mainPath){
+    private int numberOfObjects = 100_000;
+    private Object[] objects;
+    private boolean isSaveBatchEnd = true;
+
+
+    public void installLastComplete(String mainPath, String lastVersion){
 //        String lastVersion = downloader.getLastVersion();
-        String lastVersion = "20180917";
         String path = mainPath+"complete"+lastVersion;
         File folder = new File(path);
         if (folder.exists()) {
             File[] files = folder.listFiles();
             try {
-                SAXParserFactory factory = SAXParserFactory.newInstance();
-                SAXParser saxParser = factory.newSAXParser();
+                SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 for (File file : files) {
                     String fileName = file.getName();
 //                    if (!fileName.contains("_DEL_")&&!fileName.contains("_NORMDOC_")) {
-                    if(fileName.contains("AS_STEAD_20180916_37eaf347-7140-4f4f-8d30-2466d6fc9b55.XML")){
-                        MySAXParser mySAXParser = new MySAXParser(fileName);
+                    if(fileName.contains("AS_FLATTYPE_20180916_3904c8e7-853d-4197-9ead-c42fa9a1b55a.XML")){
+
+
+                        MySAXParser mySAXParser = new MySAXParser(fileName, "complete");
                         saxParser.parse(file, mySAXParser);
+
+
                     }
                 }
 //                Version version = new Version();
@@ -59,9 +59,16 @@ public class Installer {
         } else logger.warn("Folder not found or new version exists");
     }
 
-//    public void installLastDelta(String mainPath){
-//        String lastVersion = downloader.getLastVersion();
-//        String path = mainPath+"delta"+lastVersion;
+
+
+
+
+//    public void installDeltaByVersion(String mainPath, String deltaVersion){
+//        installDelta(mainPath, deltaVersion);
+//    }
+//
+//    private void installDelta(String mainPath, String deltaVersion){
+//        String path = mainPath+"delta"+deltaVersion;
 //        File folder = new File(path);
 //        if (folder.exists()) {
 //            File[] files = folder.listFiles();
@@ -70,17 +77,15 @@ public class Installer {
 //                SAXParser saxParser = factory.newSAXParser();
 //                for (File file : files) {
 //                    String fileName = file.getName();
-//                    if (!fileName.contains("_DEL_")) {
-//                        MySAXParser mySAXParser = new MySAXParser(fileName);
-//                        saxParser.parse(mainPath + path, mySAXParser);
-//                    }
+//                    MySAXParser mySAXParser = new MySAXParser(fileName, "delta");
+//                    saxParser.parse(file, mySAXParser);
 //                }
-//                Version version = new Version();
-//                version.setVersion(lastVersion);
-//                genericDao.save(version);
-//                logger.info("Update is completed");
+////                Version version = new Version();
+////                version.setVersion(deltaVersion);
+////                genericDao.save(version);
+//                logger.info("Update to version "+deltaVersion+" is completed");
 //            } catch (Exception e) {
-//                e.printStackTrace();
+//                logger.error(e.getMessage());
 //            }
 //        } else logger.warn("Folder not found or new version exists");
 //    }

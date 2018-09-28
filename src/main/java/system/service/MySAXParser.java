@@ -21,12 +21,14 @@ public class MySAXParser extends DefaultHandler {
     private GenericDao genericDao = new GenericDao();
 
     private String xmlFile;
+    private String action;
     private int counter;
     private Object[] objects;
     private boolean isSaveBatchEnd = true;
 
-    MySAXParser(String xmlFile) {
+    MySAXParser(String xmlFile, String action) {
         this.xmlFile = xmlFile;
+        this.action = action;
     }
 
     public void startDocument() {
@@ -62,7 +64,8 @@ public class MySAXParser extends DefaultHandler {
                 Object[] entities = objects;
                 isSaveBatchEnd = false;
                 new Thread(() -> {
-                    genericDao.saveBatch(entities);
+                    if (action.equals("complete")) genericDao.saveBatch(entities);
+                    else genericDao.saveOrUpdateBatch(entities);
                     isSaveBatchEnd = true;
                 }).start();
                 objects = new Object[length];
@@ -79,9 +82,10 @@ public class MySAXParser extends DefaultHandler {
                     logger.error(e.getMessage());
                 }
             }
-            genericDao.saveBatch(objects);
+            if (action.equals("complete")) genericDao.saveBatch(objects);
+            else genericDao.saveOrUpdateBatch(objects);
         }
         logger.info("Stop parse " + xmlFile);
-        logger.info("Saved "+counter+" objects");
+        logger.info("Parsed "+counter+" objects");
     }
 }

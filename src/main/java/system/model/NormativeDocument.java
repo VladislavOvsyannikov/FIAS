@@ -23,14 +23,6 @@ public class NormativeDocument {
     @Column(name = "docname")
     private String DOCNAME;
 
-//    //Дата документа
-//    @Column(name = "docdate")
-//    private String DOCDATE;
-//
-//    //Номер документа
-//    @Column(name = "docnum")
-//    private String DOCNUM;
-
     //Тип документа
     @Column(name = "doctype")
     private int DOCTYPE;
@@ -39,6 +31,13 @@ public class NormativeDocument {
 //    @Column(name = "docimgid")
 //    private String DOCIMGID;
 
+//    //Дата документа
+//    @Column(name = "docdate")
+//    private String DOCDATE;
+//
+//    //Номер документа
+//    @Column(name = "docnum")
+//    private String DOCNUM;
 
 
     public int getId() {

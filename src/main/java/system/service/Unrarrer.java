@@ -11,20 +11,13 @@ public class Unrarrer {
 
     private static final Logger logger = Logger.getLogger(Unrarrer.class);
 
-    private String lastVersion = new Downloader().getLastVersion();
-
-    public void unrarLastDelta(String path){
-        String fileName = "delta"+lastVersion;
-        unRarFile(path, fileName);
-    }
-
-    public void unrarDeltaByVersion(String path, String version){
-        String fileName = "delta"+version;
-        unRarFile(path, fileName);
-    }
-
-    public void unrarLastComplete(String path){
+    public void unrarLastComplete(String path, String lastVersion){
         String fileName = "complete"+lastVersion;
+        unRarFile(path, fileName);
+    }
+
+    public void unrarDeltaByVersion(String path, String deltaVersion){
+        String fileName = "delta"+deltaVersion;
         unRarFile(path, fileName);
     }
 
@@ -44,5 +37,4 @@ public class Unrarrer {
             logger.warn("File not found");
         }
     }
-
 }
