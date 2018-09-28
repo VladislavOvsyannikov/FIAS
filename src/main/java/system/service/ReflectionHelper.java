@@ -11,9 +11,7 @@ public class ReflectionHelper {
     public static Object createInstance(String className) {
         try {
             return Class.forName("system.model."+className).newInstance();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+        } catch (Exception ignored) {}
         return null;
     }
 

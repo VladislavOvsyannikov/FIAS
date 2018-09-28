@@ -7,8 +7,8 @@ public class Test {
     public static void main(String[] args){
         Test test = new Test();
 
-//        test.fiasService.checkUpdate();
-//        test.fiasService.installLastComplete();
-          test.fiasService.installDeltaByVersion();
+        test.fiasService.checkUpdate();
+        test.fiasService.installLastComplete();
+        test.fiasService.installDeltaByVersion();
     }
 }

@@ -16,77 +16,42 @@ public class Installer {
 
     private static final Logger logger = Logger.getLogger(Installer.class);
 
-    private GenericDao genericDao = new GenericDao();
+    private GenericDao<Version> genericDao = new GenericDao<>();
 
     @Autowired
-    public void setGenericDao(GenericDao genericDao) {
+    public void setGenericDao(GenericDao<Version> genericDao) {
         this.genericDao = genericDao;
     }
 
 
-    private int numberOfObjects = 100_000;
-    private Object[] objects;
-    private boolean isSaveBatchEnd = true;
+    public void installLastComplete(String mainPath, String lastVersion) {
+        installDatabase(mainPath, "complete", lastVersion, 100_000);
+    }
 
+    public void installDeltaByVersion(String mainPath, String deltaVersion){
+        installDatabase(mainPath, "delta", deltaVersion, 10_000);
+    }
 
-    public void installLastComplete(String mainPath, String lastVersion){
-//        String lastVersion = downloader.getLastVersion();
-        String path = mainPath+"complete"+lastVersion;
+    private void installDatabase(String mainPath, String databaseType, String databaseVersion, int numberOfObjects) {
+        String path = mainPath + databaseType + databaseVersion;
         File folder = new File(path);
         if (folder.exists()) {
-            File[] files = folder.listFiles();
             try {
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
-                for (File file : files) {
+                for (File file : folder.listFiles()) {
                     String fileName = file.getName();
-//                    if (!fileName.contains("_DEL_")&&!fileName.contains("_NORMDOC_")) {
-                    if(fileName.contains("AS_FLATTYPE_20180916_3904c8e7-853d-4197-9ead-c42fa9a1b55a.XML")){
-
-
-                        MySAXParser mySAXParser = new MySAXParser(fileName, "complete");
+                    if (!fileName.contains("_DEL_") && !fileName.contains("_NORMDOC_")) {
+                        MySAXParser mySAXParser = new MySAXParser(fileName, databaseType, numberOfObjects);
                         saxParser.parse(file, mySAXParser);
-
-
                     }
                 }
-//                Version version = new Version();
-//                version.setVersion(lastVersion);
-//                genericDao.save(version);
-                logger.info("Install is completed");
+                Version version = new Version();
+                version.setVersion(databaseVersion);
+                genericDao.save(version);
+                logger.info("Update to version " + databaseVersion + " is completed");
             } catch (Exception e) {
                 logger.error(e.getMessage());
             }
-        } else logger.warn("Folder not found or new version exists");
+        } else logger.warn("Folder not found");
     }
-
-
-
-
-
-//    public void installDeltaByVersion(String mainPath, String deltaVersion){
-//        installDelta(mainPath, deltaVersion);
-//    }
-//
-//    private void installDelta(String mainPath, String deltaVersion){
-//        String path = mainPath+"delta"+deltaVersion;
-//        File folder = new File(path);
-//        if (folder.exists()) {
-//            File[] files = folder.listFiles();
-//            try {
-//                SAXParserFactory factory = SAXParserFactory.newInstance();
-//                SAXParser saxParser = factory.newSAXParser();
-//                for (File file : files) {
-//                    String fileName = file.getName();
-//                    MySAXParser mySAXParser = new MySAXParser(fileName, "delta");
-//                    saxParser.parse(file, mySAXParser);
-//                }
-////                Version version = new Version();
-////                version.setVersion(deltaVersion);
-////                genericDao.save(version);
-//                logger.info("Update to version "+deltaVersion+" is completed");
-//            } catch (Exception e) {
-//                logger.error(e.getMessage());
-//            }
-//        } else logger.warn("Folder not found or new version exists");
-//    }
 }
