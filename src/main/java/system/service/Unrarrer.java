@@ -11,6 +11,7 @@ public class Unrarrer {
 
     private static final Logger logger = Logger.getLogger(Unrarrer.class);
 
+
     public void unrarLastComplete(String path, String lastVersion){
         String fileName = "complete"+lastVersion;
         unRarFile(path, fileName);

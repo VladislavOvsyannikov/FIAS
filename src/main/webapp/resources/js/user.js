@@ -1,78 +1,82 @@
 var user = angular.module('user', []);
 var config = {headers: {'Content-Type': 'application/json;charset=utf-8;'}};
 
-var counter = 0;
-var message = "Please login after registration";
+var guid = " ";
+var nextObjects;
 
-user.controller('getController', function ($scope, $http, $location, $window) {
+user.controller('userController', function ($scope, $http) {
 
-    $scope.getUsername = function () {
-        var url = "getUsername";
-        $http.get(url, config).then(function (response) {
-            $scope.username = response.data;
+    $scope.getObjectsListByGuid = function () {
+        $http.post("getObjectsListByGuid", guid, config).then(function (response) {
+            $scope.objectsNextList = response.data;
+            nextObjects = $scope.objectsNextList;
         });
     };
 
-    $scope.getChampions = function () {
-        var url = "getChampions";
-        $http.get(url, config).then(function (response) {
-            $scope.champions = response.data;
-        });
+    $scope.getShowDropdownList = function () {
+        return showDropdownList;
     };
 
-    $scope.getCurrentUser = function () {
-        var url = "getCurrentUser";
-        $http.get(url, config).then(function (response) {
-            $scope.user = response.data;
-            if ($scope.user!=="") counter = $scope.user.counter;
-
-        });
+    $scope.getGuid = function () {
+        return guid;
     };
-
-    $scope.getUsers = function () {
-        var url = "getUsers";
-        $http.get(url, config).then(function (response) {
-            $scope.users = response.data;
-        });
-    };
-
-    $scope.getCounter = function () {
-        return counter;
-    };
-
-    $scope.getMessage = function () {
-        return message;
-    };
-
 });
 
-user.controller('postController', function ($scope, $http, $location, $window) {
+var showDropdownList = [{value: true}];
+var directiveScopes = [];
+var level = 0;
 
-    $scope.click = function () {
-        var url = "click";
-        $http.post(url, config).then(function (response) {
-            counter++;
-        });
-    };
-
-    $scope.submitRegistration = function () {
-        var url = "submitRegistration";
-        var data = {
-            name: $scope.name,
-            password: $scope.password
-        };
-        if ($scope.name == null || $scope.password == null || $scope.password === ""  || $scope.name === ""){
-            message = "Enter nickname and password";
-        }else {
-            $http.post(url, data, config).then(function (response) {
-                $scope.answer = response.data;
-                if ($scope.answer === "true") {
-                    $window.location.href = '/login';
-                } else {
-                    message = "This user already exists";
-                }
+user.directive('dropdownListNext',function($http, $timeout){
+    return {
+        restrict: 'E',
+        scope: true,
+        templateUrl: 'template.html',
+        link: function(scope, elelement, attrs){
+            var $listContainer = angular.element( elelement[0].querySelectorAll('.search-object-list')[0] );
+            elelement.find('input').bind('focus',function(){
+                $listContainer.addClass('show');
             });
-        }
-    };
+            elelement.find('input').bind('blur',function(){
+                $timeout(function(){ $listContainer.removeClass('show') }, 200);
+            });
 
+            scope.chooseObject = function(object){
+                level = 0;
+                for (var i=0; i<directiveScopes.length; i++){
+                    if (scope.$id === directiveScopes[i].$id) level = i+1;
+                }
+
+                if (level>0 && level<directiveScopes.length){
+                    scope.searchNext = object.formalname+' '+object.shortname;
+                    guid = object.aoguid;
+                    $http.post("getObjectsListByGuid", guid, config).then(function (response) {
+                        directiveScopes[level].objectsNextList=response.data;
+                    });
+                    for (i=directiveScopes.length-1; i>=level; i--){
+                        directiveScopes[i].searchNext="";
+                        directiveScopes[i].objectsNextList = [];
+                        if (i>level) directiveScopes.pop();
+                    }
+                    while (showDropdownList.length !== directiveScopes.length) showDropdownList.pop();
+                }
+
+                if (level>0 && level===directiveScopes.length) {
+                    guid = object.aoguid;
+                    scope.searchNext = object.formalname+' '+object.shortname;
+                    scope.getObjectsListByGuid();
+                    if (showDropdownList.length<=directiveScopes.length) showDropdownList.push({value: true});
+                }
+
+                if (level===0){
+                    guid = object.aoguid;
+                    scope.objectsNextList = nextObjects;
+                    scope.searchNext = object.formalname+' '+object.shortname;
+                    showDropdownList.push({value: true});
+                    if (level===0) directiveScopes.push(scope);
+                    scope.getObjectsListByGuid();
+                }
+                $listContainer.removeClass('show');
+            };
+        }
+    }
 });

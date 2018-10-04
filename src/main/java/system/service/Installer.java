@@ -16,7 +16,7 @@ public class Installer {
 
     private static final Logger logger = Logger.getLogger(Installer.class);
 
-    private GenericDao<Version> genericDao = new GenericDao<>();
+    private GenericDao<Version> genericDao;
 
     @Autowired
     public void setGenericDao(GenericDao<Version> genericDao) {
@@ -40,10 +40,11 @@ public class Installer {
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 for (File file : folder.listFiles()) {
                     String fileName = file.getName();
-                    if (!fileName.contains("_DEL_") && !fileName.contains("_NORMDOC_")) {
-                        MySAXParser mySAXParser = new MySAXParser(fileName, databaseType, numberOfObjects);
-                        saxParser.parse(file, mySAXParser);
-                    }
+//                    if (!fileName.contains("_DEL_") && !fileName.contains("_NORMDOC_")){
+//                    if (fileName.contains("AS_ADDROBJ_")) {
+//                        MySAXParser mySAXParser = new MySAXParser(fileName, databaseType, numberOfObjects);
+//                        saxParser.parse(file, mySAXParser);
+//                    }
                 }
                 Version version = new Version();
                 version.setVersion(databaseVersion);

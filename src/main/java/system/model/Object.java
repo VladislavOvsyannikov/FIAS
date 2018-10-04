@@ -11,9 +11,6 @@ import javax.persistence.*;
         @Index(columnList = "parentguid", name = "parentguidobject")})
 public class Object{
 
-//    @Column(name = "id", nullable = false)
-//    private int id;
-
     @Id
     @Column(name = "aoid", nullable = false, unique = true, length = 32)
     private String AOID;
@@ -33,6 +30,10 @@ public class Object{
     @Column(name = "livestatus", length = 1)
     private int LIVESTATUS;
 
+    //Статус актуальности адресного объекта
+    @Column(name = "actstatus", length = 1)
+    private int ACTSTATUS;
+
     //Формализованное наименование
     @Column(name = "formalname")
     private String FORMALNAME;
@@ -41,130 +42,125 @@ public class Object{
     @Column(name = "shortname", length = 50)
     private String SHORTNAME;
 
+    //Почтовый индекс
+    @Column(name = "postalcode", length = 6)
+    private String POSTALCODE;
+
+    //Код ИФНС ФЛ
+    @Column(name = "ifnsfl", length = 4)
+    private String IFNSFL;
+
+    //Код ИФНС ЮЛ
+    @Column(name = "ifnsul", length = 4)
+    private String IFNSUL;
+
+    //OKATO
+    @Column(name = "okato", length = 11)
+    private String OKATO;
+
+    //OKTMO
+    @Column(name = "oktmo", length = 11)
+    private String OKTMO;
+
+    //Начало действия записи
+    @Column(name = "startdate", length = 10)
+    private String STARTDATE;
+
+    //Окончание действия записи
+    @Column(name = "enddate", length = 10)
+    private String ENDDATE;
+
+    //Тип адресации
+    @Column(name = "divtype", length = 1)
+    private int DIVTYPE;
+
+//    //Код региона
+//    @Column(name = "regioncode", length = 2)
+//    private String REGIONCODE;
+//
+//    //Код автономии
+//    @Column(name = "autocode", length = 1)
+//    private String AUTOCODE;
+//
+//    //Код района
+//    @Column(name = "areacode", length = 3)
+//    private String AREACODE;
+
+//    //Код города
+//    @Column(name = "citycode", length = 3)
+//    private String CITYCODE;
+//
+//    //Код внутригородского района
+//    @Column(name = "ctarcode", length = 3)
+//    private String CTARCODE;
+//
+//    //Код населенного пункта
+//    @Column(name = "placecode", length = 3)
+//    private String PLACECODE;
+//
+//    //Код элемента планировочной структуры
+//    @Column(name = "plancode", length = 4)
+//    private String PLANCODE;
+//
+//    //Код улицы
+//    @Column(name = "streetcode", length = 4)
+//    private String STREETCODE;
+
+//    //Код дополнительного адресообразующего элемента
+//    @Column(name = "extrcode", length = 4)
+//    private String EXTRCODE;
+//
+//    //Код подчиненного дополнительного адресообразующего элемента
+//    @Column(name = "sextcode", length = 3)
+//    private String SEXTCODE;
+
+//    //Код территориального участка ИФНС ФЛ
+//    @Column(name = "terrifnsfl", length = 4)
+//    private String TERRIFNSFL;
+
+//    //Код территориального участка ИФНС ЮЛ
+//    @Column(name = "terrifnsul", length = 4)
+//    private String TERRIFNSUL;
+
+//    //Дата внесения записи
+//    @Column(name = "updatedate", length = 10)
+//    private String UPDATEDATE;
+//
+//    //Идентификатор записи связывания с предыдушей исторической записью
+//    @Column(name = "previd", length = 32)
+//    private String PREVID;
+//
+//    //Идентификатор записи  связывания с последующей исторической записью
+//    @Column(name = "nextid", length = 32)
+//    private String NEXTID;
+
+//    //Статус центра
+//    @Column(name = "centstatus", length = 1)
+//    private int CENTSTATUS;
+
+//    //Причина появления записи
+//    @Column(name = "operstatus", length = 2)
+//    private int OPERSTATUS;
+
 //    //Официальное наименование
 //    @Column(name = "offname")
 //    private String OFFNAME;
 
-//    //Код региона
-//    @Column(name = "regioncode")
-//    private String REGIONCODE;
-//
-//    //Код автономии
-//    @Column(name = "autocode")
-//    private String AUTOCODE;
-
-//    //Код района
-//    @Column(name = "areacode")
-//    private String AREACODE;
-
-//    //Код города
-//    @Column(name = "citycode")
-//    private String CITYCODE;
-
-//    //Код внутригородского района
-//    @Column(name = "ctarcode")
-//    private String CTARCODE;
-
-//    //Код населенного пункта
-//    @Column(name = "placecode")
-//    private String PLACECODE;
-
-//    //Код элемента планировочной структуры
-//    @Column(name = "plancode")
-//    private String PLANCODE;
-
-//    //Код улицы
-//    @Column(name = "streetcode")
-//    private String STREETCODE;
-
-//    //Код дополнительного адресообразующего элемента
-//    @Column(name = "extrcode")
-//    private String EXTRCODE;
-
-//    //Код подчиненного дополнительного адресообразующего элемента
-//    @Column(name = "sextcode")
-//    private String SEXTCODE;
-
-//    //Почтовый индекс
-//    @Column(name = "postalcode")
-//    private String POSTALCODE;
-
-//    //Код ИФНС ФЛ
-//    @Column(name = "ifnsfl")
-//    private String IFNSFL;
-//
-//    //Код территориального участка ИФНС ФЛ
-//    @Column(name = "terrifnsfl")
-//    private String TERRIFNSFL;
-//
-//    //Код ИФНС ЮЛ
-//    @Column(name = "ifnsul")
-//    private String IFNSUL;
-//
-//    //Код территориального участка ИФНС ЮЛ
-//    @Column(name = "terrifnsul")
-//    private String TERRIFNSUL;
-//
-//    //OKATO
-//    @Column(name = "okato")
-//    private String OKATO;
-//
-//    //OKTMO
-//    @Column(name = "oktmo")
-//    private String OKTMO;
-
-//    //Дата внесения записи
-//    @Column(name = "updatedate")
-//    private String UPDATEDATE;
-
-//    //Идентификатор записи связывания с предыдушей исторической записью
-//    @Column(name = "previd")
-//    private String PREVID;
-//
-//    //Идентификатор записи  связывания с последующей исторической записью
-//    @Column(name = "nextid")
-//    private String NEXTID;
-
 //    //Код адресного объекта одной строкой с признаком актуальности из КЛАДР 4.0
-//    @Column(name = "code")
+//    @Column(name = "code", length = 17)
 //    private String CODE;
 //
 //    //Код адресного объекта из КЛАДР 4.0 одной строкой без признака актуальности (последних двух цифр)
-//    @Column(name = "plaincode")
+//    @Column(name = "plaincode", length = 15)
 //    private String PLAINCODE;
 
-//    //Статус актуальности адресного объекта
-//    @Column(name = "actstatus")
-//    private int ACTSTATUS;
-
-//    //Статус центра
-//    @Column(name = "centstatus")
-//    private int CENTSTATUS;
-
-//    //Причина появления записи
-//    @Column(name = "operstatus")
-//    private int OPERSTATUS;
-//
 //    //Статус актуальности КЛАДР 4
 //    @Column(name = "currstatus")
 //    private int CURRSTATUS;
-
-//    //Начало действия записи
-//    @Column(name = "startdate")
-//    private String STARTDATE;
 //
-//    //Окончание действия записи
-//    @Column(name = "enddate")
-//    private String ENDDATE;
-
 //    //Внешний ключ на нормативный документ
 //    @Column(name = "normdoc")
 //    private String NORMDOC;
-
-//    //Тип адресации
-//    @Column(name = "divtype")
-//    private int DIVTYPE;
-
 
     public String getAOID() {
         return AOID;
@@ -206,6 +202,14 @@ public class Object{
         this.LIVESTATUS = LIVESTATUS;
     }
 
+    public int getACTSTATUS() {
+        return ACTSTATUS;
+    }
+
+    public void setACTSTATUS(int ACTSTATUS) {
+        this.ACTSTATUS = ACTSTATUS;
+    }
+
     public String getFORMALNAME() {
         return FORMALNAME;
     }
@@ -220,5 +224,69 @@ public class Object{
 
     public void setSHORTNAME(String SHORTNAME) {
         this.SHORTNAME = SHORTNAME;
+    }
+
+    public String getPOSTALCODE() {
+        return POSTALCODE;
+    }
+
+    public void setPOSTALCODE(String POSTALCODE) {
+        this.POSTALCODE = POSTALCODE;
+    }
+
+    public String getIFNSFL() {
+        return IFNSFL;
+    }
+
+    public void setIFNSFL(String IFNSFL) {
+        this.IFNSFL = IFNSFL;
+    }
+
+    public String getIFNSUL() {
+        return IFNSUL;
+    }
+
+    public void setIFNSUL(String IFNSUL) {
+        this.IFNSUL = IFNSUL;
+    }
+
+    public String getOKATO() {
+        return OKATO;
+    }
+
+    public void setOKATO(String OKATO) {
+        this.OKATO = OKATO;
+    }
+
+    public String getOKTMO() {
+        return OKTMO;
+    }
+
+    public void setOKTMO(String OKTMO) {
+        this.OKTMO = OKTMO;
+    }
+
+    public String getSTARTDATE() {
+        return STARTDATE;
+    }
+
+    public void setSTARTDATE(String STARTDATE) {
+        this.STARTDATE = STARTDATE;
+    }
+
+    public String getENDDATE() {
+        return ENDDATE;
+    }
+
+    public void setENDDATE(String ENDDATE) {
+        this.ENDDATE = ENDDATE;
+    }
+
+    public int getDIVTYPE() {
+        return DIVTYPE;
+    }
+
+    public void setDIVTYPE(int DIVTYPE) {
+        this.DIVTYPE = DIVTYPE;
     }
 }

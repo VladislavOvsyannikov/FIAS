@@ -11,10 +11,6 @@ import javax.persistence.*;
         @Index(columnList = "houseguid", name = "houseguidroom")})
 public class Room {
 
-//    @Id
-//    @Column(name = "id", nullable = false)
-//    private int id;
-
     @Id
     @Column(name = "roomid", nullable = false, unique = true, length = 32)
     private String ROOMID;
@@ -38,9 +34,25 @@ public class Room {
     @Column(name = "flatnumber", length = 100)
     private String FLATNUMBER;
 
-//    //Почтовый индекс
-//    @Column(name = "postalcode")
-//    private String POSTALCODE;
+    //Почтовый индекс
+    @Column(name = "postalcode", length = 6)
+    private String POSTALCODE;
+
+    //Начало действия записи
+    @Column(name = "startdate", length = 10)
+    private String STARTDATE;
+
+    //Окончание действия записи
+    @Column(name = "enddate", length = 10)
+    private String ENDDATE;
+
+    //Кадастровый номер помещения
+    @Column(name = "cadnum", length = 100)
+    private String CADNUM;
+
+    //Кадастровый номер комнаты в помещении
+    @Column(name = "roomcadnum", length = 100)
+    private String ROOMCADNUM;
 
 //    //Тип комнаты
 //    @Column(name = "roomtype")
@@ -61,14 +73,6 @@ public class Room {
 //    //Идентификатор записи  связывания с последующей исторической записью
 //    @Column(name = "nextid")
 //    private String NEXTID;
-//
-//    //Начало действия записи
-//    @Column(name = "startdate")
-//    private String STARTDATE;
-//
-//    //Окончание действия записи
-//    @Column(name = "enddate")
-//    private String ENDDATE;
 
 //    //Внешний ключ на нормативный документ
 //    @Column(name = "normdoc")
@@ -77,14 +81,7 @@ public class Room {
 //    //Причина появления записи
 //    @Column(name = "operstatus")
 //    private int OPERSTATUS;
-//
-//    //Кадастровый номер помещения
-//    @Column(name = "cadnum")
-//    private String CADNUM;
-//
-//    //Кадастровый номер комнаты в помещении
-//    @Column(name = "roomcadnum")
-//    private String ROOMCADNUM;
+
 
     public String getROOMID() {
         return ROOMID;
@@ -110,14 +107,6 @@ public class Room {
         this.HOUSEGUID = HOUSEGUID;
     }
 
-    public String getFLATNUMBER() {
-        return FLATNUMBER;
-    }
-
-    public void setFLATNUMBER(String FLATNUMBER) {
-        this.FLATNUMBER = FLATNUMBER;
-    }
-
     public int getLIVESTATUS() {
         return LIVESTATUS;
     }
@@ -132,5 +121,53 @@ public class Room {
 
     public void setFLATTYPE(int FLATTYPE) {
         this.FLATTYPE = FLATTYPE;
+    }
+
+    public String getFLATNUMBER() {
+        return FLATNUMBER;
+    }
+
+    public void setFLATNUMBER(String FLATNUMBER) {
+        this.FLATNUMBER = FLATNUMBER;
+    }
+
+    public String getPOSTALCODE() {
+        return POSTALCODE;
+    }
+
+    public void setPOSTALCODE(String POSTALCODE) {
+        this.POSTALCODE = POSTALCODE;
+    }
+
+    public String getSTARTDATE() {
+        return STARTDATE;
+    }
+
+    public void setSTARTDATE(String STARTDATE) {
+        this.STARTDATE = STARTDATE;
+    }
+
+    public String getENDDATE() {
+        return ENDDATE;
+    }
+
+    public void setENDDATE(String ENDDATE) {
+        this.ENDDATE = ENDDATE;
+    }
+
+    public String getCADNUM() {
+        return CADNUM;
+    }
+
+    public void setCADNUM(String CADNUM) {
+        this.CADNUM = CADNUM;
+    }
+
+    public String getROOMCADNUM() {
+        return ROOMCADNUM;
+    }
+
+    public void setROOMCADNUM(String ROOMCADNUM) {
+        this.ROOMCADNUM = ROOMCADNUM;
     }
 }

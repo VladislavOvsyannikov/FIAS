@@ -3,11 +3,12 @@ package system.dao;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import system.service.HibernateEntityManagerFactory;
-import system.service.Installer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.FlushModeType;
 import javax.persistence.Query;
+import java.util.List;
 
 @Repository
 public class GenericDao<T> {
@@ -15,19 +16,14 @@ public class GenericDao<T> {
     private static final Logger logger = Logger.getLogger(GenericDao.class);
 
 
-    public void saveBatch(T[] entities){
+    public void saveBatch(T[] entities, int numberOfObjects){
         EntityManager entityManager = HibernateEntityManagerFactory.getEntityManagerFactory().createEntityManager();
         EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityManager.setFlushMode(FlushModeType.COMMIT);
         try {
             entityTransaction.begin();
-            for (int i = 0; i < entities.length; i++) {
-                if (i > 0 && i % 1000 == 0) {
-                    entityManager.flush();
-                    entityManager.clear();
-                }
-                if (entities[i]!=null) {
-                    entityManager.persist(entities[i]);
-                }
+            for (int i = 0; i < numberOfObjects; i++) {
+                entityManager.persist(entities[i]);
             }
             entityTransaction.commit();
         } catch (RuntimeException e) {
@@ -40,19 +36,17 @@ public class GenericDao<T> {
         }
     }
 
-    public void saveOrUpdateBatch(T[] entities){
+    public void saveOrUpdateBatch(T[] entities, int numberOfObjects){
         EntityManager entityManager = HibernateEntityManagerFactory.getEntityManagerFactory().createEntityManager();
         EntityTransaction entityTransaction = entityManager.getTransaction();
         try {
             entityTransaction.begin();
-            for (int i = 0; i < entities.length; i++) {
-                if (i > 0 && i % 1000 == 0) {
+            for (int i = 0; i < numberOfObjects; i++) {
+                if (i > 0 && i % 200 == 0) {
                     entityManager.flush();
                     entityManager.clear();
                 }
-                if (entities[i]!=null) {
-                    entityManager.merge(entities[i]);
-                }
+                entityManager.merge(entities[i]);
             }
             entityTransaction.commit();
         } catch (RuntimeException e) {
@@ -92,5 +86,18 @@ public class GenericDao<T> {
         }
         entityManager.close();
         return t;
+    }
+
+    public List<T> getEntities(String q, Class c) {
+        List<T> list = null;
+        EntityManager entityManager = HibernateEntityManagerFactory.getEntityManagerFactory().createEntityManager();
+        Query query = entityManager.createNativeQuery(q, c);
+        try {
+            list = query.getResultList();
+        }catch (Exception e){
+            logger.error(e.getMessage());
+        }
+        entityManager.close();
+        return list;
     }
 }

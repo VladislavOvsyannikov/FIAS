@@ -7,18 +7,18 @@ import system.dao.GenericDao;
 
 import java.util.Arrays;
 
-
 public class MySAXParser extends DefaultHandler {
 
     private static final Logger logger = Logger.getLogger(MySAXParser.class);
 
-    private String[] numbersOfNoExistHouses = {"2","3","15","16","18","27","34","35","38","39"};
+//    private String[] numbersOfNoExistHouses = {"2","3","15","16","18","27","34","35","38","39"};
     private GenericDao<Object> genericDao = new GenericDao<>();
     private String xmlFile;
     private String databaseType;
     private Object[] objects;
     private int index = -1;
     private boolean isSaveBatchEnd = true;
+    private int counter = 0;
 
     MySAXParser(String xmlFile, String databaseType, int numberOfObjects) {
         this.xmlFile = xmlFile;
@@ -36,9 +36,9 @@ public class MySAXParser extends DefaultHandler {
             for (int i = 0; i < attributes.getLength(); i++) {
                 String field = attributes.getLocalName(i);
                 String value = attributes.getValue(i);
-                if (databaseType.equals("complete") && field.equals("LIVESTATUS") && value.equals("0")) return;
-                if (databaseType.equals("complete") && field.equals("STATSTATUS")
-                        && (Arrays.stream(numbersOfNoExistHouses).anyMatch(value::equals))) return;
+//                if (databaseType.equals("complete") && field.equals("LIVESTATUS") && value.equals("0")) return;
+//                if (databaseType.equals("complete") && field.equals("STATSTATUS")
+//                        && (Arrays.stream(numbersOfNoExistHouses).anyMatch(value::equals))) return;
                 if (field.endsWith("ID")) value = value.replaceAll("-","");
                 ReflectionHelper.setFieldValue(object, field, value);
             }
@@ -52,11 +52,13 @@ public class MySAXParser extends DefaultHandler {
                     }
                 }
                 Object[] entities = objects;
+                counter += index+1;
                 isSaveBatchEnd = false;
                 new Thread(() -> {
-                    if (databaseType.equals("complete")) genericDao.saveBatch(entities);
-                    else genericDao.saveOrUpdateBatch(entities);
+                    if (databaseType.equals("complete")) genericDao.saveBatch(entities, objects.length);
+                    else genericDao.saveOrUpdateBatch(entities, objects.length);
                     isSaveBatchEnd = true;
+                    logger.info("Saved "+counter+" objects");
                 }).start();
                 objects = new Object[objects.length];
                 index = -1;
@@ -73,9 +75,12 @@ public class MySAXParser extends DefaultHandler {
                     logger.error(e.getMessage());
                 }
             }
-            if (databaseType.equals("complete")) genericDao.saveBatch(objects);
-            else genericDao.saveOrUpdateBatch(objects);
+            if (databaseType.equals("complete")) genericDao.saveBatch(objects, index+1);
+            else genericDao.saveOrUpdateBatch(objects, index+1);
+            counter += index+1;
+            logger.info("Saved "+counter+" objects");
         }
         logger.info("Stop parse " + xmlFile);
+        logger.info("Parsed "+counter+" objects");
     }
 }

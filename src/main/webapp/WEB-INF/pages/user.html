@@ -1,13 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="user" ng-controller="userController">
 <head>
     <meta charset="UTF-8">
     <title>FiasUser</title>
     <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/resources/css/userStyle.css" rel="stylesheet">
     <script src="/resources/js/angular.min.js"></script>
     <script src="/resources/js/user.js"></script>
 </head>
 <body>
-    FIAS
+last object guid: {{getGuid()}}
+<br><br>
+<div ng-init="getObjectsListByGuid()">
+    <div ng-repeat="flag in getShowDropdownList()" ng-show="flag.value">
+            <dropdown-list-next data-objects-next-list="objectsNextList"></dropdown-list-next>
+            <br>
+    </div>
+</div>
 </body>
 </html>
