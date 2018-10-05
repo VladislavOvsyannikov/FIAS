@@ -8,7 +8,7 @@ import java.util.List;
 @Repository
 public class ObjectDao extends GenericDao<Object>{
 
-    public List<Object> getObjectsStartList() {
+    private List<Object> getObjectsStartList() {
         return getEntities(
                 "select * from object where parentguid is null and livestatus=1", Object.class);
     }

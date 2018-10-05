@@ -1,8 +1,17 @@
-<input type="text" ng-model="searchNext" placeholder="Select  AddrObj"/>
+<input type="text" ng-model="search" placeholder="Select"/>
 <div class="search-object-list">
-    <ul class="list">
-        <li ng-repeat="object in objectsNextList | filter:searchNext" ng-click="chooseObject(object)">
-            {{object.formalname}} {{ object.shortname }}
-        </li>
-    </ul>
+    <div ng-if="objectsNextList.length > 0">
+        <ul class="list">
+            <li ng-repeat="object in objectsNextList | filter:search" ng-click="chooseObject(object)">
+                {{object.formalname}} {{ object.shortname }}
+            </li>
+        </ul>
+    </div>
+    <div ng-if="objectsNextList.length == 0 && steadsList.length > 0">
+        <ul class="list">
+            <li ng-repeat="stead in steadsList | filter:search" ng-click="chooseStead(stead)">
+                участок № {{stead.number}}
+            </li>
+        </ul>
+    </div>
 </div>

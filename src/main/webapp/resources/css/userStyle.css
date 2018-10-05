@@ -36,12 +36,12 @@ input {
     opacity: 1;
 }
 
-.list li .amount {
-    display: inline-block;
-    padding: 2px 3px;
-    background-color: rgb(83, 177, 211);
-    border-radius: 3px;
-    margin: 0 0 3px 10px;
-    font-size: 65%;
-    color: white;
-}
+/*.list li .amount {*/
+    /*display: inline-block;*/
+    /*padding: 2px 3px;*/
+    /*background-color: rgb(83, 177, 211);*/
+    /*border-radius: 3px;*/
+    /*margin: 0 0 3px 10px;*/
+    /*font-size: 65%;*/
+    /*color: white;*/
+/*}*/

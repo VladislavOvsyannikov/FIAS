@@ -8,11 +8,11 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import system.dao.GenericDao;
-import system.dao.ObjectDao;
-import system.dao.VersionDao;
+import system.dao.*;
 import system.model.Object;
-import system.model.Version;
+import system.model.Stead;
+import system.model.House;
+import system.model.Room;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,10 +29,25 @@ public class FiasService {
     private String mainPath = "D:\\Fias\\";
     private Downloader downloader;
     private Unrarrer unrarrer;
-    private Installer installer;
+    private Installer installer = new Installer();
     private ObjectDao objectDao;
     private VersionDao versionDao;
+    private SteadDao steadDao;
+    private HouseDao houseDao;
+    private RoomDao roomDao;
 
+    @Autowired
+    public void setHouseDao(HouseDao houseDao) {
+        this.houseDao = houseDao;
+    }
+    @Autowired
+    public void setRoomDao(RoomDao roomDao) {
+        this.roomDao = roomDao;
+    }
+    @Autowired
+    public void setSteadDao(SteadDao steadDao) {
+        this.steadDao = steadDao;
+    }
     @Autowired
     public void setDownloader(Downloader downloader) {
         this.downloader = downloader;
@@ -55,12 +70,6 @@ public class FiasService {
     }
 
 
-    public List<Object> getObjectsStartList() {
-        return objectDao.getObjectsStartList();
-    }
-
-    public List<Object> getObjectsListByGuid(String guid) { return objectDao.getObjectsListByGuid(guid); }
-
     public void checkUpdate(){
         String lastVersion = getLastVersion();
         String currentVersion = getCurrentVersion();
@@ -75,6 +84,7 @@ public class FiasService {
         }
     }
 
+
     public void downloadLastComplete(){
         downloader.downloadLastComplete(mainPath, getLastVersion());
     }
@@ -83,6 +93,7 @@ public class FiasService {
         String deltaVersion = getLastVersion();
         downloader.downloadDeltaByVersion(mainPath, deltaVersion);
     }
+
 
     public void unrarLastComplete(){
         unrarrer.unrarLastComplete(mainPath, getLastVersion());
@@ -93,6 +104,7 @@ public class FiasService {
         unrarrer.unrarDeltaByVersion(mainPath, deltaVersion);
     }
 
+
     public void installLastComplete(){
         installer.installLastComplete(mainPath, "20180917");
     }
@@ -101,6 +113,7 @@ public class FiasService {
         String deltaVersion = getLastVersion();
         installer.installDeltaByVersion(mainPath, deltaVersion);
     }
+
 
     private String getLastVersion(){
         StringBuilder res = new StringBuilder();
@@ -163,5 +176,22 @@ public class FiasService {
             logger.error(e.getMessage());
         }
         return versions;
+    }
+
+
+    public List<Object> getObjectsListByGuid(String guid) {
+        return objectDao.getObjectsListByGuid(guid);
+    }
+
+    public List<Stead> getSteadsListByGuid(String guid){
+        return steadDao.getSteadsListByGuid(guid);
+    }
+
+    public List<House> getHousesListByGuid(String guid){
+        return houseDao.getHousesListByGuid(guid);
+    }
+
+    public List<Room> getRoomsListByGuid(String guid){
+        return roomDao.getRoomsListByGuid(guid);
     }
 }
