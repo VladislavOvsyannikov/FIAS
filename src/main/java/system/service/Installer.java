@@ -4,7 +4,6 @@ package system.service;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import system.dao.GenericDao;
 import system.dao.VersionDao;
 import system.model.Version;
 
@@ -17,7 +16,7 @@ public class Installer {
 
     private static final Logger logger = Logger.getLogger(Installer.class);
 
-    private VersionDao versionDao = new VersionDao();
+    private VersionDao versionDao;
 
     @Autowired
     public void setVersionDao(VersionDao versionDao) {
@@ -42,10 +41,10 @@ public class Installer {
                 for (File file : folder.listFiles()) {
                     String fileName = file.getName();
 //                    if (!fileName.contains("_DEL_") && !fileName.contains("_NORMDOC_")){
-                    if (fileName.contains("AS_HOUSE_")) {
-                        MySAXParser mySAXParser = new MySAXParser(fileName, databaseType, numberOfObjects);
-                        saxParser.parse(file, mySAXParser);
-                    }
+//                    if (fileName.contains("AS_HOUSE_")) {
+//                        MySAXParser mySAXParser = new MySAXParser(fileName, databaseType, numberOfObjects);
+//                        saxParser.parse(file, mySAXParser);
+//                    }
                 }
                 Version version = new Version();
                 version.setVersion(databaseVersion);

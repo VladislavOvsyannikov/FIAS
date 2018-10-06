@@ -2,14 +2,31 @@
 <div class="search-object-list">
     <div ng-if="objectsNextList.length > 0">
         <ul class="list">
-            <li ng-repeat="object in objectsNextList | filter:search" ng-click="chooseObject(object)">
-                {{object.formalname}} {{ object.shortname }}
+            <li ng-repeat="object in objectsNextList | filter:search
+                    | orderBy:'formalname'" ng-click="chooseObject(object)">
+                {{ object.shortname }} {{object.formalname}}
             </li>
         </ul>
     </div>
-    <div ng-if="objectsNextList.length == 0 && steadsList.length > 0">
+    <div ng-if="objectsNextList.length == 0 && (steadsList.length > 0 || housesList.length > 0)">
         <ul class="list">
-            <li ng-repeat="stead in steadsList | filter:search" ng-click="chooseStead(stead)">
+            <li ng-repeat="house in housesList | filter:{housenum:search} | orderBy:'housenum'"
+                ng-click="chooseHouse(house)">
+                <div ng-if="house.buildnum && house.strucnum">
+                    дом {{house.housenum}} к. {{house.buildnum}} стр. {{house.strucnum}}
+                </div>
+                <div ng-if="house.buildnum && !house.strucnum">
+                    дом {{house.housenum}} к. {{house.buildnum}}
+                </div>
+                <div ng-if="!house.buildnum && house.strucnum">
+                    дом {{house.housenum}} стр. {{house.strucnum}}
+                </div>
+                <div ng-if="!house.buildnum && !house.strucnum">
+                    дом {{house.housenum}}
+                </div>
+            </li>
+            <li ng-repeat="stead in steadsList | filter:{number:search} | orderBy:'number'"
+                ng-click="chooseStead(stead)">
                 участок № {{stead.number}}
             </li>
         </ul>

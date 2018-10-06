@@ -2,7 +2,8 @@ var user = angular.module('user', []);
 var config = {headers: {'Content-Type': 'application/json;charset=utf-8;'}};
 
 var guid = " ";
-var nextObjects;
+var nextObjects = [];
+var nextHouses = [];
 
 user.controller('userController', function ($scope, $http) {
 
@@ -10,7 +11,10 @@ user.controller('userController', function ($scope, $http) {
         $http.post("getObjectsListByGuid", guid, config).then(function (response) {
             $scope.objectsNextList = response.data;
             nextObjects = $scope.objectsNextList;
-            if ($scope.objectsNextList.length === 0) $scope.getSteadsListByGuid();
+            if ($scope.objectsNextList.length === 0){
+                $scope.getSteadsListByGuid();
+                $scope.getHousesListByGuid();
+            }
         });
     };
 
@@ -24,7 +28,7 @@ user.controller('userController', function ($scope, $http) {
     $scope.getHousesListByGuid = function () {
         $http.post("getHousesListByGuid", guid, config).then(function (response) {
             $scope.housesList = response.data;
-            nextObjects = $scope.housesList;
+            nextHouses = $scope.housesList;
         });
     };
 
@@ -69,13 +73,16 @@ user.directive('dropdownListNext',function($http, $timeout){
                 }
 
                 if (level>0 && level<directiveScopes.length){
-                    scope.search = object.formalname+' '+object.shortname;
+                    scope.search = object.shortname+' '+object.formalname;
                     guid = object.aoguid;
                     $http.post("getObjectsListByGuid", guid, config).then(function (response) {
                         directiveScopes[level].objectsNextList=response.data;
                         if (directiveScopes[level].objectsNextList.length === 0){
                             $http.post("getSteadsListByGuid", guid, config).then(function (response) {
                                 directiveScopes[level].steadsList=response.data;
+                            });
+                            $http.post("getHousesListByGuid", guid, config).then(function (response) {
+                                directiveScopes[level].housesList=response.data;
                             });
                         }
                     });
@@ -90,7 +97,7 @@ user.directive('dropdownListNext',function($http, $timeout){
 
                 if (level>0 && level===directiveScopes.length) {
                     guid = object.aoguid;
-                    scope.search = object.formalname+' '+object.shortname;
+                    scope.search = object.shortname+' '+object.formalname;
                     scope.getObjectsListByGuid();
                     if (showDropdownList.length<=directiveScopes.length) showDropdownList.push({value: true});
                 }
@@ -98,7 +105,7 @@ user.directive('dropdownListNext',function($http, $timeout){
                 if (level===0){
                     guid = object.aoguid;
                     scope.objectsNextList = nextObjects;
-                    scope.search = object.formalname+' '+object.shortname;
+                    scope.search = object.shortname+' '+object.formalname;
                     showDropdownList.push({value: true});
                     if (level===0) directiveScopes.push(scope);
                     scope.getObjectsListByGuid();
@@ -116,6 +123,22 @@ user.directive('dropdownListNext',function($http, $timeout){
 
                 if (level === 0) {
                     scope.steadsList = nextObjects;
+                    directiveScopes.push(scope);
+                }
+                $listContainer.removeClass('show');
+            };
+
+            scope.chooseHouse = function(house) {
+                level = 0;
+                for (var i = 0; i < directiveScopes.length; i++) {
+                    if (scope.$id === directiveScopes[i].$id) level = i + 1;
+                }
+                guid = house.houseguid;
+                scope.search = 'дом ' + house.housenum;
+                if (house.buildnum !== null) scope.search += ' к. '+house.buildnum;
+                if (house.strucnum !== null) scope.search += ' стр. '+house.strucnum;
+                if (level === 0) {
+                    scope.housesList = nextHouses;
                     directiveScopes.push(scope);
                 }
                 $listContainer.removeClass('show');

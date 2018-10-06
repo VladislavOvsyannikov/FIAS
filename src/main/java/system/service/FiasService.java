@@ -29,7 +29,7 @@ public class FiasService {
     private String mainPath = "D:\\Fias\\";
     private Downloader downloader;
     private Unrarrer unrarrer;
-    private Installer installer = new Installer();
+    private Installer installer;
     private ObjectDao objectDao;
     private VersionDao versionDao;
     private SteadDao steadDao;
