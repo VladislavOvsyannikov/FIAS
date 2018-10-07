@@ -11,6 +11,9 @@ import javax.persistence.*;
         @Index(columnList = "houseguid", name = "houseguidroom")})
 public class Room {
 
+    @Transient
+    private String type;
+
     @Id
     @Column(name = "roomid", nullable = false, unique = true, length = 32)
     private String ROOMID;
@@ -169,5 +172,13 @@ public class Room {
 
     public void setROOMCADNUM(String ROOMCADNUM) {
         this.ROOMCADNUM = ROOMCADNUM;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -2,10 +2,36 @@ var user = angular.module('user', []);
 var config = {headers: {'Content-Type': 'application/json;charset=utf-8;'}};
 
 var guid = " ";
-var nextObjects = [];
-var nextHouses = [];
+var lastObject = null;
+var lastRoom = null;
 
 user.controller('userController', function ($scope, $http) {
+
+    $scope.getLastObjectInformation = function () {
+        var res = ["GUID: " + guid];
+        if (lastObject !== null) {
+            if (lastObject.postalcode !== null) res.push("Почтовый индекс: " + lastObject.postalcode);
+            if (lastObject.okato !== null) res.push("\nOKATO: " + lastObject.okato);
+            if (lastObject.oktmo !== null) res.push("OKTMO: " + lastObject.oktmo);
+            if (lastObject.ifnsfl !== null) res.push("ИФНС ФЛ: " + lastObject.ifnsfl);
+            if (lastObject.ifnsul !== null) res.push("ИФНС ЮЛ: " + lastObject.ifnsul);
+        }
+        if (lastRoom !== null) {
+            if (lastRoom.cadnum !== null) res.push("Кадастровый номер помещения: " + lastRoom.cadnum);
+            if (lastRoom.roomcadnum !== null) res.push("Кадастровый номер комнаты в помещении: " + lastRoom.roomcadnum);
+        }
+        return res;
+    };
+
+    $scope.getFullAddress = function () {
+        var res = "";
+        try {
+            res = lastObject.postalcode !== null? lastObject.postalcode+", ":"";
+            for (var i=0; i<directiveScopes.length-1; i++) res += directiveScopes[i].search+", "
+            res+=directiveScopes[directiveScopes.length-1].search;
+        }catch (error){}
+        return res;
+    };
 
     $scope.getObjectsListByGuid = function () {
         $http.post("getObjectsListByGuid", guid, config).then(function (response) {
@@ -29,6 +55,10 @@ user.controller('userController', function ($scope, $http) {
         $http.post("getHousesListByGuid", guid, config).then(function (response) {
             $scope.housesList = response.data;
             nextHouses = $scope.housesList;
+            if ($scope.housesList.length === 0){
+                $scope.steadsList = [];
+                $scope.getRoomsListByGuid();
+            }
         });
     };
 
@@ -36,21 +66,22 @@ user.controller('userController', function ($scope, $http) {
         $http.post("getRoomsListByGuid", guid, config).then(function (response) {
             $scope.roomsList = response.data;
             nextObjects = $scope.roomsList;
+            if ($scope.roomsList.length > 0 && showDropdownList.length <= directiveScopes.length)
+                showDropdownList.push({value: true});
+            if ($scope.roomsList.length === 0 && showDropdownList.length > directiveScopes.length)
+                showDropdownList.pop();
         });
     };
 
     $scope.getShowDropdownList = function () {
         return showDropdownList;
     };
-
-    $scope.getGuid = function () {
-        return guid;
-    };
 });
 
 var showDropdownList = [{value: true}];
+var nextObjects = [];
+var nextHouses = [];
 var directiveScopes = [];
-var level = 0;
 
 user.directive('dropdownListNext',function($http, $timeout){
     return {
@@ -67,14 +98,25 @@ user.directive('dropdownListNext',function($http, $timeout){
             });
 
             scope.chooseObject = function(object){
-                level = 0;
+                var level = 0;
                 for (var i=0; i<directiveScopes.length; i++){
                     if (scope.$id === directiveScopes[i].$id) level = i+1;
                 }
-
+                lastRoom = null;
+                lastObject = object;
+                guid = object.aoguid;
+                scope.search = object.shortname+' '+object.formalname;
+                if (level===0){
+                    scope.objectsNextList = nextObjects;
+                    showDropdownList.push({value: true});
+                    directiveScopes.push(scope);
+                    scope.getObjectsListByGuid();
+                }
+                if (level>0 && level===directiveScopes.length) {
+                    scope.getObjectsListByGuid();
+                    if (showDropdownList.length<=directiveScopes.length) showDropdownList.push({value: true});
+                }
                 if (level>0 && level<directiveScopes.length){
-                    scope.search = object.shortname+' '+object.formalname;
-                    guid = object.aoguid;
                     $http.post("getObjectsListByGuid", guid, config).then(function (response) {
                         directiveScopes[level].objectsNextList=response.data;
                         if (directiveScopes[level].objectsNextList.length === 0){
@@ -83,6 +125,13 @@ user.directive('dropdownListNext',function($http, $timeout){
                             });
                             $http.post("getHousesListByGuid", guid, config).then(function (response) {
                                 directiveScopes[level].housesList=response.data;
+                                var dirSco = directiveScopes[level];
+                                if ((dirSco.housesList.length > 0 || dirSco.steadsList.length > 0) &&
+                                    showDropdownList.length < directiveScopes.length)
+                                    showDropdownList.push({value: true});
+                                if (dirSco.housesList.length === 0 && dirSco.steadsList.length === 0)
+                                    directiveScopes.pop();
+                                if (showDropdownList.length > directiveScopes.length) showDropdownList.pop();
                             });
                         }
                     });
@@ -90,56 +139,79 @@ user.directive('dropdownListNext',function($http, $timeout){
                         directiveScopes[i].search="";
                         directiveScopes[i].objectsNextList = [];
                         directiveScopes[i].steadsList = [];
+                        directiveScopes[i].housesList = [];
+                        directiveScopes[i].roomsList = [];
                         if (i>level) directiveScopes.pop();
                     }
-                    while (showDropdownList.length !== directiveScopes.length) showDropdownList.pop();
-                }
-
-                if (level>0 && level===directiveScopes.length) {
-                    guid = object.aoguid;
-                    scope.search = object.shortname+' '+object.formalname;
-                    scope.getObjectsListByGuid();
-                    if (showDropdownList.length<=directiveScopes.length) showDropdownList.push({value: true});
-                }
-
-                if (level===0){
-                    guid = object.aoguid;
-                    scope.objectsNextList = nextObjects;
-                    scope.search = object.shortname+' '+object.formalname;
-                    showDropdownList.push({value: true});
-                    if (level===0) directiveScopes.push(scope);
-                    scope.getObjectsListByGuid();
-                }
-                $listContainer.removeClass('show');
-            };
-
-            scope.chooseStead = function(stead) {
-                level = 0;
-                for (var i = 0; i < directiveScopes.length; i++) {
-                    if (scope.$id === directiveScopes[i].$id) level = i + 1;
-                }
-                guid = stead.steadguid;
-                scope.search = 'участок № ' + stead.number;
-
-                if (level === 0) {
-                    scope.steadsList = nextObjects;
-                    directiveScopes.push(scope);
+                    while (showDropdownList.length > directiveScopes.length) showDropdownList.pop();
                 }
                 $listContainer.removeClass('show');
             };
 
             scope.chooseHouse = function(house) {
-                level = 0;
+                var level = 0;
                 for (var i = 0; i < directiveScopes.length; i++) {
                     if (scope.$id === directiveScopes[i].$id) level = i + 1;
                 }
+                lastRoom = null;
+                lastObject = house;
                 guid = house.houseguid;
                 scope.search = 'дом ' + house.housenum;
                 if (house.buildnum !== null) scope.search += ' к. '+house.buildnum;
                 if (house.strucnum !== null) scope.search += ' стр. '+house.strucnum;
                 if (level === 0) {
                     scope.housesList = nextHouses;
+                    scope.steadsList = nextObjects;
                     directiveScopes.push(scope);
+                    scope.getHousesListByGuid();
+                }
+                if (level>0 && level===directiveScopes.length) scope.getHousesListByGuid();
+                if (level>0 && level<directiveScopes.length){
+                    $http.post("getRoomsListByGuid", guid, config).then(function (response) {
+                        directiveScopes[level].roomsList=response.data;
+                        directiveScopes[level].search = "";
+                        if (response.data.length > 0 && showDropdownList.length < directiveScopes.length)
+                            showDropdownList.push({value: true});
+                        if (response.data.length === 0) directiveScopes.pop();
+                        if (showDropdownList.length > directiveScopes.length) showDropdownList.pop();
+                    });
+                }
+                $listContainer.removeClass('show');
+            };
+
+            scope.chooseRoom = function(room) {
+                var level = 0;
+                for (var i = 0; i < directiveScopes.length; i++) {
+                    if (scope.$id === directiveScopes[i].$id) level = i + 1;
+                }
+                lastRoom = room;
+                guid = room.roomguid;
+                scope.search = room.type+' '+room.flatnumber;
+                if (level === 0) {
+                    scope.roomsList = nextObjects;
+                    directiveScopes.push(scope);
+                }
+                $listContainer.removeClass('show');
+            };
+
+            scope.chooseStead = function(stead) {
+                var level = 0;
+                for (var i = 0; i < directiveScopes.length; i++) {
+                    if (scope.$id === directiveScopes[i].$id) level = i + 1;
+                }
+                lastRoom = null;
+                lastObject = stead;
+                guid = stead.steadguid;
+                scope.search = 'участок ' + stead.number;
+
+                if (level === 0) {
+                    scope.steadsList = nextObjects;
+                    scope.housesList = nextHouses;
+                    directiveScopes.push(scope);
+                }
+                if (level < showDropdownList.length){
+                    showDropdownList.pop();
+                    if (level < directiveScopes.length) directiveScopes.pop();
                 }
                 $listContainer.removeClass('show');
             };

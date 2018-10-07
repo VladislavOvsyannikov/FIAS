@@ -41,10 +41,10 @@ public class Installer {
                 for (File file : folder.listFiles()) {
                     String fileName = file.getName();
 //                    if (!fileName.contains("_DEL_") && !fileName.contains("_NORMDOC_")){
-//                    if (fileName.contains("AS_HOUSE_")) {
-//                        MySAXParser mySAXParser = new MySAXParser(fileName, databaseType, numberOfObjects);
-//                        saxParser.parse(file, mySAXParser);
-//                    }
+                    if (fileName.contains("AS_ROOM_")) {
+                        MySAXParser mySAXParser = new MySAXParser(fileName, databaseType, numberOfObjects);
+                        saxParser.parse(file, mySAXParser);
+                    }
                 }
                 Version version = new Version();
                 version.setVersion(databaseVersion);

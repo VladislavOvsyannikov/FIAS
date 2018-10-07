@@ -9,10 +9,14 @@
     <script src="/resources/js/user.js"></script>
 </head>
 <body>
-last object guid: {{getGuid()}}
-<br><br>
+Информация о последнем объекте: <br>
+<div ng-repeat="info in getLastObjectInformation()">
+    {{info}} <br>
+</div>
+<br>
+Адрес: {{getFullAddress()}}<br><br>
 <div ng-init="getObjectsListByGuid()">
-    <div ng-repeat="flag in getShowDropdownList()" ng-show="flag.value">
+    <div ng-repeat="flag in getShowDropdownList()">
             <dropdown-list-next data-objects-next-list="objectsNextList"></dropdown-list-next>
             <br>
     </div>

@@ -11,7 +11,7 @@ public class Test {
         long startTime = System.currentTimeMillis();
         Test test = new Test();
 
-        test.fiasService.getHousesListByGuid("71eed6c9495a43c98be87669b799289e");
+        test.fiasService.installLastComplete();
 
         logger.info(((System.currentTimeMillis()-startTime)/1000) + " seconds");
     }

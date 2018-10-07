@@ -21,7 +21,6 @@ public class RoomType {
     private String NAME;
 
 
-
     public int getRMTYPEID() {
         return RMTYPEID;
     }

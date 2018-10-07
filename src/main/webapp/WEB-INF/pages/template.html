@@ -27,7 +27,16 @@
             </li>
             <li ng-repeat="stead in steadsList | filter:{number:search} | orderBy:'number'"
                 ng-click="chooseStead(stead)">
-                участок № {{stead.number}}
+                участок {{stead.number}}
+            </li>
+        </ul>
+    </div>
+    <div ng-if="objectsNextList.length == 0 && housesList.length == 0 &&
+                steadsList.length == 0 && roomsList.length > 0">
+        <ul class="list">
+            <li ng-repeat="room in roomsList | filter:{flatnumber:search} | orderBy:'flatnumber'"
+                ng-click="chooseRoom(room)">
+                {{room.type}} {{room.flatnumber}}
             </li>
         </ul>
     </div>

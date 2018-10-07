@@ -27,8 +27,6 @@ public class FlatType {
     @Column(name = "name", nullable = false)
     private String NAME;
 
-
-
     public int getFLTYPEID() {
         return FLTYPEID;
     }

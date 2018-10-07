@@ -36,9 +36,6 @@ public class MySAXParser extends DefaultHandler {
             for (int i = 0; i < attributes.getLength(); i++) {
                 String field = attributes.getLocalName(i);
                 String value = attributes.getValue(i);
-//                if (databaseType.equals("complete") && field.equals("LIVESTATUS") && value.equals("0")) return;
-//                if (databaseType.equals("complete") && field.equals("STATSTATUS")
-//                        && (Arrays.stream(numbersOfNoExistHouses).anyMatch(value::equals))) return;
                 if (field.endsWith("ID")) value = value.replaceAll("-","");
                 ReflectionHelper.setFieldValue(object, field, value);
             }
