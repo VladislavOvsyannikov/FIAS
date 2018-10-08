@@ -26,10 +26,11 @@ user.controller('userController', function ($scope, $http) {
     $scope.getFullAddress = function () {
         var res = "";
         try {
-            res = lastObject.postalcode !== null? lastObject.postalcode+", ":"";
-            for (var i=0; i<directiveScopes.length-1; i++) res += directiveScopes[i].search+", "
-            res+=directiveScopes[directiveScopes.length-1].search;
-        }catch (error){}
+            res = lastObject.postalcode !== null ? lastObject.postalcode + ", " : "";
+            for (var i = 0; i < directiveScopes.length - 1; i++) res += directiveScopes[i].search + ", "
+            res += directiveScopes[directiveScopes.length - 1].search;
+        } catch (error) {
+        }
         return res;
     };
 
@@ -37,7 +38,7 @@ user.controller('userController', function ($scope, $http) {
         $http.post("getObjectsListByGuid", guid, config).then(function (response) {
             $scope.objectsNextList = response.data;
             nextObjects = $scope.objectsNextList;
-            if ($scope.objectsNextList.length === 0){
+            if ($scope.objectsNextList.length === 0) {
                 $scope.getSteadsListByGuid();
                 $scope.getHousesListByGuid();
             }
@@ -55,7 +56,7 @@ user.controller('userController', function ($scope, $http) {
         $http.post("getHousesListByGuid", guid, config).then(function (response) {
             $scope.housesList = response.data;
             nextHouses = $scope.housesList;
-            if ($scope.housesList.length === 0){
+            if ($scope.housesList.length === 0) {
                 $scope.steadsList = [];
                 $scope.getRoomsListByGuid();
             }
@@ -83,48 +84,50 @@ var nextObjects = [];
 var nextHouses = [];
 var directiveScopes = [];
 
-user.directive('dropdownListNext',function($http, $timeout){
+user.directive('dropdownListNext', function ($http, $timeout) {
     return {
         restrict: 'E',
         scope: true,
         templateUrl: 'template.html',
-        link: function(scope, elelement, attrs){
-            var $listContainer = angular.element( elelement[0].querySelectorAll('.search-object-list')[0] );
-            elelement.find('input').bind('focus',function(){
+        link: function (scope, elelement, attrs) {
+            var $listContainer = angular.element(elelement[0].querySelectorAll('.search-object-list')[0]);
+            elelement.find('input').bind('focus', function () {
                 $listContainer.addClass('show');
             });
-            elelement.find('input').bind('blur',function(){
-                $timeout(function(){ $listContainer.removeClass('show') }, 200);
+            elelement.find('input').bind('blur', function () {
+                $timeout(function () {
+                    $listContainer.removeClass('show')
+                }, 200);
             });
 
-            scope.chooseObject = function(object){
+            scope.chooseObject = function (object) {
                 var level = 0;
-                for (var i=0; i<directiveScopes.length; i++){
-                    if (scope.$id === directiveScopes[i].$id) level = i+1;
+                for (var i = 0; i < directiveScopes.length; i++) {
+                    if (scope.$id === directiveScopes[i].$id) level = i + 1;
                 }
                 lastRoom = null;
                 lastObject = object;
                 guid = object.aoguid;
-                scope.search = object.shortname+' '+object.formalname;
-                if (level===0){
+                scope.search = object.shortname + ' ' + object.formalname;
+                if (level === 0) {
                     scope.objectsNextList = nextObjects;
                     showDropdownList.push({value: true});
                     directiveScopes.push(scope);
                     scope.getObjectsListByGuid();
                 }
-                if (level>0 && level===directiveScopes.length) {
+                if (level > 0 && level === directiveScopes.length) {
                     scope.getObjectsListByGuid();
-                    if (showDropdownList.length<=directiveScopes.length) showDropdownList.push({value: true});
+                    if (showDropdownList.length <= directiveScopes.length) showDropdownList.push({value: true});
                 }
-                if (level>0 && level<directiveScopes.length){
+                if (level > 0 && level < directiveScopes.length) {
                     $http.post("getObjectsListByGuid", guid, config).then(function (response) {
-                        directiveScopes[level].objectsNextList=response.data;
-                        if (directiveScopes[level].objectsNextList.length === 0){
+                        directiveScopes[level].objectsNextList = response.data;
+                        if (directiveScopes[level].objectsNextList.length === 0) {
                             $http.post("getSteadsListByGuid", guid, config).then(function (response) {
-                                directiveScopes[level].steadsList=response.data;
+                                directiveScopes[level].steadsList = response.data;
                             });
                             $http.post("getHousesListByGuid", guid, config).then(function (response) {
-                                directiveScopes[level].housesList=response.data;
+                                directiveScopes[level].housesList = response.data;
                                 var dirSco = directiveScopes[level];
                                 if ((dirSco.housesList.length > 0 || dirSco.steadsList.length > 0) &&
                                     showDropdownList.length < directiveScopes.length)
@@ -135,20 +138,20 @@ user.directive('dropdownListNext',function($http, $timeout){
                             });
                         }
                     });
-                    for (i=directiveScopes.length-1; i>=level; i--){
-                        directiveScopes[i].search="";
+                    for (i = directiveScopes.length - 1; i >= level; i--) {
+                        directiveScopes[i].search = "";
                         directiveScopes[i].objectsNextList = [];
                         directiveScopes[i].steadsList = [];
                         directiveScopes[i].housesList = [];
                         directiveScopes[i].roomsList = [];
-                        if (i>level) directiveScopes.pop();
+                        if (i > level) directiveScopes.pop();
                     }
                     while (showDropdownList.length > directiveScopes.length) showDropdownList.pop();
                 }
                 $listContainer.removeClass('show');
             };
 
-            scope.chooseHouse = function(house) {
+            scope.chooseHouse = function (house) {
                 var level = 0;
                 for (var i = 0; i < directiveScopes.length; i++) {
                     if (scope.$id === directiveScopes[i].$id) level = i + 1;
@@ -157,18 +160,18 @@ user.directive('dropdownListNext',function($http, $timeout){
                 lastObject = house;
                 guid = house.houseguid;
                 scope.search = 'дом ' + house.housenum;
-                if (house.buildnum !== null) scope.search += ' к. '+house.buildnum;
-                if (house.strucnum !== null) scope.search += ' стр. '+house.strucnum;
+                if (house.buildnum !== null) scope.search += ' к. ' + house.buildnum;
+                if (house.strucnum !== null) scope.search += ' стр. ' + house.strucnum;
                 if (level === 0) {
                     scope.housesList = nextHouses;
                     scope.steadsList = nextObjects;
                     directiveScopes.push(scope);
                     scope.getHousesListByGuid();
                 }
-                if (level>0 && level===directiveScopes.length) scope.getHousesListByGuid();
-                if (level>0 && level<directiveScopes.length){
+                if (level > 0 && level === directiveScopes.length) scope.getHousesListByGuid();
+                if (level > 0 && level < directiveScopes.length) {
                     $http.post("getRoomsListByGuid", guid, config).then(function (response) {
-                        directiveScopes[level].roomsList=response.data;
+                        directiveScopes[level].roomsList = response.data;
                         directiveScopes[level].search = "";
                         if (response.data.length > 0 && showDropdownList.length < directiveScopes.length)
                             showDropdownList.push({value: true});
@@ -179,14 +182,14 @@ user.directive('dropdownListNext',function($http, $timeout){
                 $listContainer.removeClass('show');
             };
 
-            scope.chooseRoom = function(room) {
+            scope.chooseRoom = function (room) {
                 var level = 0;
                 for (var i = 0; i < directiveScopes.length; i++) {
                     if (scope.$id === directiveScopes[i].$id) level = i + 1;
                 }
                 lastRoom = room;
                 guid = room.roomguid;
-                scope.search = room.type+' '+room.flatnumber;
+                scope.search = room.type + ' ' + room.flatnumber;
                 if (level === 0) {
                     scope.roomsList = nextObjects;
                     directiveScopes.push(scope);
@@ -194,7 +197,7 @@ user.directive('dropdownListNext',function($http, $timeout){
                 $listContainer.removeClass('show');
             };
 
-            scope.chooseStead = function(stead) {
+            scope.chooseStead = function (stead) {
                 var level = 0;
                 for (var i = 0; i < directiveScopes.length; i++) {
                     if (scope.$id === directiveScopes[i].$id) level = i + 1;
@@ -209,7 +212,7 @@ user.directive('dropdownListNext',function($http, $timeout){
                     scope.housesList = nextHouses;
                     directiveScopes.push(scope);
                 }
-                if (level < showDropdownList.length){
+                if (level < showDropdownList.length) {
                     showDropdownList.pop();
                     if (level < directiveScopes.length) directiveScopes.pop();
                 }
@@ -217,4 +220,91 @@ user.directive('dropdownListNext',function($http, $timeout){
             };
         }
     }
+});
+
+user.filter('myObjectFilter', function () {
+    return function (objects, search) {
+        var res = [];
+        if (search !== undefined && search !== "") {
+            var shortnameSearch;
+            var formalnameSearch = '';
+            if (search.split(' ').length > 1) {
+                shortnameSearch = search.split(' ')[0];
+                formalnameSearch = search.split(' ')[1];
+                for (var i = 0; i < objects.length; i++) {
+                    if (objects[i].shortname.toLowerCase().indexOf(shortnameSearch.toLowerCase()) !== -1)
+                        res.push(objects[i]);
+                }
+                for (i = 0; i < res.length; i++) {
+                    if (res[i].formalname.toLowerCase().indexOf(formalnameSearch.toLowerCase()) === -1) {
+                        res.splice(i, 1);
+                        i--;
+                    }
+                }
+            } else {
+                for (i = 0; i < objects.length; i++) {
+                    if (objects[i].shortname.toLowerCase().indexOf(search.toLowerCase()) !== -1 ||
+                        objects[i].formalname.toLowerCase().indexOf(search.toLowerCase()) !== -1)
+                        res.push(objects[i]);
+                }
+            }
+        } else return objects;
+        return res;
+    };
+});
+
+user.filter('myHouseFilter', function () {
+    return function (objects, search) {
+        var res = [];
+        if (search !== undefined && search !== "") {
+            for (i = 0; i < objects.length; i++) {
+                if (objects[i].housenum.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1)
+                    res.push(objects[i]);
+            }
+        } else return objects;
+        return res;
+    };
+});
+
+user.filter('mySteadFilter', function () {
+    return function (objects, search) {
+        var res = [];
+        if (search !== undefined && search !== "") {
+            for (i = 0; i < objects.length; i++) {
+                if (objects[i].number.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1)
+                    res.push(objects[i]);
+            }
+        } else return objects;
+        return res;
+    };
+});
+
+user.filter('myRoomFilter', function () {
+    return function (objects, search) {
+        var res = [];
+        if (search !== undefined && search !== "") {
+            var typeSearch;
+            var numberSearch;
+            if (search.split(' ').length > 1) {
+                typeSearch = search.split(' ')[0];
+                numberSearch = search.split(' ')[1];
+                for (var i = 0; i < objects.length; i++) {
+                    if (objects[i].type.toLowerCase().indexOf(typeSearch.toLowerCase()) !== -1)
+                        res.push(objects[i]);
+                }
+                for (i = 0; i < res.length; i++) {
+                    if (res[i].flatnumber.toLowerCase().lastIndexOf(numberSearch.toLowerCase(), 0) === -1) {
+                        res.splice(i, 1);
+                        i--;
+                    }
+                }
+            } else {
+                for (i = 0; i < objects.length; i++) {
+                    if (objects[i].flatnumber.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1)
+                        res.push(objects[i]);
+                }
+            }
+        } else return objects;
+        return res;
+    };
 });
