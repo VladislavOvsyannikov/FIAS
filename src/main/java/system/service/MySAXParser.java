@@ -1,6 +1,7 @@
 package system.service;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
 import system.dao.GenericDao;
@@ -9,7 +10,7 @@ import java.util.Arrays;
 
 public class MySAXParser extends DefaultHandler {
 
-    private static final Logger logger = Logger.getLogger(MySAXParser.class);
+    private static final Logger logger = LogManager.getLogger(MySAXParser.class);
 
 //    private String[] numbersOfNoExistHouses = {"2","3","15","16","18","27","34","35","38","39"};
     private GenericDao<Object> genericDao = new GenericDao<>();

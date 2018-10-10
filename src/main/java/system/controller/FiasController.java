@@ -9,16 +9,16 @@ public class FiasController {
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     public String admin() {
-        return "/admin.html";
+        return "admin.html";
     }
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public String user() {
-        return "/user.html";
+        return "user.html";
     }
 
     @RequestMapping(value = "/template.html", method = RequestMethod.GET)
     public String template() {
-        return "/template.html";
+        return "template.html";
     }
 }

@@ -7,7 +7,8 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(name = "adress_object_type", schema = "fias")
+@Table(name = "adress_object_type", schema = "fias", indexes = {
+        @Index(columnList = "level, scname", name = "level_scname")})
 public class AddressObjectType {
 
     @Id
@@ -25,7 +26,6 @@ public class AddressObjectType {
     //Краткое наименование типа объекта
     @Column(name = "scname")
     private String SCNAME;
-
 
 
     public String getKOD_T_ST() {

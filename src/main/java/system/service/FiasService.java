@@ -5,7 +5,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import system.dao.*;
@@ -25,7 +26,7 @@ import java.util.List;
 @Service
 public class FiasService {
 
-    private static final Logger logger = Logger.getLogger(FiasService.class);
+    private static final Logger logger = LogManager.getLogger(FiasService.class);
     private String mainPath = "D:\\Fias\\";
     private Downloader downloader;
     private Unrarrer unrarrer;
@@ -40,99 +41,85 @@ public class FiasService {
     public void setHouseDao(HouseDao houseDao) {
         this.houseDao = houseDao;
     }
+
     @Autowired
     public void setRoomDao(RoomDao roomDao) {
         this.roomDao = roomDao;
     }
+
     @Autowired
     public void setSteadDao(SteadDao steadDao) {
         this.steadDao = steadDao;
     }
+
     @Autowired
     public void setDownloader(Downloader downloader) {
         this.downloader = downloader;
     }
+
     @Autowired
     public void setUnrarrer(Unrarrer unrarrer) {
         this.unrarrer = unrarrer;
     }
+
     @Autowired
     public void setInstaller(Installer installer) {
         this.installer = installer;
     }
+
     @Autowired
     public void setObjectDao(ObjectDao objectDao) {
         this.objectDao = objectDao;
     }
+
     @Autowired
     public void setVersionDao(VersionDao versionDao) {
         this.versionDao = versionDao;
     }
 
 
-    public void checkUpdate(){
+    public void installComplete() {
         String lastVersion = getLastVersion();
-        String currentVersion = getCurrentVersion();
-        if (currentVersion==null) logger.info("Complete database download is required");
-        else {
-            if (Integer.parseInt(lastVersion)>Integer.parseInt(currentVersion)) {
-                logger.info("Current version: " + currentVersion);
-                logger.info("Next updates required: ");
-                logger.info(getNewVersions().toString());
-            }
-            else logger.info("All data are actual");
+//        downloader.downloadLastComplete(mainPath, lastVersion);
+//        unrarrer.unrarLastComplete(mainPath, lastVersion);
+//        installer.installLastComplete(mainPath, lastVersion);
+    }
+
+    public void installOneUpdate() {
+        String deltaVersion = getListOfNewVersions().get(0);
+//        downloader.downloadDeltaByVersion(mainPath, deltaVersion);
+//        unrarrer.unrarDeltaByVersion(mainPath, deltaVersion);
+//        installer.installDeltaByVersion(mainPath, deltaVersion);
+    }
+
+    public void installUpdates() {
+        List<String> listOfNewVersions = getListOfNewVersions();
+        for (String deltaVersion : listOfNewVersions){
+//            downloader.downloadDeltaByVersion(mainPath, deltaVersion);
+//            unrarrer.unrarDeltaByVersion(mainPath, deltaVersion);
+//            installer.installDeltaByVersion(mainPath, deltaVersion);
         }
     }
 
 
-    public void downloadLastComplete(){
-        downloader.downloadLastComplete(mainPath, getLastVersion());
-    }
-
-    public void downloadDeltaByVersion(){
-        String deltaVersion = getLastVersion();
-        downloader.downloadDeltaByVersion(mainPath, deltaVersion);
-    }
-
-
-    public void unrarLastComplete(){
-        unrarrer.unrarLastComplete(mainPath, getLastVersion());
-    }
-
-    public void unrarDeltaByVersion(){
-        String deltaVersion = getLastVersion();
-        unrarrer.unrarDeltaByVersion(mainPath, deltaVersion);
-    }
-
-
-    public void installLastComplete(){
-        installer.installLastComplete(mainPath, "20180917");
-    }
-
-    public void installDeltaByVersion() {
-        String deltaVersion = getLastVersion();
-        installer.installDeltaByVersion(mainPath, deltaVersion);
-    }
-
-
-    private String getLastVersion(){
+    public String getLastVersion() {
         StringBuilder res = new StringBuilder();
         try {
             URL url = new URL("https://fias.nalog.ru/Public/Downloads/Actual/VerDate.txt");
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             String[] strings = in.readLine().split("\\.");
-            for (int i=strings.length-1; i>=0; i--) res.append(strings[i]);
+            for (int i = strings.length - 1; i >= 0; i--) res.append(strings[i]);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
         return res.toString();
     }
 
-    private String getCurrentVersion(){
+    public String getCurrentVersion() {
         return versionDao.getCurrentVersion();
     }
 
-    private List<String> getNewVersions(){
+    public List<String> getListOfNewVersions() {
         String url = "https://fias.nalog.ru/WebServices/Public/DownloadService.asmx";
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost post = new HttpPost(url);
@@ -157,16 +144,17 @@ public class FiasService {
 
         List<String> versions = new ArrayList<>();
         StringBuilder res = new StringBuilder();
+        if (getCurrentVersion() == null) return null;
         try {
             HttpResponse response = client.execute(post);
             BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             String line = br.readLine().replaceAll("/", "");
             String[] text = line.split("<TextVersion>");
-            for (int i=0; i<text.length; i++){
-                if (i%2!=0){
+            for (int i = 0; i < text.length; i++) {
+                if (i % 2 != 0) {
                     String[] strings = text[i].split(" ")[3].split("\\.");
-                    for (int j=strings.length-1; j>=0; j--) res.append(strings[j]);
-                    if (Integer.parseInt(res.toString()) > Integer.parseInt(getCurrentVersion())){
+                    for (int j = strings.length - 1; j >= 0; j--) res.append(strings[j]);
+                    if (Integer.parseInt(res.toString()) > Integer.parseInt(getCurrentVersion())) {
                         versions.add(res.toString());
                     }
                     res.setLength(0);
@@ -183,15 +171,15 @@ public class FiasService {
         return objectDao.getObjectsListByGuid(guid);
     }
 
-    public List<Stead> getSteadsListByGuid(String guid){
+    public List<Stead> getSteadsListByGuid(String guid) {
         return steadDao.getSteadsListByGuid(guid);
     }
 
-    public List<House> getHousesListByGuid(String guid){
+    public List<House> getHousesListByGuid(String guid) {
         return houseDao.getHousesListByGuid(guid);
     }
 
-    public List<Room> getRoomsListByGuid(String guid){
+    public List<Room> getRoomsListByGuid(String guid) {
         return roomDao.getRoomsListByGuid(guid);
     }
 }

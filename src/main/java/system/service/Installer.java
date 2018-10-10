@@ -1,7 +1,8 @@
 package system.service;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import system.dao.VersionDao;
@@ -14,7 +15,7 @@ import java.io.File;
 @Service
 public class Installer {
 
-    private static final Logger logger = Logger.getLogger(Installer.class);
+    private static final Logger logger = LogManager.getLogger(Installer.class);
 
     private VersionDao versionDao;
 

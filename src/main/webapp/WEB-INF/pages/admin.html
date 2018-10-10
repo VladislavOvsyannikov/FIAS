@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="admin" ng-controller="adminController">
 <head>
     <meta charset="UTF-8">
     <title>FiasAdmin</title>
@@ -7,7 +7,17 @@
     <script src="/resources/js/angular.min.js"></script>
     <script src="/resources/js/admin.js"></script>
 </head>
-<body>
-    FIAS
+<body ng-init="getLastVersion(); getCurrentVersion(); getNewVersions()">
+    Admin<br>
+    {{lastVersion}}<br>
+    {{currentVersion}}<br>
+    {{newVersions}}<br>
+    <div ng-if="currentVersion == 'Complete database download is required'">
+        <button ng-click="installComplete()">Install complete database</button><br>
+    </div>
+    <div ng-if="newVersions != 'All data are actual' && newVersions != ''">
+        <button ng-click="installOneUpdate()">Install one update</button><br>
+        <button ng-click="installUpdates()">Install all updates</button><br>
+    </div>
 </body>
 </html>

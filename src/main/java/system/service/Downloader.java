@@ -1,6 +1,7 @@
 package system.service;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -14,7 +15,7 @@ import java.nio.channels.ReadableByteChannel;
 @Service
 public class Downloader {
 
-    private static final Logger logger = Logger.getLogger(Downloader.class);
+    private static final Logger logger = LogManager.getLogger(Downloader.class);
 
 
     public void downloadLastComplete(String path, String lastVersion){

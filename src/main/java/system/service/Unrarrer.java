@@ -1,7 +1,8 @@
 package system.service;
 
 import com.github.junrar.extract.ExtractArchive;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -9,8 +10,7 @@ import java.io.File;
 @Service
 public class Unrarrer {
 
-    private static final Logger logger = Logger.getLogger(Unrarrer.class);
-
+    private static final Logger logger = LogManager.getLogger(Unrarrer.class);
 
     public void unrarLastComplete(String path, String lastVersion){
         String fileName = "complete"+lastVersion;

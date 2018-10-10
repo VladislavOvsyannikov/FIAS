@@ -1,8 +1,10 @@
 package system.dao;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import system.service.HibernateEntityManagerFactory;
+import system.service.Unrarrer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -13,7 +15,7 @@ import java.util.List;
 @Repository
 public class GenericDao<T> {
 
-    private static final Logger logger = Logger.getLogger(GenericDao.class);
+    private static final Logger logger = LogManager.getLogger(GenericDao.class);
 
 
     public void saveBatch(T[] entities, int numberOfObjects){

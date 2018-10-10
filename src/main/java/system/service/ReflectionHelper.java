@@ -1,12 +1,10 @@
 package system.service;
 
-import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 
 public class ReflectionHelper {
 
-    private static final Logger logger = Logger.getLogger(ReflectionHelper.class);
 
     public static Object createInstance(String className) {
         try {

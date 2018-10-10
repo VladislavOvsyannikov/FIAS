@@ -42,4 +42,34 @@ public class FiasRestController {
     public List<Room> getRoomsListByGuid(@RequestBody String guid){
         return fiasService.getRoomsListByGuid(guid);
     }
+
+    @RequestMapping(value = "/getCurrentVersion", method = RequestMethod.POST)
+    public String getCurrentVersion(){
+        return fiasService.getCurrentVersion();
+    }
+
+    @RequestMapping(value = "/getLastVersion", method = RequestMethod.POST)
+    public String getLastVersion(){
+        return fiasService.getLastVersion();
+    }
+
+    @RequestMapping(value = "/getNewVersions", method = RequestMethod.POST)
+    public List<String> getNewVersions(){
+        return fiasService.getListOfNewVersions();
+    }
+
+    @RequestMapping(value = "/installComplete", method = RequestMethod.POST)
+    public void installComplete(){
+        fiasService.installComplete();
+    }
+
+    @RequestMapping(value = "/installOneUpdate", method = RequestMethod.POST)
+    public void installOneUpdate(){
+        fiasService.installOneUpdate();
+    }
+
+    @RequestMapping(value = "/installUpdates", method = RequestMethod.POST)
+    public void installUpdates(){
+        fiasService.installUpdates();
+    }
 }

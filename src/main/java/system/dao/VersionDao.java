@@ -6,7 +6,6 @@ import system.model.Version;
 @Repository
 public class VersionDao extends GenericDao<Version>{
 
-
     public String getCurrentVersion() {
         Version version = getEntity(
                 "select * from history_of_update order by id desc limit 1", Version.class);

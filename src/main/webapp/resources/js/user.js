@@ -1,14 +1,14 @@
-var user = angular.module('user', []);
-var config = {headers: {'Content-Type': 'application/json;charset=utf-8;'}};
+let user = angular.module('user', []);
+let config = {headers: {'Content-Type': 'application/json;charset=utf-8;'}};
 
-var guid = " ";
-var lastObject = null;
-var lastRoom = null;
+let guid = " ";
+let lastObject = null;
+let lastRoom = null;
 
 user.controller('userController', function ($scope, $http) {
 
     $scope.getLastObjectInformation = function () {
-        var res = ["GUID: " + guid];
+        let res = ["GUID: " + guid];
         if (lastObject !== null) {
             if (lastObject.postalcode !== null) res.push("Почтовый индекс: " + lastObject.postalcode);
             if (lastObject.okato !== null) res.push("\nOKATO: " + lastObject.okato);
@@ -24,10 +24,10 @@ user.controller('userController', function ($scope, $http) {
     };
 
     $scope.getFullAddress = function () {
-        var res = "";
+        let res = "";
         try {
             res = lastObject.postalcode !== null ? lastObject.postalcode + ", " : "";
-            for (var i = 0; i < directiveScopes.length - 1; i++) res += directiveScopes[i].search + ", "
+            for (let i = 0; i < directiveScopes.length - 1; i++) res += directiveScopes[i].search + ", "
             res += directiveScopes[directiveScopes.length - 1].search;
         } catch (error) {
         }
@@ -79,10 +79,10 @@ user.controller('userController', function ($scope, $http) {
     };
 });
 
-var showDropdownList = [{value: true}];
-var nextObjects = [];
-var nextHouses = [];
-var directiveScopes = [];
+let showDropdownList = [{value: true}];
+let nextObjects = [];
+let nextHouses = [];
+let directiveScopes = [];
 
 user.directive('dropdownListNext', function ($http, $timeout) {
     return {
@@ -90,7 +90,7 @@ user.directive('dropdownListNext', function ($http, $timeout) {
         scope: true,
         templateUrl: 'template.html',
         link: function (scope, elelement, attrs) {
-            var $listContainer = angular.element(elelement[0].querySelectorAll('.search-object-list')[0]);
+            let $listContainer = angular.element(elelement[0].querySelectorAll('.search-object-list')[0]);
             elelement.find('input').bind('focus', function () {
                 $listContainer.addClass('show');
             });
@@ -101,8 +101,8 @@ user.directive('dropdownListNext', function ($http, $timeout) {
             });
 
             scope.chooseObject = function (object) {
-                var level = 0;
-                for (var i = 0; i < directiveScopes.length; i++) {
+                let level = 0;
+                for (let i = 0; i < directiveScopes.length; i++) {
                     if (scope.$id === directiveScopes[i].$id) level = i + 1;
                 }
                 lastRoom = null;
@@ -128,7 +128,7 @@ user.directive('dropdownListNext', function ($http, $timeout) {
                             });
                             $http.post("getHousesListByGuid", guid, config).then(function (response) {
                                 directiveScopes[level].housesList = response.data;
-                                var dirSco = directiveScopes[level];
+                                let dirSco = directiveScopes[level];
                                 if ((dirSco.housesList.length > 0 || dirSco.steadsList.length > 0) &&
                                     showDropdownList.length < directiveScopes.length)
                                     showDropdownList.push({value: true});
@@ -138,7 +138,7 @@ user.directive('dropdownListNext', function ($http, $timeout) {
                             });
                         }
                     });
-                    for (i = directiveScopes.length - 1; i >= level; i--) {
+                    for (let i = directiveScopes.length - 1; i >= level; i--) {
                         directiveScopes[i].search = "";
                         directiveScopes[i].objectsNextList = [];
                         directiveScopes[i].steadsList = [];
@@ -152,8 +152,8 @@ user.directive('dropdownListNext', function ($http, $timeout) {
             };
 
             scope.chooseHouse = function (house) {
-                var level = 0;
-                for (var i = 0; i < directiveScopes.length; i++) {
+                let level = 0;
+                for (let i = 0; i < directiveScopes.length; i++) {
                     if (scope.$id === directiveScopes[i].$id) level = i + 1;
                 }
                 lastRoom = null;
@@ -183,8 +183,8 @@ user.directive('dropdownListNext', function ($http, $timeout) {
             };
 
             scope.chooseRoom = function (room) {
-                var level = 0;
-                for (var i = 0; i < directiveScopes.length; i++) {
+                let level = 0;
+                for (let i = 0; i < directiveScopes.length; i++) {
                     if (scope.$id === directiveScopes[i].$id) level = i + 1;
                 }
                 lastRoom = room;
@@ -198,8 +198,8 @@ user.directive('dropdownListNext', function ($http, $timeout) {
             };
 
             scope.chooseStead = function (stead) {
-                var level = 0;
-                for (var i = 0; i < directiveScopes.length; i++) {
+                let level = 0;
+                for (let i = 0; i < directiveScopes.length; i++) {
                     if (scope.$id === directiveScopes[i].$id) level = i + 1;
                 }
                 lastRoom = null;
@@ -224,25 +224,25 @@ user.directive('dropdownListNext', function ($http, $timeout) {
 
 user.filter('myObjectFilter', function () {
     return function (objects, search) {
-        var res = [];
+        let res = [];
         if (search !== undefined && search !== "") {
-            var shortnameSearch;
-            var formalnameSearch = '';
+            let shortnameSearch;
+            let formalnameSearch = '';
             if (search.split(' ').length > 1) {
                 shortnameSearch = search.split(' ')[0];
                 formalnameSearch = search.split(' ')[1];
-                for (var i = 0; i < objects.length; i++) {
+                for (let i = 0; i < objects.length; i++) {
                     if (objects[i].shortname.toLowerCase().indexOf(shortnameSearch.toLowerCase()) !== -1)
                         res.push(objects[i]);
                 }
-                for (i = 0; i < res.length; i++) {
+                for (let i = 0; i < res.length; i++) {
                     if (res[i].formalname.toLowerCase().indexOf(formalnameSearch.toLowerCase()) === -1) {
                         res.splice(i, 1);
                         i--;
                     }
                 }
             } else {
-                for (i = 0; i < objects.length; i++) {
+                for (let i = 0; i < objects.length; i++) {
                     if (objects[i].shortname.toLowerCase().indexOf(search.toLowerCase()) !== -1 ||
                         objects[i].formalname.toLowerCase().indexOf(search.toLowerCase()) !== -1)
                         res.push(objects[i]);
@@ -255,9 +255,9 @@ user.filter('myObjectFilter', function () {
 
 user.filter('myHouseFilter', function () {
     return function (objects, search) {
-        var res = [];
+        let res = [];
         if (search !== undefined && search !== "") {
-            for (i = 0; i < objects.length; i++) {
+            for (let i = 0; i < objects.length; i++) {
                 if (objects[i].housenum.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1)
                     res.push(objects[i]);
             }
@@ -268,9 +268,9 @@ user.filter('myHouseFilter', function () {
 
 user.filter('mySteadFilter', function () {
     return function (objects, search) {
-        var res = [];
+        let res = [];
         if (search !== undefined && search !== "") {
-            for (i = 0; i < objects.length; i++) {
+            for (let i = 0; i < objects.length; i++) {
                 if (objects[i].number.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1)
                     res.push(objects[i]);
             }
@@ -281,25 +281,25 @@ user.filter('mySteadFilter', function () {
 
 user.filter('myRoomFilter', function () {
     return function (objects, search) {
-        var res = [];
+        let res = [];
         if (search !== undefined && search !== "") {
-            var typeSearch;
-            var numberSearch;
+            let typeSearch;
+            let numberSearch;
             if (search.split(' ').length > 1) {
                 typeSearch = search.split(' ')[0];
                 numberSearch = search.split(' ')[1];
-                for (var i = 0; i < objects.length; i++) {
+                for (let i = 0; i < objects.length; i++) {
                     if (objects[i].type.toLowerCase().indexOf(typeSearch.toLowerCase()) !== -1)
                         res.push(objects[i]);
                 }
-                for (i = 0; i < res.length; i++) {
+                for (let i = 0; i < res.length; i++) {
                     if (res[i].flatnumber.toLowerCase().lastIndexOf(numberSearch.toLowerCase(), 0) === -1) {
                         res.splice(i, 1);
                         i--;
                     }
                 }
             } else {
-                for (i = 0; i < objects.length; i++) {
+                for (let i = 0; i < objects.length; i++) {
                     if (objects[i].flatnumber.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1)
                         res.push(objects[i]);
                 }
