@@ -41,8 +41,7 @@ public class Installer {
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 for (File file : folder.listFiles()) {
                     String fileName = file.getName();
-//                    if (!fileName.contains("_DEL_") && !fileName.contains("_NORMDOC_")){
-                    if (fileName.contains("AS_ROOM_")) {
+                    if (!fileName.contains("_DEL_") && !fileName.contains("_NORMDOC_")){
                         MySAXParser mySAXParser = new MySAXParser(fileName, databaseType, numberOfObjects);
                         saxParser.parse(file, mySAXParser);
                     }

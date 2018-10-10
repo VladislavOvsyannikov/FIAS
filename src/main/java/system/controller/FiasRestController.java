@@ -59,17 +59,17 @@ public class FiasRestController {
     }
 
     @RequestMapping(value = "/installComplete", method = RequestMethod.POST)
-    public void installComplete(){
-        fiasService.installComplete();
+    public boolean installComplete(){
+        return fiasService.installComplete();
     }
 
     @RequestMapping(value = "/installOneUpdate", method = RequestMethod.POST)
-    public void installOneUpdate(){
-        fiasService.installOneUpdate();
+    public boolean installOneUpdate(){
+        return fiasService.installOneUpdate();
     }
 
     @RequestMapping(value = "/installUpdates", method = RequestMethod.POST)
-    public void installUpdates(){
-        fiasService.installUpdates();
+    public boolean installUpdates(){
+        return fiasService.installUpdates();
     }
 }

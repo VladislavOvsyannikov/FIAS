@@ -12,12 +12,12 @@
     {{lastVersion}}<br>
     {{currentVersion}}<br>
     {{newVersions}}<br>
-    <div ng-if="currentVersion == 'Complete database download is required'">
-        <button ng-click="installComplete()">Install complete database</button><br>
+    <div ng-if="currentVersion == 'Complete database download is required'" ng-init="disabled">
+        <button ng-click="installComplete()" ng-disabled="disabled">Install complete database</button><br>
     </div>
-    <div ng-if="newVersions != 'All data are actual' && newVersions != ''">
-        <button ng-click="installOneUpdate()">Install one update</button><br>
-        <button ng-click="installUpdates()">Install all updates</button><br>
+    <div ng-if="newVersions != 'All data are actual' && newVersions != ''" ng-init="disabled">
+        <button ng-click="installOneUpdate()"  ng-disabled="disabled">Install one update</button><br>
+        <button ng-click="installUpdates()"  ng-disabled="disabled">Install all updates</button><br>
     </div>
 </body>
 </html>

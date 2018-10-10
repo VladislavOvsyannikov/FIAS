@@ -17,6 +17,11 @@ public class FiasController {
         return "user.html";
     }
 
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String login() {
+        return "login.html";
+    }
+
     @RequestMapping(value = "/template.html", method = RequestMethod.GET)
     public String template() {
         return "template.html";

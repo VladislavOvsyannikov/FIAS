@@ -24,18 +24,26 @@ admin.controller('adminController', function ($scope, $http, $window) {
         });
     };
 
+    $scope.disabled = false;
+
     $scope.installComplete = function () {
+        $scope.disabled = true;
         $http.post("installComplete", config).then(function (response) {
+            $scope.disabled = !response.data;
         });
     };
 
     $scope.installOneUpdate = function () {
+        $scope.disabled = true;
         $http.post("installOneUpdate", config).then(function (response) {
+            $scope.disabled = !response.data;
         });
     };
 
     $scope.installUpdates = function () {
+        $scope.disabled = true;
         $http.post("installUpdates", config).then(function (response) {
+            $scope.disabled = !response.data;
         });
     };
 });

@@ -12,7 +12,6 @@ public class MySAXParser extends DefaultHandler {
 
     private static final Logger logger = LogManager.getLogger(MySAXParser.class);
 
-//    private String[] numbersOfNoExistHouses = {"2","3","15","16","18","27","34","35","38","39"};
     private GenericDao<Object> genericDao = new GenericDao<>();
     private String xmlFile;
     private String databaseType;
