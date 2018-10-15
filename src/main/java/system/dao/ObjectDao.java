@@ -18,8 +18,16 @@ public class ObjectDao extends GenericDao<Object>{
 
 
     private List<Object> getObjectsStartList() {
-        return setFullObjectType(getEntities(
+        List<Object> objects = setFullObjectType(getEntities(
                 "select * from object where parentguid is null and livestatus=1", Object.class));
+        for (Object object:objects){
+            if (object.getFORMALNAME().contains("Чувашская")){
+                object.setSHORTNAME("республика");
+                object.setFORMALNAME("Чувашская");
+                break;
+            }
+        }
+        return objects;
     }
 
     public List<Object> getObjectsListByGuid(String guid) {

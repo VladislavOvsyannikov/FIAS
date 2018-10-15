@@ -1,17 +1,17 @@
-<input type="text" ng-model="search" placeholder="Select"/>
+<input type="text" class="form-control" ng-model="search" placeholder="Select"/>
 <div class="search-object-list">
     <div ng-if="objectsNextList.length > 0">
-        <ul class="list">
+        <ul class="list-group">
             <li ng-repeat="object in objectsNextList | myObjectFilter:search | orderBy:'formalname'"
-                ng-click="chooseObject(object)">
+                class="list-group-item" ng-click="chooseObject(object)">
                 {{ object.shortname }} {{object.formalname}}
             </li>
         </ul>
     </div>
     <div ng-if="objectsNextList.length == 0 && (steadsList.length > 0 || housesList.length > 0)">
-        <ul class="list">
+        <ul class="list-group">
             <li ng-repeat="house in housesList | myHouseFilter:search | orderBy:'housenum'"
-                ng-click="chooseHouse(house)">
+                class="list-group-item" ng-click="chooseHouse(house)">
                 <div ng-if="house.buildnum && house.strucnum">
                     дом {{house.housenum}} к. {{house.buildnum}} стр. {{house.strucnum}}
                 </div>
@@ -26,16 +26,16 @@
                 </div>
             </li>
             <li ng-repeat="stead in steadsList | mySteadFilter:search | orderBy:'number'"
-                ng-click="chooseStead(stead)">
+                class="list-group-item" ng-click="chooseStead(stead)">
                 участок {{stead.number}}
             </li>
         </ul>
     </div>
     <div ng-if="objectsNextList.length == 0 && housesList.length == 0 &&
                 steadsList.length == 0 && roomsList.length > 0">
-        <ul class="list">
+        <ul class="list-group">
             <li ng-repeat="room in roomsList | myRoomFilter:search | orderBy:'flatnumber'"
-                ng-click="chooseRoom(room)">
+                class="list-group-item" ng-click="chooseRoom(room)">
                 {{room.type}} {{room.flatnumber}}
             </li>
         </ul>

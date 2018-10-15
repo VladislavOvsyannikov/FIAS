@@ -87,9 +87,9 @@ public class FiasService {
     @Secured("ROLE_ADMIN")
     public boolean installOneUpdate() {
         String deltaVersion = getListOfNewVersions().get(0);
-        downloader.downloadDeltaByVersion(mainPath, deltaVersion);
-        unrarrer.unrarDeltaByVersion(mainPath, deltaVersion);
-        installer.installDeltaByVersion(mainPath, deltaVersion);
+//        downloader.downloadDeltaByVersion(mainPath, deltaVersion);
+//        unrarrer.unrarDeltaByVersion(mainPath, deltaVersion);
+//        installer.installDeltaByVersion(mainPath, deltaVersion);
         return true;
     }
 

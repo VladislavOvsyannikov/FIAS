@@ -2,46 +2,33 @@ body {
     font-family: Arial, sans-serif;
 }
 
-input {
-    padding: 3px 5px;
-    border: 1px solid gray;
-    border-radius: 3px;
+.form-control{
+    width: 50%;
 }
 
-.list {
-    list-style-type: none;
-    margin: 0;
+.text-space{
+    left:10%;
+}
+
+.list-group{
     opacity: 0;
-    padding: 4px 7px;
+    height: 0;
+    overflow-y: scroll;
     position: absolute;
-    margin-left: -1000px;
-    background: white;
-    box-shadow: 1px 1px 6px rgb(195, 195, 195);
-    border-radius: 2px;
-    -webkit-transition: opacity 0.4s;
-    transition: opacity 0.4s;
 }
 
-.list li {
-    padding: 3px 5px;
+.show .list-group{
+    width: 48%;
+    opacity: 1;
+    height: 250px;
+    overflow-y: auto;
+}
+
+.list-group li {
+    padding: 5px 10px;
     cursor: pointer;
 }
 
-.list li:hover {
+.list-group li:hover {
     background: lightgray;
 }
-
-.show .list {
-    margin-left: 0;
-    opacity: 1;
-}
-
-/*.list li .amount {*/
-    /*display: inline-block;*/
-    /*padding: 2px 3px;*/
-    /*background-color: rgb(83, 177, 211);*/
-    /*border-radius: 3px;*/
-    /*margin: 0 0 3px 10px;*/
-    /*font-size: 65%;*/
-    /*color: white;*/
-/*}*/

@@ -8,7 +8,8 @@ let lastRoom = null;
 user.controller('userController', function ($scope, $http) {
 
     $scope.getLastObjectInformation = function () {
-        let res = ["GUID: " + guid];
+        let res = [];
+        if (guid !== " ") res.push("GUID: " + guid);
         if (lastObject !== null) {
             if (lastObject.postalcode !== null) res.push("Почтовый индекс: " + lastObject.postalcode);
             if (lastObject.okato !== null) res.push("\nOKATO: " + lastObject.okato);
@@ -96,8 +97,7 @@ user.directive('dropdownListNext', function ($http, $timeout) {
             });
             elelement.find('input').bind('blur', function () {
                 $timeout(function () {
-                    $listContainer.removeClass('show')
-                }, 200);
+                    $listContainer.removeClass('show')}, 200);
             });
 
             scope.chooseObject = function (object) {
@@ -212,7 +212,7 @@ user.directive('dropdownListNext', function ($http, $timeout) {
                     scope.housesList = nextHouses;
                     directiveScopes.push(scope);
                 }
-                if (level < showDropdownList.length) {
+                if (level > 0 && level < showDropdownList.length) {
                     showDropdownList.pop();
                     if (level < directiveScopes.length) directiveScopes.pop();
                 }
@@ -226,11 +226,9 @@ user.filter('myObjectFilter', function () {
     return function (objects, search) {
         let res = [];
         if (search !== undefined && search !== "") {
-            let shortnameSearch;
-            let formalnameSearch = '';
             if (search.split(' ').length > 1) {
-                shortnameSearch = search.split(' ')[0];
-                formalnameSearch = search.split(' ')[1];
+                let shortnameSearch = search.split(' ')[0];
+                let formalnameSearch = search.split(' ')[1];
                 for (let i = 0; i < objects.length; i++) {
                     if (objects[i].shortname.toLowerCase().indexOf(shortnameSearch.toLowerCase()) !== -1)
                         res.push(objects[i]);
@@ -257,11 +255,26 @@ user.filter('myHouseFilter', function () {
     return function (objects, search) {
         let res = [];
         if (search !== undefined && search !== "") {
-            for (let i = 0; i < objects.length; i++) {
-                if (objects[i].housenum.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1)
-                    res.push(objects[i]);
+            if (search.split(' ').length > 1) {
+                let house = search.split(' ')[0];
+                let flatnumberSearch = search.split(' ')[1];
+                for (let i = 0; i < objects.length; i++) {
+                    if ("дом".indexOf(house.toLowerCase()) !== -1) res.push(objects[i]);
+                }
+                for (let i = 0; i < res.length; i++) {
+                    if (res[i].housenum.toLowerCase().lastIndexOf(flatnumberSearch.toLowerCase(), 0) === -1) {
+                        res.splice(i, 1);
+                        i--;
+                    }
+                }
+            } else {
+                for (let i = 0; i < objects.length; i++) {
+                    if (objects[i].housenum.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1 ||
+                        "дом".indexOf(search.toLowerCase()) !== -1)
+                        res.push(objects[i]);
+                }
             }
-        } else return objects;
+        }else return objects;
         return res;
     };
 });
@@ -270,11 +283,26 @@ user.filter('mySteadFilter', function () {
     return function (objects, search) {
         let res = [];
         if (search !== undefined && search !== "") {
-            for (let i = 0; i < objects.length; i++) {
-                if (objects[i].number.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1)
-                    res.push(objects[i]);
+            if (search.split(' ').length > 1) {
+                let stead = search.split(' ')[0];
+                let numberSearch = search.split(' ')[1];
+                for (let i = 0; i < objects.length; i++) {
+                    if ("участок".indexOf(stead.toLowerCase()) !== -1) res.push(objects[i]);
+                }
+                for (let i = 0; i < res.length; i++) {
+                    if (res[i].number.toLowerCase().lastIndexOf(numberSearch.toLowerCase(), 0) === -1) {
+                        res.splice(i, 1);
+                        i--;
+                    }
+                }
+            } else {
+                for (let i = 0; i < objects.length; i++) {
+                    if (objects[i].number.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1 ||
+                        "участок".indexOf(search.toLowerCase()) !== -1)
+                        res.push(objects[i]);
+                }
             }
-        } else return objects;
+        }else return objects;
         return res;
     };
 });
@@ -283,11 +311,9 @@ user.filter('myRoomFilter', function () {
     return function (objects, search) {
         let res = [];
         if (search !== undefined && search !== "") {
-            let typeSearch;
-            let numberSearch;
             if (search.split(' ').length > 1) {
-                typeSearch = search.split(' ')[0];
-                numberSearch = search.split(' ')[1];
+                let typeSearch = search.split(' ')[0];
+                let numberSearch = search.split(' ')[1];
                 for (let i = 0; i < objects.length; i++) {
                     if (objects[i].type.toLowerCase().indexOf(typeSearch.toLowerCase()) !== -1)
                         res.push(objects[i]);
@@ -300,7 +326,8 @@ user.filter('myRoomFilter', function () {
                 }
             } else {
                 for (let i = 0; i < objects.length; i++) {
-                    if (objects[i].flatnumber.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1)
+                    if (objects[i].flatnumber.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1 ||
+                        objects[i].type.toLowerCase().indexOf(search.toLowerCase()) !== -1)
                         res.push(objects[i]);
                 }
             }

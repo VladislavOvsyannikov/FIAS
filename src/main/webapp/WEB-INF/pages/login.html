@@ -2,14 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>FiasLogin</title>
+    <title>Fias</title>
+    <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .btn{
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-<form method="post" action="/login">
-    <input type="text" name="username"  placeholder="name">
-    <input type="password" name="password" placeholder="password">
-    <br>
-    <button type="submit">Log in</button>
-</form>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">FIAS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link" href="/user">User</a>
+                <a class="nav-item nav-link" href="/admin">Admin</a>
+                <a class="nav-item nav-link" href="/login">Sign in</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="jumbotron my-2">
+        <h2 class="display-10">Federal Information Address System</h2>
+    </div>
+    <div class="row justify-content-center text-center">
+        <form method="post" action="/login" class="form-signin">
+            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+            <input class="form-control" type="text" name="username" placeholder="name"><br>
+            <input class="form-control" type="password" name="password" placeholder="password"><br>
+            <button class="btn" type="submit">Sign in</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
 </body>
 </html>
