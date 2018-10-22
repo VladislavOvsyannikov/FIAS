@@ -1,4 +1,4 @@
-package system.model;
+package system.model.primary;
 
 import javax.persistence.*;
 
@@ -8,8 +8,13 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "house", schema = "fias", indexes = {
-        @Index(columnList = "aoguid", name = "parentguidhouse")})
+        @Index(columnList = "aoguid", name = "parentguidhouse"),
+        @Index(columnList = "houseguid", name = "houseguid"),
+        @Index(columnList = "postalcode", name = "postalcode")})
 public class House {
+
+    @Transient
+    private String fullAddress;
 
     @Id
     @Column(name = "houseid", nullable = false, unique = true, length = 32)
@@ -60,20 +65,38 @@ public class House {
     private String OKTMO;
 
     //Начало действия записи
-    @Column(name = "startdate", length = 10)
-    private String STARTDATE;
+    @Column(name = "startdate", length = 8)
+    private int STARTDATE;
 
     //Окончание действия записи
-    @Column(name = "enddate", length = 10)
-    private String ENDDATE;
-
-    //Тип адресации
-    @Column(name = "divtype", length = 1)
-    private int DIVTYPE;
+    @Column(name = "enddate", length = 8)
+    private int ENDDATE;
 
     //Кадастровый номер
     @Column(name = "cadnum", length = 100)
-    private int CADNUM;
+    private String CADNUM;
+
+    //Признак владения
+    @Column(name = "eststatus", length = 2)
+    private int ESTSTATUS;
+
+    //Признак строения
+    @Column(name = "strstatus", length = 2)
+    private int STRSTATUS;
+
+    //Внешний ключ на нормативный документ
+    @Column(name = "normdoc", length = 32)
+    private String NORMDOC;
+
+    @Transient
+    private String type;
+
+    @Transient
+    private String name;
+
+//    //Тип адресации
+//    @Column(name = "divtype", length = 1)
+//    private int DIVTYPE;
 
 //    //Код региона
 //    @Column(name = "regioncode")
@@ -91,21 +114,34 @@ public class House {
 //    @Column(name = "updatedate")
 //    private String UPDATEDATE;
 
-//    //Признак владения
-//    @Column(name = "eststatus")
-//    private int ESTSTATUS;
-
-//    //Признак строения
-//    @Column(name = "strstatus")
-//    private int STRSTATUS;
-
-//    //Внешний ключ на нормативный документ
-//    @Column(name = "normdoc")
-//    private String NORMDOC;
-
 //    //Счетчик записей домов для КЛАДР 4
 //    @Column(name = "counter")
 //    private int COUNTER;
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getFullAddress() {
+        return fullAddress;
+    }
+
+    public void setFullAddress(String fullAddress) {
+        this.fullAddress = fullAddress;
+    }
 
     public String getHOUSEID() {
         return HOUSEID;
@@ -203,35 +239,51 @@ public class House {
         this.OKTMO = OKTMO;
     }
 
-    public String getSTARTDATE() {
+    public int getSTARTDATE() {
         return STARTDATE;
     }
 
-    public void setSTARTDATE(String STARTDATE) {
+    public void setSTARTDATE(int STARTDATE) {
         this.STARTDATE = STARTDATE;
     }
 
-    public String getENDDATE() {
+    public int getENDDATE() {
         return ENDDATE;
     }
 
-    public void setENDDATE(String ENDDATE) {
+    public void setENDDATE(int ENDDATE) {
         this.ENDDATE = ENDDATE;
     }
 
-    public int getDIVTYPE() {
-        return DIVTYPE;
-    }
-
-    public void setDIVTYPE(int DIVTYPE) {
-        this.DIVTYPE = DIVTYPE;
-    }
-
-    public int getCADNUM() {
+    public String getCADNUM() {
         return CADNUM;
     }
 
-    public void setCADNUM(int CADNUM) {
+    public void setCADNUM(String CADNUM) {
         this.CADNUM = CADNUM;
+    }
+
+    public int getESTSTATUS() {
+        return ESTSTATUS;
+    }
+
+    public void setESTSTATUS(int ESTSTATUS) {
+        this.ESTSTATUS = ESTSTATUS;
+    }
+
+    public int getSTRSTATUS() {
+        return STRSTATUS;
+    }
+
+    public void setSTRSTATUS(int STRSTATUS) {
+        this.STRSTATUS = STRSTATUS;
+    }
+
+    public String getNORMDOC() {
+        return NORMDOC;
+    }
+
+    public void setNORMDOC(String NORMDOC) {
+        this.NORMDOC = NORMDOC;
     }
 }

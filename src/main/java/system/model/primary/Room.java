@@ -1,4 +1,4 @@
-package system.model;
+package system.model.primary;
 
 import javax.persistence.*;
 
@@ -8,11 +8,13 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "room", schema = "fias", indexes = {
-        @Index(columnList = "houseguid", name = "houseguidroom")})
+        @Index(columnList = "houseguid", name = "houseguidroom"),
+        @Index(columnList = "roomguid", name = "roomguid"),
+        @Index(columnList = "postalcode", name = "postalcode")})
 public class Room {
 
     @Transient
-    private String type;
+    private String fullAddress;
 
     @Id
     @Column(name = "roomid", nullable = false, unique = true, length = 32)
@@ -41,6 +43,15 @@ public class Room {
     @Column(name = "postalcode", length = 6)
     private String POSTALCODE;
 
+    //Кадастровый номер помещения
+    @Column(name = "cadnum", length = 100)
+    private String CADNUM;
+
+    //Кадастровый номер комнаты в помещении
+    @Column(name = "roomcadnum", length = 100)
+    private String ROOMCADNUM;
+
+
     //Начало действия записи
     @Column(name = "startdate", length = 10)
     private String STARTDATE;
@@ -49,13 +60,24 @@ public class Room {
     @Column(name = "enddate", length = 10)
     private String ENDDATE;
 
-    //Кадастровый номер помещения
-    @Column(name = "cadnum", length = 100)
-    private String CADNUM;
+//    //Внешний ключ на нормативный документ
+//    @Column(name = "normdoc")
+//    private String NORMDOC;
 
-    //Кадастровый номер комнаты в помещении
-    @Column(name = "roomcadnum", length = 100)
-    private String ROOMCADNUM;
+    @Transient
+    private String type;
+
+    @Transient
+    private String okato;
+
+    @Transient
+    private String oktmo;
+
+    @Transient
+    private String ifnsfl;
+
+    @Transient
+    private String ifnsul;
 
 //    //Тип комнаты
 //    @Column(name = "roomtype")
@@ -76,10 +98,6 @@ public class Room {
 //    //Идентификатор записи  связывания с последующей исторической записью
 //    @Column(name = "nextid")
 //    private String NEXTID;
-
-//    //Внешний ключ на нормативный документ
-//    @Column(name = "normdoc")
-//    private String NORMDOC;
 //
 //    //Причина появления записи
 //    @Column(name = "operstatus")
@@ -180,5 +198,45 @@ public class Room {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getFullAddress() {
+        return fullAddress;
+    }
+
+    public void setFullAddress(String fullAddress) {
+        this.fullAddress = fullAddress;
+    }
+
+    public String getOkato() {
+        return okato;
+    }
+
+    public void setOkato(String okato) {
+        this.okato = okato;
+    }
+
+    public String getOktmo() {
+        return oktmo;
+    }
+
+    public void setOktmo(String oktmo) {
+        this.oktmo = oktmo;
+    }
+
+    public String getIfnsfl() {
+        return ifnsfl;
+    }
+
+    public void setIfnsfl(String ifnsfl) {
+        this.ifnsfl = ifnsfl;
+    }
+
+    public String getIfnsul() {
+        return ifnsul;
+    }
+
+    public void setIfnsul(String ifnsul) {
+        this.ifnsul = ifnsul;
     }
 }

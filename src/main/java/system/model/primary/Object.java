@@ -1,4 +1,4 @@
-package system.model;
+package system.model.primary;
 
 import javax.persistence.*;
 
@@ -8,8 +8,13 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "object", schema = "fias", indexes = {
-        @Index(columnList = "parentguid", name = "parentguidobject")})
+        @Index(columnList = "parentguid", name = "parentguidobject"),
+        @Index(columnList = "aoguid", name = "aoguid"),
+        @Index(columnList = "postalcode", name = "postalcode")})
 public class Object{
+
+    @Transient
+    private String fullAddress;
 
     @Id
     @Column(name = "aoid", nullable = false, unique = true, length = 32)
@@ -63,16 +68,25 @@ public class Object{
     private String OKTMO;
 
     //Начало действия записи
-    @Column(name = "startdate", length = 10)
-    private String STARTDATE;
+    @Column(name = "startdate", length = 8)
+    private int STARTDATE;
 
     //Окончание действия записи
-    @Column(name = "enddate", length = 10)
-    private String ENDDATE;
+    @Column(name = "enddate", length = 8)
+    private int ENDDATE;
 
-    //Тип адресации
-    @Column(name = "divtype", length = 1)
-    private int DIVTYPE;
+    //Внешний ключ на нормативный документ
+    @Column(name = "normdoc", length = 32)
+    private String NORMDOC;
+
+    //Код адресного объекта одной строкой с признаком актуальности из КЛАДР 4.0
+    @Column(name = "code", length = 17)
+    private String CODE;
+
+
+//    //Тип адресации
+//    @Column(name = "divtype", length = 1)
+//    private int DIVTYPE;
 
 //    //Код региона
 //    @Column(name = "regioncode", length = 2)
@@ -145,10 +159,6 @@ public class Object{
 //    //Официальное наименование
 //    @Column(name = "offname")
 //    private String OFFNAME;
-
-//    //Код адресного объекта одной строкой с признаком актуальности из КЛАДР 4.0
-//    @Column(name = "code", length = 17)
-//    private String CODE;
 //
 //    //Код адресного объекта из КЛАДР 4.0 одной строкой без признака актуальности (последних двух цифр)
 //    @Column(name = "plaincode", length = 15)
@@ -157,10 +167,15 @@ public class Object{
 //    //Статус актуальности КЛАДР 4
 //    @Column(name = "currstatus")
 //    private int CURRSTATUS;
-//
-//    //Внешний ключ на нормативный документ
-//    @Column(name = "normdoc")
-//    private String NORMDOC;
+
+
+    public String getFullAddress() {
+        return fullAddress;
+    }
+
+    public void setFullAddress(String fullAddress) {
+        this.fullAddress = fullAddress;
+    }
 
     public String getAOID() {
         return AOID;
@@ -266,27 +281,35 @@ public class Object{
         this.OKTMO = OKTMO;
     }
 
-    public String getSTARTDATE() {
+    public int getSTARTDATE() {
         return STARTDATE;
     }
 
-    public void setSTARTDATE(String STARTDATE) {
+    public void setSTARTDATE(int STARTDATE) {
         this.STARTDATE = STARTDATE;
     }
 
-    public String getENDDATE() {
+    public int getENDDATE() {
         return ENDDATE;
     }
 
-    public void setENDDATE(String ENDDATE) {
+    public void setENDDATE(int ENDDATE) {
         this.ENDDATE = ENDDATE;
     }
 
-    public int getDIVTYPE() {
-        return DIVTYPE;
+    public String getNORMDOC() {
+        return NORMDOC;
     }
 
-    public void setDIVTYPE(int DIVTYPE) {
-        this.DIVTYPE = DIVTYPE;
+    public void setNORMDOC(String NORMDOC) {
+        this.NORMDOC = NORMDOC;
+    }
+
+    public String getCODE() {
+        return CODE;
+    }
+
+    public void setCODE(String CODE) {
+        this.CODE = CODE;
     }
 }

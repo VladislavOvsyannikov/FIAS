@@ -4,9 +4,42 @@
     <meta charset="UTF-8">
     <title>Fias</title>
     <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/resources/css/userStyle.css" rel="stylesheet">
+    <!--<link href="/resources/css/userStyle.css" rel="stylesheet">-->
     <script src="/resources/js/angular.min.js"></script>
     <script src="/resources/js/user.js"></script>
+    <style>
+        .form-control {
+            width: 85%;
+        }
+
+        .text-space {
+            left: 10%;
+        }
+
+        .list-group {
+            opacity: 0;
+            height: 0;
+            overflow-y: scroll;
+            position: absolute;
+        }
+
+        .show .list-group {
+            width: 80%;
+            opacity: 1;
+            height: 250px;
+            overflow-y: auto;
+            z-index: 1;
+        }
+
+        .list-group li {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .list-group li:hover {
+            background: lightgray;
+        }
+    </style>
 </head>
 <body>
 
@@ -28,28 +61,74 @@
 </nav>
 
 <div class="container">
-    <div class="jumbotron my-2">
-        <h2 class="display-10">Federal Information Address System</h2>
-    </div>
+    <!--<div class="jumbotron my-2">-->
+    <!--<h2 class="display-10">Federal Information Address System</h2>-->
+    <!--</div>-->
 
     <div class="row">
-        <div class="col-7">
-            <label>Расширенный поиск</label>
-            <div ng-init="getObjectsListByGuid()">
+        <div class="col-5">
+            <label>Расширенный поиск:</label>
+            <div ng-init="getObjectsByParentGuid()">
                 <div ng-repeat="flag in getShowDropdownList()">
-                    <dropdown-list-next data-objects-next-list="objectsNextList"></dropdown-list-next>
+                    <dropdown-list-next data-objects-list="objectsList"></dropdown-list-next>
                     <br>
                 </div>
             </div>
+            <button class="btn" type="submit" ng-click="getLastObjectInformation()">
+                Данные об объекте
+            </button>
         </div>
+
         <div class="col-5">
-            Доступная информация о последнем объекте: <br>
-            <div ng-repeat="info in getLastObjectInformation()">
-                {{info}} <br>
-            </div>
+            <label>Поиск по GUID:</label>
+            <input type="text" class="form-control" ng-model="guidSearch" placeholder="GUID"/>
             <br>
-            Полный адрес: {{getFullAddress()}}
+            <label>Поиск по почтовому индексу:</label>
+            <input type="text" class="form-control" ng-model="postcodeSearch" placeholder="Почтовый индекс"/>
+            <br>
+            <button class="btn" type="submit" ng-click="searchObjects()">Поиск</button>
         </div>
+
+        <div class="col-2">
+            <div class="form-group">
+                <label>Искать среди:</label>
+                <select class="form-control">
+                    <option>4</option>
+                    <option>5</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <table ng-show="resultObjects.length > 0" class="table">
+            <thead>
+            <tr class="row m-0">
+                <th class="d-inline-block col-2 text-center">Полный адрес</th>
+                <th class="d-inline-block col-2 text-center">GUID</th>
+                <th class="d-inline-block col-1 text-center">Статус</th>
+                <th class="d-inline-block col-1 text-center">Почтовый индекс</th>
+                <th class="d-inline-block col-1 text-center">ОКАТО</th>
+                <th class="d-inline-block col-1 text-center">ОКТМО</th>
+                <th class="d-inline-block col-1 text-center">ИФНС ФЛ</th>
+                <th class="d-inline-block col-1 text-center">ИФНС ЮЛ</th>
+                <th class="d-inline-block col-2 text-center">Кадастровый номер</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="row m-0" ng-repeat="object in resultObjects">
+                <td class="d-inline-block col-sm-2 text-center h6 small">{{getFullAddress(object)}}</td>
+                <td class="d-inline-block col-sm-2 text-center h6 small">{{getGuid(object)}}</td>
+                <td class="d-inline-block col-sm-1 text-center h6 small">???</td>
+                <td class="d-inline-block col-sm-1 text-center h6 small">{{object.postalcode}}</td>
+                <td class="d-inline-block col-sm-1 text-center h6 small">{{object.okato}}</td>
+                <td class="d-inline-block col-sm-1 text-center h6 small">{{object.oktmo}}</td>
+                <td class="d-inline-block col-sm-1 text-center h6 small">{{object.ifnsfl}}</td>
+                <td class="d-inline-block col-sm-1 text-center h6 small">{{object.ifnsul}}</td>
+                <td class="d-inline-block col-sm-2 text-center h6 small">{{object.cadnum}}</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 

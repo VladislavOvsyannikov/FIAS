@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import system.dao.*;
-import system.model.*;
-import system.model.Object;
+import system.model.primary.*;
+import system.model.primary.Object;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Service
@@ -172,20 +173,20 @@ public class FiasService {
     }
 
 
-    public List<Object> getObjectsListByGuid(String guid) {
-        return objectDao.getObjectsListByGuid(guid);
+    public List<Object> getObjectsByParentGuid(String guid) {
+        return objectDao.getObjectsByParentGuid(guid);
     }
 
-    public List<Stead> getSteadsListByGuid(String guid) {
-        return steadDao.getSteadsListByGuid(guid);
+    public List<Stead> getSteadsByParentGuid(String guid) {
+        return steadDao.getSteadsByParentGuid(guid);
     }
 
-    public List<House> getHousesListByGuid(String guid) {
-        return houseDao.getHousesListByGuid(guid);
+    public List<House> getHousesByParentGuid(String guid) {
+        return houseDao.getHousesByParentGuid(guid);
     }
 
-    public List<Room> getRoomsListByGuid(String guid) {
-        return roomDao.getRoomsListByGuid(guid);
+    public List<Room> getRoomsListByParentGuid(String guid) {
+        return roomDao.getRoomsListByParentGuid(guid);
     }
 
     public String toMD5(String md5) {
@@ -205,5 +206,18 @@ public class FiasService {
 
     public List<User> getAllUsers() {
         return userDao.getAllUsers();
+    }
+
+    public List<java.lang.Object> searchObjects(LinkedHashMap<String, String> params) {
+        List<java.lang.Object> res = new ArrayList<>();
+        List<Object> objects = objectDao.getObjectsByParams(params);
+        if (objects != null) res.addAll(objects);
+        List<House> houses = houseDao.getHousesByParams(params);
+        if (houses != null) res.addAll(houses);
+        List<Stead> steads = steadDao.getSteadsByParams(params);
+        if (steads != null) res.addAll(steads);
+        List<Room> rooms = roomDao.getRoomsByParams(params);
+        if (rooms != null) res.addAll(rooms);
+        return res;
     }
 }

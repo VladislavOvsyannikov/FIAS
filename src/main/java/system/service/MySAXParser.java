@@ -36,7 +36,8 @@ public class MySAXParser extends DefaultHandler {
             for (int i = 0; i < attributes.getLength(); i++) {
                 String field = attributes.getLocalName(i);
                 String value = attributes.getValue(i);
-                if (field.endsWith("ID")) value = value.replaceAll("-","");
+                if (field.endsWith("ID") || field.endsWith("DATE") || field.endsWith("NORMDOC"))
+                    value = value.replaceAll("-","");
                 ReflectionHelper.setFieldValue(object, field, value);
             }
             objects[++index] = object;

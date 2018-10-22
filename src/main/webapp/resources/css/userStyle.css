@@ -1,27 +1,24 @@
-body {
-    font-family: Arial, sans-serif;
+.form-control {
+    width: 100%;
 }
 
-.form-control{
-    width: 50%;
+.text-space {
+    left: 10%;
 }
 
-.text-space{
-    left:10%;
-}
-
-.list-group{
+.list-group {
     opacity: 0;
     height: 0;
     overflow-y: scroll;
     position: absolute;
 }
 
-.show .list-group{
-    width: 48%;
+.show .list-group {
+    width: 67%;
     opacity: 1;
     height: 250px;
     overflow-y: auto;
+    z-index: 1;
 }
 
 .list-group li {

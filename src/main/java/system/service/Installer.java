@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import system.dao.VersionDao;
-import system.model.Version;
+import system.model.primary.Version;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -41,7 +41,7 @@ public class Installer {
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
                 for (File file : folder.listFiles()) {
                     String fileName = file.getName();
-                    if (!fileName.contains("_DEL_") && !fileName.contains("_NORMDOC_")){
+                    if (!fileName.contains("_DEL_")){
                         MySAXParser mySAXParser = new MySAXParser(fileName, databaseType, numberOfObjects);
                         saxParser.parse(file, mySAXParser);
                     }

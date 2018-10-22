@@ -1,4 +1,4 @@
-package system.model;
+package system.model.primary;
 
 import javax.persistence.*;
 
@@ -8,8 +8,13 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "stead", schema = "fias", indexes = {
-        @Index(columnList = "parentguid", name = "parentguidstead")})
+        @Index(columnList = "parentguid", name = "parentguidstead"),
+        @Index(columnList = "steadguid", name = "steadguid"),
+        @Index(columnList = "postalcode", name = "postalcode")})
 public class Stead {
+
+    @Transient
+    private String fullAddress;
 
     @Id
     @Column(name = "steadid", nullable = false, unique = true, length = 32)
@@ -51,20 +56,33 @@ public class Stead {
     private String OKTMO;
 
     //Начало действия записи
-    @Column(name = "startdate", length = 10)
-    private String STARTDATE;
+    @Column(name = "startdate", length = 8)
+    private int STARTDATE;
 
     //Окончание действия записи
-    @Column(name = "enddate", length = 10)
-    private String ENDDATE;
-
-    //Тип адресации
-    @Column(name = "divtype", length = 1)
-    private int DIVTYPE;
+    @Column(name = "enddate", length = 8)
+    private int ENDDATE;
 
     //Кадастровый номер
     @Column(name = "cadnum", length = 100)
-    private int CADNUM;
+    private String CADNUM;
+
+    //Внешний ключ на нормативный документ
+    @Column(name = "normdoc", length = 32)
+    private String NORMDOC;
+
+
+//    //Тип адресации
+//    @Column(name = "divtype", length = 1)
+//    private int DIVTYPE;
+
+//    //Идентификатор записи связывания с предыдушей исторической записью
+//    @Column(name = "previd")
+//    private String PREVID;
+//
+//    //Идентификатор записи  связывания с последующей исторической записью
+//    @Column(name = "nextid")
+//    private String NEXTID;
 
 //    //Код региона
 //    @Column(name = "regioncode")
@@ -82,21 +100,18 @@ public class Stead {
 //    @Column(name = "updatedate")
 //    private String UPDATEDATE;
 
-//    //Идентификатор записи связывания с предыдушей исторической записью
-//    @Column(name = "previd")
-//    private String PREVID;
-//
-//    //Идентификатор записи  связывания с последующей исторической записью
-//    @Column(name = "nextid")
-//    private String NEXTID;
-
 //    //Причина появления записи
 //    @Column(name = "operstatus")
 //    private int OPERSTATUS;
 
-//    //Внешний ключ на нормативный документ
-//    @Column(name = "normdoc")
-//    private String NORMDOC;
+
+    public String getFullAddress() {
+        return fullAddress;
+    }
+
+    public void setFullAddress(String fullAddress) {
+        this.fullAddress = fullAddress;
+    }
 
     public String getSTEADID() {
         return STEADID;
@@ -178,36 +193,36 @@ public class Stead {
         this.OKTMO = OKTMO;
     }
 
-    public String getSTARTDATE() {
+    public int getSTARTDATE() {
         return STARTDATE;
     }
 
-    public void setSTARTDATE(String STARTDATE) {
+    public void setSTARTDATE(int STARTDATE) {
         this.STARTDATE = STARTDATE;
     }
 
-    public String getENDDATE() {
+    public int getENDDATE() {
         return ENDDATE;
     }
 
-    public void setENDDATE(String ENDDATE) {
+    public void setENDDATE(int ENDDATE) {
         this.ENDDATE = ENDDATE;
     }
 
-    public int getDIVTYPE() {
-        return DIVTYPE;
-    }
-
-    public void setDIVTYPE(int DIVTYPE) {
-        this.DIVTYPE = DIVTYPE;
-    }
-
-    public int getCADNUM() {
+    public String getCADNUM() {
         return CADNUM;
     }
 
-    public void setCADNUM(int CADNUM) {
+    public void setCADNUM(String CADNUM) {
         this.CADNUM = CADNUM;
+    }
+
+    public String getNORMDOC() {
+        return NORMDOC;
+    }
+
+    public void setNORMDOC(String NORMDOC) {
+        this.NORMDOC = NORMDOC;
     }
 }
 

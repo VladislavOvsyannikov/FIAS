@@ -1,71 +1,40 @@
 let user = angular.module('user', []);
 let config = {headers: {'Content-Type': 'application/json;charset=utf-8;'}};
-
 let guid = " ";
-let lastObject = null;
-let lastRoom = null;
 
 user.controller('userController', function ($scope, $http) {
 
-    $scope.getLastObjectInformation = function () {
-        let res = [];
-        if (guid !== " ") res.push("GUID: " + guid);
-        if (lastObject !== null) {
-            if (lastObject.postalcode !== null) res.push("Почтовый индекс: " + lastObject.postalcode);
-            if (lastObject.okato !== null) res.push("\nOKATO: " + lastObject.okato);
-            if (lastObject.oktmo !== null) res.push("OKTMO: " + lastObject.oktmo);
-            if (lastObject.ifnsfl !== null) res.push("ИФНС ФЛ: " + lastObject.ifnsfl);
-            if (lastObject.ifnsul !== null) res.push("ИФНС ЮЛ: " + lastObject.ifnsul);
-        }
-        if (lastRoom !== null) {
-            if (lastRoom.cadnum !== null) res.push("Кадастровый номер помещения: " + lastRoom.cadnum);
-            if (lastRoom.roomcadnum !== null) res.push("Кадастровый номер комнаты в помещении: " + lastRoom.roomcadnum);
-        }
-        return res;
-    };
-
-    $scope.getFullAddress = function () {
-        let res = "";
-        try {
-            res = lastObject.postalcode !== null ? lastObject.postalcode + ", " : "";
-            for (let i = 0; i < directiveScopes.length - 1; i++) res += directiveScopes[i].search + ", "
-            res += directiveScopes[directiveScopes.length - 1].search;
-        } catch (error) {
-        }
-        return res;
-    };
-
-    $scope.getObjectsListByGuid = function () {
-        $http.post("getObjectsListByGuid", guid, config).then(function (response) {
-            $scope.objectsNextList = response.data;
-            nextObjects = $scope.objectsNextList;
-            if ($scope.objectsNextList.length === 0) {
-                $scope.getSteadsListByGuid();
-                $scope.getHousesListByGuid();
+    $scope.getObjectsByParentGuid = function () {
+        $http.post("getObjectsByParentGuid", guid, config).then(function (response) {
+            $scope.objectsList = response.data;
+            nextObjects = $scope.objectsList;
+            if ($scope.objectsList.length === 0) {
+                $scope.getSteadsByParentGuid();
+                $scope.getHousesByParentGuid();
             }
         });
     };
 
-    $scope.getSteadsListByGuid = function () {
-        $http.post("getSteadsListByGuid", guid, config).then(function (response) {
+    $scope.getHousesByParentGuid = function () {
+        $http.post("getHousesByParentGuid", guid, config).then(function (response) {
+            $scope.housesList = response.data;
+            nextHouses = $scope.housesList;
+            if ($scope.housesList.length === 0) {
+                $scope.steadsList = [];
+                $scope.getRoomsListByParentGuid();
+            }
+        });
+    };
+
+    $scope.getSteadsByParentGuid = function () {
+        $http.post("getSteadsByParentGuid", guid, config).then(function (response) {
             $scope.steadsList = response.data;
             nextObjects = $scope.steadsList;
         });
     };
 
-    $scope.getHousesListByGuid = function () {
-        $http.post("getHousesListByGuid", guid, config).then(function (response) {
-            $scope.housesList = response.data;
-            nextHouses = $scope.housesList;
-            if ($scope.housesList.length === 0) {
-                $scope.steadsList = [];
-                $scope.getRoomsListByGuid();
-            }
-        });
-    };
-
-    $scope.getRoomsListByGuid = function () {
-        $http.post("getRoomsListByGuid", guid, config).then(function (response) {
+    $scope.getRoomsListByParentGuid = function () {
+        $http.post("getRoomsListByParentGuid", guid, config).then(function (response) {
             $scope.roomsList = response.data;
             nextObjects = $scope.roomsList;
             if ($scope.roomsList.length > 0 && showDropdownList.length <= directiveScopes.length)
@@ -77,6 +46,45 @@ user.controller('userController', function ($scope, $http) {
 
     $scope.getShowDropdownList = function () {
         return showDropdownList;
+    };
+
+    $scope.searchObjects = function () {
+        let data = Object();
+        data.guid = ($scope.guidSearch !== undefined && $scope.guidSearch !== "") ?
+            $scope.guidSearch.replace(new RegExp('-', 'g'), '').toLowerCase() : "";
+        data.postalcode = ($scope.postcodeSearch !== undefined && $scope.postcodeSearch !== "") ?
+            $scope.postcodeSearch : "";
+        $http.post("searchObjects", data, config).then(function (response) {
+            if (response.data !== "") {
+                $scope.resultObjects = response.data;
+            }
+        });
+    };
+
+    $scope.getLastObjectInformation = function () {
+        if (guid !== " ") {
+            let data = Object();
+            data.guid = guid;
+            $http.post("searchObjects", data, config).then(function (response) {
+                $scope.resultObjects = response.data;
+            });
+        }
+    };
+
+    $scope.getFullAddress = function (object) {
+        return object.postalcode !== undefined && object.postalcode !== null ?
+            object.postalcode + ", " + object.fullAddress : object.fullAddress;
+    };
+
+    $scope.getGuid = function (object) {
+        let guid = " ";
+        if (object.roomguid !== undefined && object.roomguid !== null) guid = object.roomguid;
+        else if (object.houseguid !== undefined && object.houseguid !== null) guid = object.houseguid;
+        else if (object.steadguid !== undefined && object.steadguid !== null) guid = object.steadguid;
+        else if (object.aoguid !== undefined && object.aoguid !== null) guid = object.aoguid;
+        guid = guid.substring(0, 8) + '-' + guid.substring(8, 12) + '-' + guid.substring(12, 16) + '-' + guid.substring(16, 20)
+            + '-' + guid.substring(20, 32);
+        return guid;
     };
 });
 
@@ -97,7 +105,8 @@ user.directive('dropdownListNext', function ($http, $timeout) {
             });
             elelement.find('input').bind('blur', function () {
                 $timeout(function () {
-                    $listContainer.removeClass('show')}, 200);
+                    $listContainer.removeClass('show')
+                }, 200);
             });
 
             scope.chooseObject = function (object) {
@@ -105,28 +114,26 @@ user.directive('dropdownListNext', function ($http, $timeout) {
                 for (let i = 0; i < directiveScopes.length; i++) {
                     if (scope.$id === directiveScopes[i].$id) level = i + 1;
                 }
-                lastRoom = null;
-                lastObject = object;
                 guid = object.aoguid;
                 scope.search = object.shortname + ' ' + object.formalname;
                 if (level === 0) {
-                    scope.objectsNextList = nextObjects;
+                    scope.objectsList = nextObjects;
                     showDropdownList.push({value: true});
                     directiveScopes.push(scope);
-                    scope.getObjectsListByGuid();
+                    scope.getObjectsByParentGuid();
                 }
                 if (level > 0 && level === directiveScopes.length) {
-                    scope.getObjectsListByGuid();
+                    scope.getObjectsByParentGuid();
                     if (showDropdownList.length <= directiveScopes.length) showDropdownList.push({value: true});
                 }
                 if (level > 0 && level < directiveScopes.length) {
-                    $http.post("getObjectsListByGuid", guid, config).then(function (response) {
-                        directiveScopes[level].objectsNextList = response.data;
-                        if (directiveScopes[level].objectsNextList.length === 0) {
-                            $http.post("getSteadsListByGuid", guid, config).then(function (response) {
+                    $http.post("getObjectsByParentGuid", guid, config).then(function (response) {
+                        directiveScopes[level].objectsList = response.data;
+                        if (directiveScopes[level].objectsList.length === 0) {
+                            $http.post("getSteadsByParentGuid", guid, config).then(function (response) {
                                 directiveScopes[level].steadsList = response.data;
                             });
-                            $http.post("getHousesListByGuid", guid, config).then(function (response) {
+                            $http.post("getHousesByParentGuid", guid, config).then(function (response) {
                                 directiveScopes[level].housesList = response.data;
                                 let dirSco = directiveScopes[level];
                                 if ((dirSco.housesList.length > 0 || dirSco.steadsList.length > 0) &&
@@ -140,7 +147,7 @@ user.directive('dropdownListNext', function ($http, $timeout) {
                     });
                     for (let i = directiveScopes.length - 1; i >= level; i--) {
                         directiveScopes[i].search = "";
-                        directiveScopes[i].objectsNextList = [];
+                        directiveScopes[i].objectsList = [];
                         directiveScopes[i].steadsList = [];
                         directiveScopes[i].housesList = [];
                         directiveScopes[i].roomsList = [];
@@ -156,8 +163,6 @@ user.directive('dropdownListNext', function ($http, $timeout) {
                 for (let i = 0; i < directiveScopes.length; i++) {
                     if (scope.$id === directiveScopes[i].$id) level = i + 1;
                 }
-                lastRoom = null;
-                lastObject = house;
                 guid = house.houseguid;
                 scope.search = 'дом ' + house.housenum;
                 if (house.buildnum !== null) scope.search += ' к. ' + house.buildnum;
@@ -166,11 +171,11 @@ user.directive('dropdownListNext', function ($http, $timeout) {
                     scope.housesList = nextHouses;
                     scope.steadsList = nextObjects;
                     directiveScopes.push(scope);
-                    scope.getHousesListByGuid();
+                    scope.getHousesByParentGuid();
                 }
-                if (level > 0 && level === directiveScopes.length) scope.getHousesListByGuid();
+                if (level > 0 && level === directiveScopes.length) scope.getHousesByParentGuid();
                 if (level > 0 && level < directiveScopes.length) {
-                    $http.post("getRoomsListByGuid", guid, config).then(function (response) {
+                    $http.post("getRoomsListByParentGuid", guid, config).then(function (response) {
                         directiveScopes[level].roomsList = response.data;
                         directiveScopes[level].search = "";
                         if (response.data.length > 0 && showDropdownList.length < directiveScopes.length)
@@ -187,7 +192,6 @@ user.directive('dropdownListNext', function ($http, $timeout) {
                 for (let i = 0; i < directiveScopes.length; i++) {
                     if (scope.$id === directiveScopes[i].$id) level = i + 1;
                 }
-                lastRoom = room;
                 guid = room.roomguid;
                 scope.search = room.type + ' ' + room.flatnumber;
                 if (level === 0) {
@@ -202,8 +206,6 @@ user.directive('dropdownListNext', function ($http, $timeout) {
                 for (let i = 0; i < directiveScopes.length; i++) {
                     if (scope.$id === directiveScopes[i].$id) level = i + 1;
                 }
-                lastRoom = null;
-                lastObject = stead;
                 guid = stead.steadguid;
                 scope.search = 'участок ' + stead.number;
 
@@ -227,10 +229,14 @@ user.filter('myObjectFilter', function () {
         let res = [];
         if (search !== undefined && search !== "") {
             if (search.split(' ').length > 1) {
-                let shortnameSearch = search.split(' ')[0];
-                let formalnameSearch = search.split(' ')[1];
+                let shortnameSearch = search.split(' ', 2)[0];
+                let formalnameSearch = "";
+                for (let i = 1; i < search.split(' ').length; i++) {
+                    formalnameSearch += search.split(' ')[i];
+                    if (i !== search.split(' ').length - 1) formalnameSearch += " ";
+                }
                 for (let i = 0; i < objects.length; i++) {
-                    if (objects[i].shortname.toLowerCase().indexOf(shortnameSearch.toLowerCase()) !== -1)
+                    if (objects[i].shortname.indexOf(shortnameSearch.toLowerCase()) !== -1)
                         res.push(objects[i]);
                 }
                 for (let i = 0; i < res.length; i++) {
@@ -241,7 +247,7 @@ user.filter('myObjectFilter', function () {
                 }
             } else {
                 for (let i = 0; i < objects.length; i++) {
-                    if (objects[i].shortname.toLowerCase().indexOf(search.toLowerCase()) !== -1 ||
+                    if (objects[i].shortname.indexOf(search.toLowerCase()) !== -1 ||
                         objects[i].formalname.toLowerCase().indexOf(search.toLowerCase()) !== -1)
                         res.push(objects[i]);
                 }
@@ -256,25 +262,29 @@ user.filter('myHouseFilter', function () {
         let res = [];
         if (search !== undefined && search !== "") {
             if (search.split(' ').length > 1) {
-                let house = search.split(' ')[0];
-                let flatnumberSearch = search.split(' ')[1];
+                let typeSearch = search.split(' ')[0];
+                let nameSearch = "";
+                for (let i = 1; i < search.split(' ').length; i++) {
+                    nameSearch += search.split(' ')[i];
+                    if (i !== search.split(' ').length - 1) nameSearch += " ";
+                }
                 for (let i = 0; i < objects.length; i++) {
-                    if ("дом".indexOf(house.toLowerCase()) !== -1) res.push(objects[i]);
+                    if (objects[i].type.indexOf(typeSearch.toLowerCase()) !== -1) res.push(objects[i]);
                 }
                 for (let i = 0; i < res.length; i++) {
-                    if (res[i].housenum.toLowerCase().lastIndexOf(flatnumberSearch.toLowerCase(), 0) === -1) {
+                    if (res[i].name.toLowerCase().lastIndexOf(nameSearch.toLowerCase(), 0) === -1) {
                         res.splice(i, 1);
                         i--;
                     }
                 }
             } else {
                 for (let i = 0; i < objects.length; i++) {
-                    if (objects[i].housenum.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1 ||
-                        "дом".indexOf(search.toLowerCase()) !== -1)
+                    if (objects[i].name.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1 ||
+                        objects[i].type.indexOf(search.toLowerCase()) !== -1)
                         res.push(objects[i]);
                 }
             }
-        }else return objects;
+        } else return objects;
         return res;
     };
 });
@@ -302,7 +312,7 @@ user.filter('mySteadFilter', function () {
                         res.push(objects[i]);
                 }
             }
-        }else return objects;
+        } else return objects;
         return res;
     };
 });
@@ -315,7 +325,7 @@ user.filter('myRoomFilter', function () {
                 let typeSearch = search.split(' ')[0];
                 let numberSearch = search.split(' ')[1];
                 for (let i = 0; i < objects.length; i++) {
-                    if (objects[i].type.toLowerCase().indexOf(typeSearch.toLowerCase()) !== -1)
+                    if (objects[i].type.indexOf(typeSearch.toLowerCase()) !== -1)
                         res.push(objects[i]);
                 }
                 for (let i = 0; i < res.length; i++) {
@@ -327,7 +337,7 @@ user.filter('myRoomFilter', function () {
             } else {
                 for (let i = 0; i < objects.length; i++) {
                     if (objects[i].flatnumber.toLowerCase().lastIndexOf(search.toLowerCase(), 0) !== -1 ||
-                        objects[i].type.toLowerCase().indexOf(search.toLowerCase()) !== -1)
+                        objects[i].type.indexOf(search.toLowerCase()) !== -1)
                         res.push(objects[i]);
                 }
             }

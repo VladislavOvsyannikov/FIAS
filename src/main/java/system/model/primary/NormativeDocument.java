@@ -1,4 +1,4 @@
-package system.model;
+package system.model.primary;
 
 import javax.persistence.*;
 
@@ -12,20 +12,20 @@ import javax.persistence.*;
 public class NormativeDocument {
 
     @Id
-    @Column(name = "id", nullable = false)
-    private int id;
-
-    //Идентификатор нормативного документа
-    @Column(name = "normdocid", nullable = false)
+    @Column(name = "normdocid", nullable = false, unique = true, length = 32)
     private String NORMDOCID;
 
-    //Наименование документа
-    @Column(name = "docname")
-    private String DOCNAME;
-
     //Тип документа
-    @Column(name = "doctype")
+    @Column(name = "doctype", length = 3)
     private int DOCTYPE;
+
+//    //Номер документа
+//    @Column(name = "docnum" , length = 20)
+//    private String DOCNUM;
+//
+//    //Наименование документа
+//    @Column(name = "docname", length = 1000)
+//    private String DOCNAME;
 
 //    //Идентификатор образа (внешний ключ)
 //    @Column(name = "docimgid")
@@ -34,19 +34,7 @@ public class NormativeDocument {
 //    //Дата документа
 //    @Column(name = "docdate")
 //    private String DOCDATE;
-//
-//    //Номер документа
-//    @Column(name = "docnum")
-//    private String DOCNUM;
 
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getNORMDOCID() {
         return NORMDOCID;
@@ -54,14 +42,6 @@ public class NormativeDocument {
 
     public void setNORMDOCID(String NORMDOCID) {
         this.NORMDOCID = NORMDOCID;
-    }
-
-    public String getDOCNAME() {
-        return DOCNAME;
-    }
-
-    public void setDOCNAME(String DOCNAME) {
-        this.DOCNAME = DOCNAME;
     }
 
     public int getDOCTYPE() {
