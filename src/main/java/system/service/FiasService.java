@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import system.dao.*;
 import system.model.primary.*;
@@ -189,19 +190,8 @@ public class FiasService {
         return roomDao.getRoomsListByParentGuid(guid);
     }
 
-    public String toMD5(String md5) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] array = md.digest(md5.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for (byte anArray : array) {
-                sb.append(Integer.toHexString((anArray & 0xFF) | 0x100).substring(1, 3));
-            }
-            return sb.toString();
-        } catch (java.security.NoSuchAlgorithmException e) {
-            System.out.println(e.getMessage());
-        }
-        return null;
+    public String bCrypt(String string) {
+        return BCrypt.hashpw(string, BCrypt.gensalt());
     }
 
     public List<User> getAllUsers() {
@@ -210,14 +200,24 @@ public class FiasService {
 
     public List<java.lang.Object> searchObjects(LinkedHashMap<String, String> params) {
         List<java.lang.Object> res = new ArrayList<>();
-        List<Object> objects = objectDao.getObjectsByParams(params);
-        if (objects != null) res.addAll(objects);
-        List<House> houses = houseDao.getHousesByParams(params);
-        if (houses != null) res.addAll(houses);
-        List<Stead> steads = steadDao.getSteadsByParams(params);
-        if (steads != null) res.addAll(steads);
-        List<Room> rooms = roomDao.getRoomsByParams(params);
-        if (rooms != null) res.addAll(rooms);
+        String searchType = params.get("searchType");
+        params.remove("searchType");
+        if (searchType.contains("object")) {
+            List<Object> objects = objectDao.getObjectsByParams(params);
+            if (objects != null) res.addAll(objects);
+        }
+        if (searchType.contains("house")) {
+            List<House> houses = houseDao.getHousesByParams(params);
+            if (houses != null) res.addAll(houses);
+        }
+        if (searchType.contains("stead")) {
+            List<Stead> steads = steadDao.getSteadsByParams(params);
+            if (steads != null) res.addAll(steads);
+        }
+        if (searchType.contains("room")) {
+            List<Room> rooms = roomDao.getRoomsByParams(params);
+            if (rooms != null) res.addAll(rooms);
+        }
         return res;
     }
 }

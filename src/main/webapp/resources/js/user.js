@@ -2,11 +2,13 @@ let user = angular.module('user', []);
 let config = {headers: {'Content-Type': 'application/json;charset=utf-8;'}};
 let guid = " ";
 
-user.controller('userController', function ($scope, $http) {
+user.controller('userController', function ($rootScope, $scope, $http) {
 
     $scope.getObjectsByParentGuid = function () {
+        $rootScope.downloadingMessage = "Downloading...";
         $http.post("getObjectsByParentGuid", guid, config).then(function (response) {
             $scope.objectsList = response.data;
+            $rootScope.downloadingMessage = "";
             nextObjects = $scope.objectsList;
             if ($scope.objectsList.length === 0) {
                 $scope.getSteadsByParentGuid();
@@ -16,8 +18,10 @@ user.controller('userController', function ($scope, $http) {
     };
 
     $scope.getHousesByParentGuid = function () {
+        $rootScope.downloadingMessage = "Downloading...";
         $http.post("getHousesByParentGuid", guid, config).then(function (response) {
             $scope.housesList = response.data;
+            $rootScope.downloadingMessage = "";
             nextHouses = $scope.housesList;
             if ($scope.housesList.length === 0) {
                 $scope.steadsList = [];
@@ -27,18 +31,22 @@ user.controller('userController', function ($scope, $http) {
     };
 
     $scope.getSteadsByParentGuid = function () {
+        $rootScope.downloadingMessage = "Downloading...";
         $http.post("getSteadsByParentGuid", guid, config).then(function (response) {
             $scope.steadsList = response.data;
+            $rootScope.downloadingMessage = "";
             nextObjects = $scope.steadsList;
         });
     };
 
     $scope.getRoomsListByParentGuid = function () {
+        $rootScope.downloadingMessage = "Downloading...";
         $http.post("getRoomsListByParentGuid", guid, config).then(function (response) {
             $scope.roomsList = response.data;
+            $rootScope.downloadingMessage = "";
             nextObjects = $scope.roomsList;
             if ($scope.roomsList.length > 0 && showDropdownList.length <= directiveScopes.length)
-                showDropdownList.push({value: true});
+                showDropdownList.push({value: showDropdownList.length+1});
             if ($scope.roomsList.length === 0 && showDropdownList.length > directiveScopes.length)
                 showDropdownList.pop();
         });
@@ -48,12 +56,17 @@ user.controller('userController', function ($scope, $http) {
         return showDropdownList;
     };
 
+
     $scope.searchObjects = function () {
         let data = Object();
         data.guid = ($scope.guidSearch !== undefined && $scope.guidSearch !== "") ?
             $scope.guidSearch.replace(new RegExp('-', 'g'), '').toLowerCase() : "";
         data.postalcode = ($scope.postcodeSearch !== undefined && $scope.postcodeSearch !== "") ?
             $scope.postcodeSearch : "";
+        data.searchType = $scope.objectCheck ? "object":"";
+        data.searchType += $scope.houseCheck ? "house":"";
+        data.searchType += $scope.steadCheck ? "stead":"";
+        data.searchType += $scope.roomCheck ? "room":"";
         $http.post("searchObjects", data, config).then(function (response) {
             if (response.data !== "") {
                 $scope.resultObjects = response.data;
@@ -65,6 +78,7 @@ user.controller('userController', function ($scope, $http) {
         if (guid !== " ") {
             let data = Object();
             data.guid = guid;
+            data.searchType = "objecthousesteadroom";
             $http.post("searchObjects", data, config).then(function (response) {
                 $scope.resultObjects = response.data;
             });
@@ -86,14 +100,19 @@ user.controller('userController', function ($scope, $http) {
             + '-' + guid.substring(20, 32);
         return guid;
     };
+
+    $scope.getStatus = function (object) {
+        //
+        return "actual";
+    }
 });
 
-let showDropdownList = [{value: true}];
+let showDropdownList = [{value: 1}];
 let nextObjects = [];
 let nextHouses = [];
 let directiveScopes = [];
 
-user.directive('dropdownListNext', function ($http, $timeout) {
+user.directive('dropdownListNext', function ($rootScope, $http, $timeout) {
     return {
         restrict: 'E',
         scope: true,
@@ -118,27 +137,34 @@ user.directive('dropdownListNext', function ($http, $timeout) {
                 scope.search = object.shortname + ' ' + object.formalname;
                 if (level === 0) {
                     scope.objectsList = nextObjects;
-                    showDropdownList.push({value: true});
+                    showDropdownList.push({value: showDropdownList.length+1});
                     directiveScopes.push(scope);
                     scope.getObjectsByParentGuid();
                 }
                 if (level > 0 && level === directiveScopes.length) {
                     scope.getObjectsByParentGuid();
-                    if (showDropdownList.length <= directiveScopes.length) showDropdownList.push({value: true});
+                    if (showDropdownList.length <= directiveScopes.length)
+                        showDropdownList.push({value: showDropdownList.length+1});
                 }
                 if (level > 0 && level < directiveScopes.length) {
+                    $rootScope.downloadingMessage = "Downloading...";
                     $http.post("getObjectsByParentGuid", guid, config).then(function (response) {
                         directiveScopes[level].objectsList = response.data;
+                        $rootScope.downloadingMessage = "";
                         if (directiveScopes[level].objectsList.length === 0) {
+                            $rootScope.downloadingMessage = "Downloading...";
                             $http.post("getSteadsByParentGuid", guid, config).then(function (response) {
                                 directiveScopes[level].steadsList = response.data;
+                                $rootScope.downloadingMessage = "";
                             });
+                            $rootScope.downloadingMessage = "Downloading...";
                             $http.post("getHousesByParentGuid", guid, config).then(function (response) {
                                 directiveScopes[level].housesList = response.data;
+                                $rootScope.downloadingMessage = "";
                                 let dirSco = directiveScopes[level];
                                 if ((dirSco.housesList.length > 0 || dirSco.steadsList.length > 0) &&
                                     showDropdownList.length < directiveScopes.length)
-                                    showDropdownList.push({value: true});
+                                    showDropdownList.push({value: showDropdownList.length+1});
                                 if (dirSco.housesList.length === 0 && dirSco.steadsList.length === 0)
                                     directiveScopes.pop();
                                 if (showDropdownList.length > directiveScopes.length) showDropdownList.pop();
@@ -175,11 +201,13 @@ user.directive('dropdownListNext', function ($http, $timeout) {
                 }
                 if (level > 0 && level === directiveScopes.length) scope.getHousesByParentGuid();
                 if (level > 0 && level < directiveScopes.length) {
+                    $rootScope.downloadingMessage = "Downloading...";
                     $http.post("getRoomsListByParentGuid", guid, config).then(function (response) {
                         directiveScopes[level].roomsList = response.data;
+                        $rootScope.downloadingMessage = "";
                         directiveScopes[level].search = "";
                         if (response.data.length > 0 && showDropdownList.length < directiveScopes.length)
-                            showDropdownList.push({value: true});
+                            showDropdownList.push({value: showDropdownList.length+1});
                         if (response.data.length === 0) directiveScopes.pop();
                         if (showDropdownList.length > directiveScopes.length) showDropdownList.pop();
                     });

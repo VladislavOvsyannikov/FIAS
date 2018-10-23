@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import system.model.primary.User;
 
@@ -26,21 +27,17 @@ public class Provider implements AuthenticationProvider {
 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String login = authentication.getName();
-        String pwd = authentication.getCredentials().toString();
-        String password = fiasService.toMD5(pwd);
+        String password = authentication.getCredentials().toString();
         User user = null;
         for (User user1 : fiasService.getAllUsers()){
-            if ((user1).getName().equals(login) && (user1).getPassword().equals(password)){
+            if (user1.getName().equals(login) && BCrypt.checkpw(password, user1.getPassword()))
                 user = user1;
-            }
         }
         if (user!=null){
             List<GrantedAuthority> grantedAuth = new ArrayList<>();
             grantedAuth.add(new SimpleGrantedAuthority(user.getRole()));
             return new UsernamePasswordAuthenticationToken(login, password, grantedAuth);
-        }else {
-            return null;
-        }
+        }else return null;
     }
 
     public boolean supports(Class<?> authentication) {

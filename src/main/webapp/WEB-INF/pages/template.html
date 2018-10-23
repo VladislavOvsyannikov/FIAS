@@ -1,4 +1,5 @@
-<input type="text" class="form-control" ng-model="search" placeholder="Select"/>
+<input type="text" class="form-control" ng-model="search"
+       placeholder="Select" ng-disabled="downloadingMessage != ''"/>
 <div class="search-object-list">
     <div ng-if="objectsList.length > 0">
         <ul class="list-group">
