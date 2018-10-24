@@ -12,15 +12,14 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import system.dao.*;
-import system.model.primary.*;
-import system.model.primary.Object;
+import system.model.*;
+import system.model.Object;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -174,20 +173,20 @@ public class FiasService {
     }
 
 
-    public List<Object> getObjectsByParentGuid(String guid) {
-        return objectDao.getObjectsByParentGuid(guid);
+    public List<Object> getObjectsByParentGuid(String guid, boolean isActual) {
+        return objectDao.getObjectsByParentGuid(guid, isActual);
     }
 
-    public List<Stead> getSteadsByParentGuid(String guid) {
-        return steadDao.getSteadsByParentGuid(guid);
+    public List<Stead> getSteadsByParentGuid(String guid, boolean isActual) {
+        return steadDao.getSteadsByParentGuid(guid, isActual);
     }
 
-    public List<House> getHousesByParentGuid(String guid) {
-        return houseDao.getHousesByParentGuid(guid);
+    public List<House> getHousesByParentGuid(String guid, boolean isActual) {
+        return houseDao.getHousesByParentGuid(guid, isActual);
     }
 
-    public List<Room> getRoomsListByParentGuid(String guid) {
-        return roomDao.getRoomsListByParentGuid(guid);
+    public List<Room> getRoomsListByParentGuid(String guid, boolean isActual) {
+        return roomDao.getRoomsListByParentGuid(guid, isActual);
     }
 
     public String bCrypt(String string) {
@@ -201,21 +200,23 @@ public class FiasService {
     public List<java.lang.Object> searchObjects(LinkedHashMap<String, String> params) {
         List<java.lang.Object> res = new ArrayList<>();
         String searchType = params.get("searchType");
+        boolean isActual = Boolean.parseBoolean(params.get("actual"));
         params.remove("searchType");
+        params.remove("actual");
         if (searchType.contains("object")) {
-            List<Object> objects = objectDao.getObjectsByParams(params);
+            List<Object> objects = objectDao.getObjectsByParams(params, isActual);
             if (objects != null) res.addAll(objects);
         }
         if (searchType.contains("house")) {
-            List<House> houses = houseDao.getHousesByParams(params);
+            List<House> houses = houseDao.getHousesByParams(params, isActual);
             if (houses != null) res.addAll(houses);
         }
         if (searchType.contains("stead")) {
-            List<Stead> steads = steadDao.getSteadsByParams(params);
+            List<Stead> steads = steadDao.getSteadsByParams(params, isActual);
             if (steads != null) res.addAll(steads);
         }
         if (searchType.contains("room")) {
-            List<Room> rooms = roomDao.getRoomsByParams(params);
+            List<Room> rooms = roomDao.getRoomsByParams(params, isActual);
             if (rooms != null) res.addAll(rooms);
         }
         return res;

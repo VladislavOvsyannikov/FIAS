@@ -77,7 +77,7 @@ public class GenericDao<T> {
         entityManager.close();
     }
 
-    public T getEntity(String q, Class c){
+    T getEntity(String q, Class c){
         T t = null;
         EntityManager entityManager = HibernateEntityManagerFactory.getEntityManagerFactory().createEntityManager();
         Query query = entityManager.createNativeQuery(q, c);
@@ -90,7 +90,7 @@ public class GenericDao<T> {
         return t;
     }
 
-    public List<T> getEntities(String q, Class c) {
+    List<T> getEntities(String q, Class c) {
         List<T> list = null;
         EntityManager entityManager = HibernateEntityManagerFactory.getEntityManagerFactory().createEntityManager();
         Query query = entityManager.createNativeQuery(q, c);

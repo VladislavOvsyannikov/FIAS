@@ -1,4 +1,4 @@
-package system.model.primary;
+package system.model;
 
 import javax.persistence.*;
 
@@ -93,6 +93,9 @@ public class House {
 
     @Transient
     private String name;
+
+    @Transient
+    private String stateStatus;
 
 //    //Тип адресации
 //    @Column(name = "divtype", length = 1)
@@ -285,5 +288,13 @@ public class House {
 
     public void setNORMDOC(String NORMDOC) {
         this.NORMDOC = NORMDOC;
+    }
+
+    public String getStateStatus() {
+        return stateStatus;
+    }
+
+    public void setStateStatus(String stateStatus) {
+        this.stateStatus = stateStatus;
     }
 }

@@ -1,5 +1,5 @@
 .form-control {
-    width: 100%;
+    width: 85%;
 }
 
 .text-space {
@@ -14,7 +14,7 @@
 }
 
 .show .list-group {
-    width: 67%;
+    width: 80%;
     opacity: 1;
     height: 250px;
     overflow-y: auto;

@@ -2,13 +2,10 @@ package system.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import system.model.primary.House;
+import system.model.House;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class HouseDao extends GenericDao<House>{
@@ -16,7 +13,12 @@ public class HouseDao extends GenericDao<House>{
     private ObjectDao objectDao;
     private EstateStatusDao estateStatusDao;
     private StructureStatusDao structureStatusDao;
+    private HouseStateStatusDao houseStateStatusDao;
 
+    @Autowired
+    public void setHouseStateStatusDao(HouseStateStatusDao houseStateStatusDao) {
+        this.houseStateStatusDao = houseStateStatusDao;
+    }
     @Autowired
     public void setObjectDao(ObjectDao objectDao) {
         this.objectDao = objectDao;
@@ -31,11 +33,13 @@ public class HouseDao extends GenericDao<House>{
     }
 
 
-    public List<House> getHousesByParentGuid(String guid) {
+    public List<House> getHousesByParentGuid(String guid, boolean isActual) {
         List<House> houses = getEntities(
                 "select * from house where aoguid=\""+guid+"\"", House.class);
-        int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date()));
-        houses.removeIf(house -> currentDate > house.getENDDATE());
+        if (isActual) {
+            int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+            houses.removeIf(house -> currentDate > house.getENDDATE());
+        } else houses = getHousesWithMaxEnddate(houses);
         for (House house : houses){
             house.setType(getHouseType(house));
             house.setName(getHouseName(house));
@@ -43,7 +47,7 @@ public class HouseDao extends GenericDao<House>{
         return houses;
     }
 
-    public List<House> getHousesByParams(LinkedHashMap<String, String> params) {
+    public List<House> getHousesByParams(LinkedHashMap<String, String> params, boolean isActual) {
         List<String> strings = new ArrayList<>();
         for (String key : params.keySet()){
             if (key.equals("guid") && !params.get(key).equals("")) strings.add("houseguid=\""+params.get(key)+"\"");
@@ -52,19 +56,42 @@ public class HouseDao extends GenericDao<House>{
         String queryPart = String.join(" and ", strings);
         List<House> houses = getEntities("select * from house where "+queryPart, House.class);
         if (houses != null && houses.size() > 0) {
-            int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date()));
-            houses.removeIf(house -> currentDate > house.getENDDATE());
-            for (House house:houses) house.setFullAddress(getFullAddress(house));
+            if (isActual) {
+                int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+                houses.removeIf(house -> currentDate > house.getENDDATE());
+            }else houses = getHousesWithMaxEnddate(houses);
+            for (House house:houses) {
+                house.setFullAddress(getFullAddress(house));
+                house.setStateStatus(getStateStatus(house));
+            }
             return houses;
         }
         return null;
     }
 
+    private List<House> getHousesWithMaxEnddate(List<House> houses) {
+        if (houses.size() <= 1) return houses;
+        houses.sort(Comparator.comparing(House::getHOUSEGUID));
+        List<House> res = new ArrayList<>();
+        House maxObject = houses.get(0);
+        House currentObject;
+        for (int i=1; i<houses.size(); i++){
+            currentObject = houses.get(i);
+            if (maxObject.getHOUSEGUID().equals(currentObject.getHOUSEGUID())){
+                if (maxObject.getENDDATE() < currentObject.getENDDATE()) maxObject = currentObject;
+            }else{
+                res.add(maxObject);
+                maxObject = currentObject;
+            }
+            if (i == houses.size()-1) res.add(maxObject);
+        }
+        return res;
+    }
+
     public House getHouseByGuid(String guid){
         List<House> houses = getEntities("select * from house where houseguid=\""+guid+"\"", House.class);
         if (houses.size() == 0) return null;
-        int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date()));
-        houses.removeIf(house -> currentDate > house.getENDDATE());
+        houses = getHousesWithMaxEnddate(houses);
         return houses.get(0);
     }
 
@@ -92,5 +119,9 @@ public class HouseDao extends GenericDao<House>{
         if (house.getHOUSENUM() == null && house.getBUILDNUM() == null && house.getSTRUCNUM() != null)
             name = house.getSTRUCNUM();
         return name;
+    }
+
+    String getStateStatus(House house){
+        return houseStateStatusDao.getStateStatus(house.getSTATSTATUS());
     }
 }

@@ -1,7 +1,7 @@
 package system.dao;
 
 import org.springframework.stereotype.Repository;
-import system.model.secondary.StructureStatus;
+import system.model.StructureStatus;
 
 @Repository
 public class StructureStatusDao extends GenericDao<StructureStatus> {

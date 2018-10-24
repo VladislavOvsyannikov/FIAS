@@ -1,7 +1,7 @@
 package system.dao;
 
 import org.springframework.stereotype.Repository;
-import system.model.primary.User;
+import system.model.User;
 
 import java.util.List;
 

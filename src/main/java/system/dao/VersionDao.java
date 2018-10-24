@@ -1,7 +1,7 @@
 package system.dao;
 
 import org.springframework.stereotype.Repository;
-import system.model.primary.Version;
+import system.model.Version;
 
 @Repository
 public class VersionDao extends GenericDao<Version>{

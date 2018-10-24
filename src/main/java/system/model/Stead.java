@@ -1,4 +1,4 @@
-package system.model.primary;
+package system.model;
 
 import javax.persistence.*;
 

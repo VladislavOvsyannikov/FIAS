@@ -4,42 +4,9 @@
     <meta charset="UTF-8">
     <title>Fias</title>
     <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
-    <!--<link href="/resources/css/userStyle.css" rel="stylesheet">-->
+    <link href="/resources/css/userStyle.css" rel="stylesheet">
     <script src="/resources/js/angular.min.js"></script>
     <script src="/resources/js/user.js"></script>
-    <style>
-        .form-control {
-            width: 85%;
-        }
-
-        .text-space {
-            left: 10%;
-        }
-
-        .list-group {
-            opacity: 0;
-            height: 0;
-            overflow-y: scroll;
-            position: absolute;
-        }
-
-        .show .list-group {
-            width: 80%;
-            opacity: 1;
-            height: 250px;
-            overflow-y: auto;
-            z-index: 1;
-        }
-
-        .list-group li {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        .list-group li:hover {
-            background: lightgray;
-        }
-    </style>
 </head>
 <body>
 
@@ -74,19 +41,32 @@
                     <br>
                 </div>
             </div>
-            <button class="btn" type="submit" ng-click="getLastObjectInformation()">
-                Данные об объекте
-            </button>
+            <div class="form-check-inline">
+                <button class="btn" type="submit" ng-click="getLastObjectInformation()">
+                    Данные об объекте
+                </button>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="actual1"
+                           ng-init="$root.actualAdvancedSearch=true" ng-model="$root.actualAdvancedSearch">
+                    <label class="form-check-label" for="actual1">Только актуальные</label>
+                </div>
+            </div>
         </div>
 
         <div class="col-5">
-            <label>Поиск по GUID:</label>
+            <label>Поиск по параметрам:</label>
             <input type="text" class="form-control" ng-model="guidSearch" placeholder="GUID"/>
             <br>
-            <label>Поиск по почтовому индексу:</label>
             <input type="text" class="form-control" ng-model="postcodeSearch" placeholder="Почтовый индекс"/>
             <br>
-            <button class="btn" type="submit" ng-click="searchObjects()">Поиск</button>
+            <div class="form-check-inline">
+                <button class="btn" type="submit" ng-click="searchObjects()">Поиск</button>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="actual2"
+                           ng-init="actualSearch=true" ng-model="actualSearch">
+                    <label class="form-check-label" for="actual2">Только актуальные</label>
+                </div>
+            </div>
         </div>
 
         <div class="col-2">
@@ -121,7 +101,7 @@
             <thead>
             <tr class="row m-0">
                 <th class="d-inline-block col-2 text-center">Полный адрес</th>
-                <th class="d-inline-block col-2 text-center">GUID</th>
+                <th class="d-inline-block col-1 text-center">GUID</th>
                 <th class="d-inline-block col-1 text-center">Статус</th>
                 <th class="d-inline-block col-1 text-center">Почтовый индекс</th>
                 <th class="d-inline-block col-1 text-center">ОКАТО</th>
@@ -129,12 +109,13 @@
                 <th class="d-inline-block col-1 text-center">ИФНС ФЛ</th>
                 <th class="d-inline-block col-1 text-center">ИФНС ЮЛ</th>
                 <th class="d-inline-block col-2 text-center">Кадастровый номер</th>
+                <th class="d-inline-block col-1 text-center">Состояние дома</th>
             </tr>
             </thead>
             <tbody>
             <tr class="row m-0" ng-repeat="object in resultObjects">
                 <td class="d-inline-block col-sm-2 text-center h6 small">{{getFullAddress(object)}}</td>
-                <td class="d-inline-block col-sm-2 text-center h6 small">{{getGuid(object)}}</td>
+                <td class="d-inline-block col-sm-1 text-center h6 small">{{getGuid(object)}}</td>
                 <td class="d-inline-block col-sm-1 text-center h6 small">{{getStatus(object)}}</td>
                 <td class="d-inline-block col-sm-1 text-center h6 small">{{object.postalcode}}</td>
                 <td class="d-inline-block col-sm-1 text-center h6 small">{{object.okato}}</td>
@@ -142,6 +123,7 @@
                 <td class="d-inline-block col-sm-1 text-center h6 small">{{object.ifnsfl}}</td>
                 <td class="d-inline-block col-sm-1 text-center h6 small">{{object.ifnsul}}</td>
                 <td class="d-inline-block col-sm-2 text-center h6 small">{{object.cadnum}}</td>
+                <td class="d-inline-block col-sm-1 text-center h6 small">{{object.stateStatus}}</td>
             </tr>
             </tbody>
         </table>

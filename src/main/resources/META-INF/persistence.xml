@@ -6,25 +6,25 @@
 
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>system.model.secondary.ActualStatus</class>
-        <class>system.model.secondary.AddressObjectType</class>
-        <class>system.model.secondary.CenterStatus</class>
-        <class>system.model.secondary.CurrentStatus</class>
-        <class>system.model.secondary.EstateStatus</class>
-        <class>system.model.secondary.FlatType</class>
-        <class>system.model.primary.House</class>
-        <class>system.model.secondary.HouseStateStatus</class>
-        <class>system.model.secondary.IntervalStatus</class>
-        <class>system.model.primary.NormativeDocument</class>
-        <class>system.model.secondary.NormativeDocumentType</class>
-        <class>system.model.primary.Object</class>
-        <class>system.model.secondary.OperationStatus</class>
-        <class>system.model.primary.Room</class>
-        <class>system.model.secondary.RoomType</class>
-        <class>system.model.primary.Stead</class>
-        <class>system.model.secondary.StructureStatus</class>
-        <class>system.model.primary.User</class>
-        <class>system.model.primary.Version</class>
+        <class>system.model.ActualStatus</class>
+        <class>system.model.AddressObjectType</class>
+        <class>system.model.CenterStatus</class>
+        <class>system.model.CurrentStatus</class>
+        <class>system.model.EstateStatus</class>
+        <class>system.model.FlatType</class>
+        <class>system.model.House</class>
+        <class>system.model.HouseStateStatus</class>
+        <class>system.model.IntervalStatus</class>
+        <class>system.model.NormativeDocument</class>
+        <class>system.model.NormativeDocumentType</class>
+        <class>system.model.Object</class>
+        <class>system.model.OperationStatus</class>
+        <class>system.model.Room</class>
+        <class>system.model.RoomType</class>
+        <class>system.model.Stead</class>
+        <class>system.model.StructureStatus</class>
+        <class>system.model.User</class>
+        <class>system.model.Version</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL57Dialect"/>

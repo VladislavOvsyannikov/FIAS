@@ -1,4 +1,4 @@
-package system.model.primary;
+package system.model;
 
 import javax.persistence.*;
 
@@ -66,6 +66,9 @@ public class Room {
 
     @Transient
     private String type;
+
+    @Transient
+    private String stateStatus;
 
     @Transient
     private String okato;
@@ -238,5 +241,13 @@ public class Room {
 
     public void setIfnsul(String ifnsul) {
         this.ifnsul = ifnsul;
+    }
+
+    public String getStateStatus() {
+        return stateStatus;
+    }
+
+    public void setStateStatus(String stateStatus) {
+        this.stateStatus = stateStatus;
     }
 }

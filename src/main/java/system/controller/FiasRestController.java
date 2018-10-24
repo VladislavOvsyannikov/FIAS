@@ -3,12 +3,13 @@ package system.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import system.model.primary.House;
-import system.model.primary.Room;
-import system.model.primary.Stead;
+import system.model.House;
+import system.model.Room;
+import system.model.Stead;
 import system.service.FiasService;
-import system.model.primary.Object;
+import system.model.Object;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,23 +25,27 @@ public class FiasRestController {
     }
 
     @RequestMapping(value = "/getObjectsByParentGuid")
-    public List<Object> getObjectsByParentGuid(@RequestBody String guid){
-        return fiasService.getObjectsByParentGuid(guid);
+    public List<Object> getObjectsByParentGuid(@RequestBody LinkedHashMap<String, String> params){
+        return fiasService.getObjectsByParentGuid(params.get("guid"),
+                Boolean.parseBoolean(params.getOrDefault("actual", "true")));
     }
 
     @RequestMapping(value = "/getSteadsByParentGuid")
-    public List<Stead> getSteadsByParentGuid(@RequestBody String guid){
-        return fiasService.getSteadsByParentGuid(guid);
+    public List<Stead> getSteadsByParentGuid(@RequestBody LinkedHashMap<String, String> params){
+        return fiasService.getSteadsByParentGuid(params.get("guid"),
+                Boolean.parseBoolean(params.getOrDefault("actual", "true")));
     }
 
     @RequestMapping(value = "/getHousesByParentGuid")
-    public List<House> getHousesByParentGuid(@RequestBody String guid){
-        return fiasService.getHousesByParentGuid(guid);
+    public List<House> getHousesByParentGuid(@RequestBody LinkedHashMap<String, String> params){
+        return fiasService.getHousesByParentGuid(params.get("guid"),
+                Boolean.parseBoolean(params.getOrDefault("actual", "true")));
     }
 
     @RequestMapping(value = "/getRoomsListByParentGuid")
-    public List<Room> getRoomsListByParentGuid(@RequestBody String guid){
-        return fiasService.getRoomsListByParentGuid(guid);
+    public List<Room> getRoomsListByParentGuid(@RequestBody LinkedHashMap<String, String> params){
+        return fiasService.getRoomsListByParentGuid(params.get("guid"),
+                Boolean.parseBoolean(params.getOrDefault("actual", "true")));
     }
 
     @RequestMapping(value = "/getCurrentVersion")

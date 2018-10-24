@@ -1,7 +1,7 @@
 package system.dao;
 
 import org.springframework.stereotype.Repository;
-import system.model.secondary.AddressObjectType;
+import system.model.AddressObjectType;
 
 @Repository
 public class AddressObjectTypeDao extends GenericDao<AddressObjectType> {

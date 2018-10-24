@@ -1,7 +1,7 @@
 package system.dao;
 
 import org.springframework.stereotype.Repository;
-import system.model.secondary.FlatType;
+import system.model.FlatType;
 
 @Repository
 public class FlatTypeDao extends GenericDao<FlatType>{
