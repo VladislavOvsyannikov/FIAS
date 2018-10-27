@@ -15,7 +15,7 @@ import system.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service("provider")
+@Service
 public class Provider implements AuthenticationProvider {
 
     private FiasService fiasService;
@@ -36,7 +36,7 @@ public class Provider implements AuthenticationProvider {
         if (user!=null){
             List<GrantedAuthority> grantedAuth = new ArrayList<>();
             grantedAuth.add(new SimpleGrantedAuthority(user.getRole()));
-            return new UsernamePasswordAuthenticationToken(login, password, grantedAuth);
+            return new UsernamePasswordAuthenticationToken(login, user.getPassword(), grantedAuth);
         }else return null;
     }
 

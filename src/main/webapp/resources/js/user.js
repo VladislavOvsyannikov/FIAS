@@ -77,8 +77,13 @@ user.controller('userController', function ($rootScope, $scope, $http) {
         data.searchType += $scope.roomCheck ? "room":"";
         data.actual = $scope.actualSearch;
         $http.post("searchObjects", data, config).then(function (response) {
-            if (response.data !== "") {
+            if (response.data.length > 0) {
+                $scope.searchMessage = "";
                 $scope.resultObjects = response.data;
+            }
+            else {
+                $scope.searchMessage = "Не найдено";
+                $scope.resultObjects = [];
             }
         });
     };
@@ -90,6 +95,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
             data.searchType = "objecthousesteadroom";
             data.actual = $scope.actualAdvancedSearch;
             $http.post("searchObjects", data, config).then(function (response) {
+                $scope.searchMessage = "";
                 $scope.resultObjects = response.data;
             });
         }

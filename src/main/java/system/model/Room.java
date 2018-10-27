@@ -51,14 +51,14 @@ public class Room {
     @Column(name = "roomcadnum", length = 100)
     private String ROOMCADNUM;
 
-
     //Начало действия записи
-    @Column(name = "startdate", length = 10)
-    private String STARTDATE;
+    @Column(name = "startdate", length = 8)
+    private int STARTDATE;
 
     //Окончание действия записи
-    @Column(name = "enddate", length = 10)
-    private String ENDDATE;
+    @Column(name = "enddate", length = 8)
+    private int ENDDATE;
+
 
 //    //Внешний ключ на нормативный документ
 //    @Column(name = "normdoc")
@@ -163,19 +163,19 @@ public class Room {
         this.POSTALCODE = POSTALCODE;
     }
 
-    public String getSTARTDATE() {
+    public int getSTARTDATE() {
         return STARTDATE;
     }
 
-    public void setSTARTDATE(String STARTDATE) {
+    public void setSTARTDATE(int STARTDATE) {
         this.STARTDATE = STARTDATE;
     }
 
-    public String getENDDATE() {
+    public int getENDDATE() {
         return ENDDATE;
     }
 
-    public void setENDDATE(String ENDDATE) {
+    public void setENDDATE(int ENDDATE) {
         this.ENDDATE = ENDDATE;
     }
 

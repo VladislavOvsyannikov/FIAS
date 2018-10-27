@@ -97,6 +97,9 @@
     </div>
     <br>
     <div class="row">
+        <div ng-init="searchMessage= ''" ng-show="searchMessage != ''">
+            {{searchMessage}}
+        </div>
         <table ng-show="resultObjects.length > 0" class="table">
             <thead>
             <tr class="row m-0">

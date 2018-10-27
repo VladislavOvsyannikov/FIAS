@@ -61,9 +61,7 @@ public class RoomDao extends GenericDao<Room>{
         for (int i=1; i<rooms.size(); i++){
             currentRoom = rooms.get(i);
             if (maxRoom.getROOMGUID().equals(currentRoom.getROOMGUID())){
-                if (Integer.parseInt(maxRoom.getENDDATE().replaceAll("-","")) <
-                        Integer.parseInt(currentRoom.getENDDATE().replaceAll("-","")))
-                    maxRoom = currentRoom;
+                if (maxRoom.getENDDATE() < currentRoom.getENDDATE()) maxRoom = currentRoom;
             }else{
                 res.add(maxRoom);
                 maxRoom = currentRoom;
