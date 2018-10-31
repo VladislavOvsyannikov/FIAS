@@ -37,44 +37,7 @@ public class FiasService {
     private SteadDao steadDao;
     private HouseDao houseDao;
     private RoomDao roomDao;
-    private UserDao userDao;
 
-    @Autowired
-    public void setHouseDao(HouseDao houseDao) {
-        this.houseDao = houseDao;
-    }
-    @Autowired
-    public void setRoomDao(RoomDao roomDao) {
-        this.roomDao = roomDao;
-    }
-    @Autowired
-    public void setSteadDao(SteadDao steadDao) {
-        this.steadDao = steadDao;
-    }
-    @Autowired
-    public void setDownloader(Downloader downloader) {
-        this.downloader = downloader;
-    }
-    @Autowired
-    public void setUnrarrer(Unrarrer unrarrer) {
-        this.unrarrer = unrarrer;
-    }
-    @Autowired
-    public void setInstaller(Installer installer) {
-        this.installer = installer;
-    }
-    @Autowired
-    public void setObjectDao(ObjectDao objectDao) {
-        this.objectDao = objectDao;
-    }
-    @Autowired
-    public void setVersionDao(VersionDao versionDao) {
-        this.versionDao = versionDao;
-    }
-    @Autowired
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
 
     @Secured("ROLE_ADMIN")
     public boolean installComplete() {
@@ -190,10 +153,6 @@ public class FiasService {
         return BCrypt.hashpw(string, BCrypt.gensalt());
     }
 
-    public List<User> getAllUsers() {
-        return userDao.getAllUsers();
-    }
-
     public List<java.lang.Object> searchObjects(LinkedHashMap<String, String> params) {
         List<java.lang.Object> res = new ArrayList<>();
         String searchType = params.get("searchType");
@@ -217,5 +176,39 @@ public class FiasService {
             if (rooms != null) res.addAll(rooms);
         }
         return res;
+    }
+
+
+    @Autowired
+    public void setHouseDao(HouseDao houseDao) {
+        this.houseDao = houseDao;
+    }
+    @Autowired
+    public void setRoomDao(RoomDao roomDao) {
+        this.roomDao = roomDao;
+    }
+    @Autowired
+    public void setSteadDao(SteadDao steadDao) {
+        this.steadDao = steadDao;
+    }
+    @Autowired
+    public void setDownloader(Downloader downloader) {
+        this.downloader = downloader;
+    }
+    @Autowired
+    public void setUnrarrer(Unrarrer unrarrer) {
+        this.unrarrer = unrarrer;
+    }
+    @Autowired
+    public void setInstaller(Installer installer) {
+        this.installer = installer;
+    }
+    @Autowired
+    public void setObjectDao(ObjectDao objectDao) {
+        this.objectDao = objectDao;
+    }
+    @Autowired
+    public void setVersionDao(VersionDao versionDao) {
+        this.versionDao = versionDao;
     }
 }

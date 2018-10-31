@@ -11,4 +11,8 @@ public class UserDao extends GenericDao<User> {
     public List<User> getAllUsers(){
         return getEntities("select * from user", User.class);
     }
+
+    public User getUser(String name){
+        return getEntity("select * from user where name=\""+name+"\"", User.class);
+    }
 }

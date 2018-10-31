@@ -20,7 +20,6 @@ public class ActualStatus {
     private String NAME;
 
 
-
     public int getACTSTATID() {
         return ACTSTATID;
     }

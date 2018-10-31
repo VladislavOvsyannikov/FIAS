@@ -76,7 +76,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
         data.searchType += $scope.steadCheck ? "stead":"";
         data.searchType += $scope.roomCheck ? "room":"";
         data.actual = $scope.actualSearch;
-        $http.post("searchObjects", data, config).then(function (response) {
+        $http.post("/rest/searchObjects", data, config).then(function (response) {
             if (response.data.length > 0) {
                 $scope.searchMessage = "";
                 $scope.resultObjects = response.data;
@@ -94,7 +94,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
             data.guid = guid;
             data.searchType = "objecthousesteadroom";
             data.actual = $scope.actualAdvancedSearch;
-            $http.post("searchObjects", data, config).then(function (response) {
+            $http.post("/rest/searchObjects", data, config).then(function (response) {
                 $scope.searchMessage = "";
                 $scope.resultObjects = response.data;
             });

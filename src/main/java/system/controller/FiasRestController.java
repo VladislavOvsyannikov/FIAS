@@ -80,7 +80,7 @@ public class FiasRestController {
         return fiasService.installUpdates();
     }
 
-    @RequestMapping(value = "/searchObjects")
+    @RequestMapping(value = "/rest/searchObjects")
     public List<java.lang.Object> searchObjects(@RequestBody LinkedHashMap<String, String> params){
         return fiasService.searchObjects(params);
     }
