@@ -18,20 +18,18 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
+            <div class="navbar-nav" ng-init="getUserName()">
                 <a class="nav-item nav-link" href="/user">User</a>
                 <a class="nav-item nav-link" href="/admin">Admin</a>
                 <a class="nav-item nav-link" href="/login">Sign in</a>
+                <a class="nav-item nav-link" href="/registration">Sign up</a>
+                <a class="nav-item nav-link">{{userName}}</a>
             </div>
         </div>
     </div>
 </nav>
 
 <div class="container">
-    <!--<div class="jumbotron my-2">-->
-    <!--<h2 class="display-10">Federal Information Address System</h2>-->
-    <!--</div>-->
-
     <div class="row">
         <div class="col-5">
             <label>Расширенный поиск: {{downloadingMessage}}</label>

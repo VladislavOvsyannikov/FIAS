@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import system.dao.UserDao;
@@ -46,9 +47,6 @@ public class TokenAuthenticationManager implements AuthenticationManager {
         String token = authentication.getToken();
         Claims claims = (DefaultClaims) Jwts.parser().setSigningKey(key).parse(token).getBody();
         if (claims.get("endDate", Long.class) > new Date().getTime()){
-//            List<GrantedAuthority> grantedAuth = new ArrayList<>();
-//            grantedAuth.add(new SimpleGrantedAuthority(claims.get("role", String.class)));
-//            return new TokenAuthentication(authentication.getToken(), grantedAuth, true);
             return authentication;
         } else return null;
     }
@@ -61,13 +59,23 @@ public class TokenAuthenticationManager implements AuthenticationManager {
             Map<String, Object> tokenData = new HashMap<>();
             tokenData.put("username", username);
             tokenData.put("role", user.getRole());
-            tokenData.put("endDate", new Date().getTime() + 3600 * 1000);
+            tokenData.put("endDate", new Date().getTime() + 24 * 3600 * 1000);
             JwtBuilder jwtBuilder = Jwts.builder();
             jwtBuilder.setClaims(tokenData);
             String token = jwtBuilder.signWith(key, SignatureAlgorithm.HS512).compact();
             List<GrantedAuthority> grantedAuth = new ArrayList<>();
             grantedAuth.add(new SimpleGrantedAuthority(user.getRole()));
+            if (user.getRole().equals("ROLE_ADMIN")) grantedAuth.add(new SimpleGrantedAuthority("ROLE_USER"));
             return new TokenAuthentication(token, grantedAuth, true);
         } else return null;
+    }
+
+    public String getUserName(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof TokenAuthentication) {
+            String token = ((TokenAuthentication) authentication).getToken();
+            Claims claims = (DefaultClaims) Jwts.parser().setSigningKey(key).parse(token).getBody();
+            return claims.get("username", String.class);
+        }else return null;
     }
 }

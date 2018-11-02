@@ -9,6 +9,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import system.dao.*;
@@ -32,12 +34,13 @@ public class FiasService {
     private Downloader downloader;
     private Unrarrer unrarrer;
     private Installer installer;
+    private TokenAuthenticationManager tokenAuthenticationManager;
     private ObjectDao objectDao;
     private VersionDao versionDao;
     private SteadDao steadDao;
     private HouseDao houseDao;
     private RoomDao roomDao;
-
+    private UserDao userDao;
 
     @Secured("ROLE_ADMIN")
     public boolean installComplete() {
@@ -132,7 +135,6 @@ public class FiasService {
         return versions;
     }
 
-
     public List<Object> getObjectsByParentGuid(String guid, boolean isActual) {
         return objectDao.getObjectsByParentGuid(guid, isActual);
     }
@@ -147,10 +149,6 @@ public class FiasService {
 
     public List<Room> getRoomsListByParentGuid(String guid, boolean isActual) {
         return roomDao.getRoomsListByParentGuid(guid, isActual);
-    }
-
-    public String bCrypt(String string) {
-        return BCrypt.hashpw(string, BCrypt.gensalt());
     }
 
     public List<java.lang.Object> searchObjects(LinkedHashMap<String, String> params) {
@@ -178,6 +176,28 @@ public class FiasService {
         return res;
     }
 
+    public boolean submitRegistration(User user) {
+        User oldUser = userDao.getUser(user.getName());
+        if (oldUser == null) {
+            User newUser = new User();
+            newUser.setName(user.getName());
+            newUser.setPassword(bCrypt(user.getPassword()));
+            newUser.setRole("ROLE_USER");
+            userDao.save(newUser);
+            SecurityContextHolder.getContext().setAuthentication(tokenAuthenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(user.getName(), user.getPassword())));
+            return true;
+        }
+        return false;
+    }
+
+    public String getUserName(){
+        return tokenAuthenticationManager.getUserName();
+    }
+
+    private String bCrypt(String string) {
+        return BCrypt.hashpw(string, BCrypt.gensalt());
+    }
 
     @Autowired
     public void setHouseDao(HouseDao houseDao) {
@@ -210,5 +230,13 @@ public class FiasService {
     @Autowired
     public void setVersionDao(VersionDao versionDao) {
         this.versionDao = versionDao;
+    }
+    @Autowired
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+    @Autowired
+    public void setTokenAuthenticationManager(TokenAuthenticationManager tokenAuthenticationManager) {
+        this.tokenAuthenticationManager = tokenAuthenticationManager;
     }
 }

@@ -1,14 +1,21 @@
 let user = angular.module('user', []);
-let config = {headers: {'Content-Type': 'application/json;charset=utf-8;'}};
+let config = {headers: {'Content-Type': 'application/json; charset=utf-8;'}};
 let guid = " ";
+let urlPrefix = "rest/";
 
 user.controller('userController', function ($rootScope, $scope, $http) {
+
+    $scope.getUserName = function () {
+        $http.get(urlPrefix+"getUserName", config).then(function(response) {
+                $scope.userName = response.data[0];
+            });
+    };
 
     $scope.getObjectsByParentGuid = function () {
         let data = {guid: guid,
                     actual: $rootScope.actualAdvancedSearch};
         $rootScope.downloadingMessage = "Downloading...";
-        $http.post("getObjectsByParentGuid", data, config).then(function (response) {
+        $http.post(urlPrefix+"getObjectsByParentGuid", data, config).then(function (response) {
             $scope.objectsList = response.data;
             $rootScope.downloadingMessage = "";
             nextObjects = $scope.objectsList;
@@ -23,7 +30,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
         let data = {guid: guid,
                     actual: $rootScope.actualAdvancedSearch};
         $rootScope.downloadingMessage = "Downloading...";
-        $http.post("getHousesByParentGuid", data, config).then(function (response) {
+        $http.post(urlPrefix+"getHousesByParentGuid", data, config).then(function (response) {
             $scope.housesList = response.data;
             $rootScope.downloadingMessage = "";
             nextHouses = $scope.housesList;
@@ -38,7 +45,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
         let data = {guid: guid,
                     actual: $rootScope.actualAdvancedSearch};
         $rootScope.downloadingMessage = "Downloading...";
-        $http.post("getSteadsByParentGuid", data, config).then(function (response) {
+        $http.post(urlPrefix+"getSteadsByParentGuid", data, config).then(function (response) {
             $scope.steadsList = response.data;
             $rootScope.downloadingMessage = "";
             nextObjects = $scope.steadsList;
@@ -49,7 +56,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
         let data = {guid: guid,
                     actual: $rootScope.actualAdvancedSearch};
         $rootScope.downloadingMessage = "Downloading...";
-        $http.post("getRoomsListByParentGuid", data, config).then(function (response) {
+        $http.post(urlPrefix+"getRoomsListByParentGuid", data, config).then(function (response) {
             $scope.roomsList = response.data;
             $rootScope.downloadingMessage = "";
             nextObjects = $scope.roomsList;
@@ -76,7 +83,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
         data.searchType += $scope.steadCheck ? "stead":"";
         data.searchType += $scope.roomCheck ? "room":"";
         data.actual = $scope.actualSearch;
-        $http.post("/rest/searchObjects", data, config).then(function (response) {
+        $http.post(urlPrefix+"searchObjects", data, config).then(function (response) {
             if (response.data.length > 0) {
                 $scope.searchMessage = "";
                 $scope.resultObjects = response.data;
@@ -94,7 +101,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
             data.guid = guid;
             data.searchType = "objecthousesteadroom";
             data.actual = $scope.actualAdvancedSearch;
-            $http.post("/rest/searchObjects", data, config).then(function (response) {
+            $http.post(urlPrefix+"searchObjects", data, config).then(function (response) {
                 $scope.searchMessage = "";
                 $scope.resultObjects = response.data;
             });
@@ -139,9 +146,7 @@ user.directive('dropdownListNext', function ($rootScope, $http, $timeout) {
                 $listContainer.addClass('show');
             });
             elelement.find('input').bind('blur', function () {
-                $timeout(function () {
-                    $listContainer.removeClass('show')
-                }, 200);
+                $timeout(function () {$listContainer.removeClass('show')}, 200);
             });
 
             scope.chooseObject = function (object) {
@@ -166,17 +171,17 @@ user.directive('dropdownListNext', function ($rootScope, $http, $timeout) {
                     $rootScope.downloadingMessage = "Downloading...";
                     let data = {guid: guid,
                                 actual: $rootScope.actualAdvancedSearch};
-                    $http.post("getObjectsByParentGuid", data, config).then(function (response) {
+                    $http.post(urlPrefix+"getObjectsByParentGuid", data, config).then(function (response) {
                         directiveScopes[level].objectsList = response.data;
                         $rootScope.downloadingMessage = "";
                         if (directiveScopes[level].objectsList.length === 0) {
                             $rootScope.downloadingMessage = "Downloading...";
-                            $http.post("getSteadsByParentGuid", data, config).then(function (response) {
+                            $http.post(urlPrefix+"getSteadsByParentGuid", data, config).then(function (response) {
                                 directiveScopes[level].steadsList = response.data;
                                 $rootScope.downloadingMessage = "";
                             });
                             $rootScope.downloadingMessage = "Downloading...";
-                            $http.post("getHousesByParentGuid", data, config).then(function (response) {
+                            $http.post(urlPrefix+"getHousesByParentGuid", data, config).then(function (response) {
                                 directiveScopes[level].housesList = response.data;
                                 $rootScope.downloadingMessage = "";
                                 let dirSco = directiveScopes[level];
@@ -220,7 +225,7 @@ user.directive('dropdownListNext', function ($rootScope, $http, $timeout) {
                     $rootScope.downloadingMessage = "Downloading...";
                     let data = {guid: guid,
                                 actual: $rootScope.actualAdvancedSearch};
-                    $http.post("getRoomsListByParentGuid", data, config).then(function (response) {
+                    $http.post(urlPrefix+"getRoomsListByParentGuid", data, config).then(function (response) {
                         directiveScopes[level].roomsList = response.data;
                         $rootScope.downloadingMessage = "";
                         directiveScopes[level].search = "";
