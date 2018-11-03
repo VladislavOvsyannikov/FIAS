@@ -70,12 +70,15 @@ public class TokenAuthenticationManager implements AuthenticationManager {
         } else return null;
     }
 
-    public String getUserName(){
+    public List<String> getCurrentUserInfo(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof TokenAuthentication) {
+            List<String> res = new ArrayList<>();
             String token = ((TokenAuthentication) authentication).getToken();
             Claims claims = (DefaultClaims) Jwts.parser().setSigningKey(key).parse(token).getBody();
-            return claims.get("username", String.class);
+            res.add(claims.get("username", String.class));
+            res.add(claims.get("role", String.class));
+            return res;
         }else return null;
     }
 }

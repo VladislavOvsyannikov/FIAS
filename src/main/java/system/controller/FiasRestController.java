@@ -79,9 +79,9 @@ public class FiasRestController {
         return fiasService.searchObjects(params);
     }
 
-    @RequestMapping(value = "/rest/getUserName")
-    public String[] getUserName(){
-        return new String[]{fiasService.getUserName()};
+    @RequestMapping(value = "/rest/getCurrentUserInfo")
+    public List<String> getCurrentUserInfo(){
+        return fiasService.getCurrentUserInfo();
     }
 
     @RequestMapping(value = "/submitRegistration")

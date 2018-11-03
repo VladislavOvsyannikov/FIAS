@@ -31,4 +31,9 @@ public class FiasController {
     public String template() {
         return "template.html";
     }
+
+    @RequestMapping(value = "/navbar.html", method = RequestMethod.GET)
+    public String navbar() {
+        return "navbar.html";
+    }
 }

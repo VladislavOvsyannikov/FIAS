@@ -1,0 +1,31 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">FIAS</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav" ng-init="userName=''; userRole=''; getCurrentUserInfo()">
+                <div ng-show="userRole == 'ROLE_USER' || userRole == 'ROLE_ADMIN'">
+                    <a class="nav-item nav-link" href="/user">User</a>
+                </div>
+                <div ng-show="userRole == 'ROLE_ADMIN'">
+                    <a class="nav-item nav-link" href="/admin">Admin</a>
+                </div>
+                <div ng-show="userName == ''">
+                    <a class="nav-item nav-link" href="/login">Sign in</a>
+                </div>
+                <div ng-show="userName == ''">
+                    <a class="nav-item nav-link" href="/registration">Sign up</a>
+                </div>
+                <div ng-show="userName != ''">
+                    <a class="nav-item nav-link" href="/logout">Sign out</a>
+                </div>
+                <div ng-show="userName != ''">
+                    <a class="nav-item nav-link">Вы вошли как {{userName}}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

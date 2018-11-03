@@ -71,6 +71,7 @@ public class FiasService {
         return true;
     }
 
+    @Secured("ROLE_ADMIN")
     public String getLastVersion() {
         StringBuilder res = new StringBuilder();
         try {
@@ -84,10 +85,12 @@ public class FiasService {
         return res.toString();
     }
 
+    @Secured("ROLE_ADMIN")
     public String getCurrentVersion() {
         return versionDao.getCurrentVersion();
     }
 
+    @Secured("ROLE_ADMIN")
     public List<String> getListOfNewVersions() {
         String url = "https://fias.nalog.ru/WebServices/Public/DownloadService.asmx";
         HttpClient client = HttpClientBuilder.create().build();
@@ -191,8 +194,8 @@ public class FiasService {
         return false;
     }
 
-    public String getUserName(){
-        return tokenAuthenticationManager.getUserName();
+    public List<String> getCurrentUserInfo(){
+        return tokenAuthenticationManager.getCurrentUserInfo();
     }
 
     private String bCrypt(String string) {
