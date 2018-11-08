@@ -11,7 +11,7 @@ import javax.persistence.*;
         @Index(columnList = "parentguid", name = "parentguidobject"),
         @Index(columnList = "aoguid", name = "aoguid"),
         @Index(columnList = "postalcode", name = "postalcode")})
-public class Object{
+public class AddrObject {
 
     @Transient
     private String fullAddress;

@@ -15,17 +15,18 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import system.dao.*;
 import system.model.*;
-import system.model.Object;
+import system.model.AddrObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class FiasService {
@@ -36,7 +37,7 @@ public class FiasService {
     private Unrarrer unrarrer;
     private Installer installer;
     private TokenAuthenticationManager tokenAuthenticationManager;
-    private ObjectDao objectDao;
+    private AddrObjectDao addrObjectDao;
     private VersionDao versionDao;
     private SteadDao steadDao;
     private HouseDao houseDao;
@@ -139,8 +140,8 @@ public class FiasService {
         return versions;
     }
 
-    public List<Object> getObjectsByParentGuid(String guid, boolean isActual) {
-        return objectDao.getObjectsByParentGuid(guid, isActual);
+    public List<AddrObject> getAddrObjectsByParentGuid(String guid, boolean isActual) {
+        return addrObjectDao.getAddrObjectsByParentGuid(guid, isActual);
     }
 
     public List<Stead> getSteadsByParentGuid(String guid, boolean isActual) {
@@ -155,30 +156,63 @@ public class FiasService {
         return roomDao.getRoomsListByParentGuid(guid, isActual);
     }
 
-    public List<java.lang.Object> searchObjects(LinkedHashMap<String, String> params) {
+    public List<Object> searchObjects(LinkedHashMap<String, String> params) {
         List<java.lang.Object> res = new ArrayList<>();
-        String searchType = params.get("searchType");
-        boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));
+        String searchType = params.getOrDefault("searchType", "addrObject house stead room");
         params.remove("searchType");
+        boolean isActual = Boolean.parseBoolean(params.getOrDefault("onlyActual", "true"));
         params.remove("onlyActual");
-        params.replace("guid", params.get("guid").replaceAll("-","").toLowerCase());
-        if (searchType.contains("object")) {
-            List<Object> objects = objectDao.getObjectsByParams(params, isActual);
-            if (objects != null) res.addAll(objects);
-        }
-        if (searchType.contains("house")) {
-            List<House> houses = houseDao.getHousesByParams(params, isActual);
-            if (houses != null) res.addAll(houses);
-        }
-        if (searchType.contains("stead")) {
-            List<Stead> steads = steadDao.getSteadsByParams(params, isActual);
-            if (steads != null) res.addAll(steads);
-        }
-        if (searchType.contains("room")) {
-            List<Room> rooms = roomDao.getRoomsByParams(params, isActual);
-            if (rooms != null) res.addAll(rooms);
+        if (params.containsKey("guid"))
+            params.replace("guid", params.get("guid").replaceAll("-","").toLowerCase());
+        if (params.size() > 0) {
+            if (searchType.contains("addrObject")) {
+                List<AddrObject> addrObjects = addrObjectDao.getAddrObjectsByParams(params, isActual);
+                if (addrObjects != null) res.addAll(addrObjects);
+            }
+            if (searchType.contains("house")) {
+                List<House> houses = houseDao.getHousesByParams(params, isActual);
+                if (houses != null) res.addAll(houses);
+            }
+            if (searchType.contains("stead")) {
+                List<Stead> steads = steadDao.getSteadsByParams(params, isActual);
+                if (steads != null) res.addAll(steads);
+            }
+            if (searchType.contains("room")) {
+                List<Room> rooms = roomDao.getRoomsByParams(params, isActual);
+                if (rooms != null) res.addAll(rooms);
+            }
         }
         return res;
+    }
+
+    public Object searchObjectByGuid(String guid) {
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        guid = guid.replaceAll("[-\"]","").toLowerCase();
+        if (guid.length() != 32) return null;
+        params.put("guid", guid);
+        List<AddrObject> addrObject = addrObjectDao.getAddrObjectsByParams(params, false);
+        if (addrObject != null) return addrObject.get(0);
+        List<House> house = houseDao.getHousesByParams(params, false);
+        if (house != null) return house.get(0);
+        List<Stead> stead = steadDao.getSteadsByParams(params, false);
+        if (stead != null) return stead.get(0);
+        List<Room> room = roomDao.getRoomsByParams(params, false);
+        if (room != null) return room.get(0);
+        return null;
+    }
+
+    public String getFullAddress(String guid){
+        String fullAddress = "";
+        Object object = searchObjectByGuid(guid);
+        if (object == null) return fullAddress;
+        try {
+            Field field = object.getClass().getDeclaredField("fullAddress");
+            field.setAccessible(true);
+            fullAddress = (String) field.get(object);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            logger.error(e.getMessage());
+        }
+        return fullAddress;
     }
 
     public boolean submitRegistration(User user) {
@@ -231,8 +265,8 @@ public class FiasService {
         this.installer = installer;
     }
     @Autowired
-    public void setObjectDao(ObjectDao objectDao) {
-        this.objectDao = objectDao;
+    public void setAddrObjectDao(AddrObjectDao addrObjectDao) {
+        this.addrObjectDao = addrObjectDao;
     }
     @Autowired
     public void setVersionDao(VersionDao versionDao) {

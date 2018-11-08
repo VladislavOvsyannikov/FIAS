@@ -12,11 +12,11 @@ import java.util.List;
 @Repository
 public class SteadDao extends GenericDao<Stead> {
 
-    private ObjectDao objectDao;
+    private AddrObjectDao addrObjectDao;
 
     @Autowired
-    public void setObjectDao(ObjectDao objectDao) {
-        this.objectDao = objectDao;
+    public void setAddrObjectDao(AddrObjectDao addrObjectDao) {
+        this.addrObjectDao = addrObjectDao;
     }
 
 
@@ -65,7 +65,7 @@ public class SteadDao extends GenericDao<Stead> {
     }
 
     private String getFullAddress(Stead stead) {
-        return objectDao.getFullAddress(stead.getPARENTGUID()) + ", участок " + stead.getNUMBER();
+        return addrObjectDao.getFullAddress(stead.getPARENTGUID()) + ", участок " + stead.getNUMBER();
     }
 }
 

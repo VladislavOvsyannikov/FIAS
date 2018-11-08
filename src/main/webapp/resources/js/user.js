@@ -20,7 +20,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
             actual: $rootScope.actualAdvancedSearch
         };
         $rootScope.downloadingMessage = "Downloading...";
-        $http.post(urlPrefix + "getObjectsByParentGuid", data, config).then(function (response) {
+        $http.post(urlPrefix + "getAddrObjectsByParentGuid", data, config).then(function (response) {
             $scope.objectsList = response.data;
             $rootScope.downloadingMessage = "";
             nextObjects = $scope.objectsList;
@@ -90,7 +90,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
         data.postalcode = ($scope.postcodeSearch !== undefined && $scope.postcodeSearch !== "") ?
             $scope.postcodeSearch : "";
         if (data.guid !== "" || data.postalcode !== "") {
-            data.searchType = $scope.objectCheck ? "object" : "";
+            data.searchType = $scope.objectCheck ? "addrObject" : "";
             data.searchType += $scope.houseCheck ? "house" : "";
             data.searchType += $scope.steadCheck ? "stead" : "";
             data.searchType += $scope.roomCheck ? "room" : "";
@@ -177,7 +177,7 @@ user.directive('dropdownListNext', function ($rootScope, $http, $timeout) {
                 }
                 guid = object.aoguid;
                 scope.search = object.shortname + ' ' + object.formalname;
-                $rootScope.typeOfLastObject = "object";
+                $rootScope.typeOfLastObject = "addrObject";
                 if (level === 0) {
                     scope.objectsList = nextObjects;
                     showDropdownList.push({value: showDropdownList.length + 1});
@@ -195,7 +195,7 @@ user.directive('dropdownListNext', function ($rootScope, $http, $timeout) {
                         guid: guid,
                         actual: $rootScope.actualAdvancedSearch
                     };
-                    $http.post(urlPrefix + "getObjectsByParentGuid", data, config).then(function (response) {
+                    $http.post(urlPrefix + "getAddrObjectsByParentGuid", data, config).then(function (response) {
                         directiveScopes[level].objectsList = response.data;
                         $rootScope.downloadingMessage = "";
                         if (directiveScopes[level].objectsList.length === 0) {

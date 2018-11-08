@@ -17,7 +17,7 @@
         <class>system.model.IntervalStatus</class>
         <class>system.model.NormativeDocument</class>
         <class>system.model.NormativeDocumentType</class>
-        <class>system.model.Object</class>
+        <class>system.model.AddrObject</class>
         <class>system.model.OperationStatus</class>
         <class>system.model.Room</class>
         <class>system.model.RoomType</class>

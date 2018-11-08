@@ -2,6 +2,8 @@ package system.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,8 +15,7 @@ import system.service.FiasService;
 import java.util.List;
 
 @Controller
-//@Api(tags = "Admin", description = " ")
-@ApiIgnore
+@Api(tags = "Admin", description = " ")
 public class AdminController {
 
     private FiasService fiasService;
@@ -24,13 +25,8 @@ public class AdminController {
         this.fiasService = fiasService;
     }
 
-    @ApiIgnore
-    @RequestMapping(value = "/admin", method = RequestMethod.GET)
-    public String admin() {
-        return "admin.html";
-    }
-
     @ApiOperation(value = "Get current local database version")
+    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = String[].class)})
     @RequestMapping(value = "/rest/getCurrentVersion", method = RequestMethod.GET)
     @ResponseBody
     public String[] getCurrentVersion(){
@@ -38,6 +34,7 @@ public class AdminController {
     }
 
     @ApiOperation(value = "Get last global database version")
+    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = String[].class)})
     @RequestMapping(value = "/rest/getLastVersion", method = RequestMethod.GET)
     @ResponseBody
     public String[] getLastVersion(){
@@ -45,6 +42,7 @@ public class AdminController {
     }
 
     @ApiOperation(value = "Get need update versions")
+    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = String[].class)})
     @RequestMapping(value = "/rest/getNewVersions", method = RequestMethod.GET)
     @ResponseBody
     public List<String> getNewVersions(){
@@ -52,6 +50,7 @@ public class AdminController {
     }
 
     @ApiOperation(value = "Install last complete database")
+    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = Boolean.class)})
     @RequestMapping(value = "/rest/installComplete", method = RequestMethod.GET)
     @ResponseBody
     public boolean installComplete(){
@@ -59,6 +58,7 @@ public class AdminController {
     }
 
     @ApiOperation(value = "Install one database update")
+    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = Boolean.class)})
     @RequestMapping(value = "/rest/installOneUpdate", method = RequestMethod.GET)
     @ResponseBody
     public boolean installOneUpdate(){
@@ -66,9 +66,16 @@ public class AdminController {
     }
 
     @ApiOperation(value = "Install all database updates")
+    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = Boolean.class)})
     @RequestMapping(value = "/rest/installUpdates", method = RequestMethod.GET)
     @ResponseBody
     public boolean installUpdates(){
         return fiasService.installUpdates();
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    public String admin() {
+        return "admin.html";
     }
 }

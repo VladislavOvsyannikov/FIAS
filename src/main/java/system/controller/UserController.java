@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+import system.model.AddrObject;
 import system.model.House;
-import system.model.Object;
 import system.model.Room;
 import system.model.Stead;
 import system.service.FiasService;
@@ -25,25 +25,41 @@ public class UserController {
         this.fiasService = fiasService;
     }
 
-    @ApiIgnore
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
-    public String user() {
-        return "user.html";
+    @ApiOperation(value = "Get information about objects satisfying parameters (guid, postalcode)")
+    @ApiImplicitParams({@ApiImplicitParam(name = "parameters", dataType = "Parameters",
+            value = "parameters for search", required = true)})
+    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = AddrObject[].class)})
+    @RequestMapping(value = "/rest/searchObjects", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Object> searchObjects(@RequestBody LinkedHashMap<String, String> parameters){
+        return fiasService.searchObjects(parameters);
     }
 
-//    @ApiOperation(value = "Get current user information")
-    @RequestMapping(value = "/rest/getCurrentUserInfo", method = RequestMethod.GET)
-    @ApiIgnore
+    @ApiOperation(value = "Get information about object by guid")
+    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = AddrObject.class)})
+    @RequestMapping(value = "/rest/searchObjectByGuid", method = RequestMethod.POST)
     @ResponseBody
-    public List<String> getCurrentUserInfo(){
-        return fiasService.getCurrentUserInfo();
+    public Object searchObjectByGuid(
+            @ApiParam(name = "guid", value = "guid for search", required = true)
+            @RequestBody String guid){
+        return fiasService.searchObjectByGuid(guid);
+    }
+
+    @ApiOperation(value = "Get full address by guid")
+    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = String[].class)})
+    @RequestMapping(value = "/rest/getFullAddressByGuid", method = RequestMethod.POST)
+    @ResponseBody
+    public String[] getFullAddress(
+            @ApiParam(name = "guid", value = "guid for search", required = true)
+            @RequestBody String guid){
+        return new String[]{fiasService.getFullAddress(guid)};
     }
 
     @ApiIgnore
-    @RequestMapping(value = "/rest/getObjectsByParentGuid", method = RequestMethod.POST)
+    @RequestMapping(value = "/rest/getAddrObjectsByParentGuid", method = RequestMethod.POST)
     @ResponseBody
-    public List<Object> getObjectsByParentGuid(@RequestBody LinkedHashMap<String, String> params){
-        return fiasService.getObjectsByParentGuid(params.get("guid"),
+    public List<AddrObject> getAddrObjectsByParentGuid(@RequestBody LinkedHashMap<String, String> params){
+        return fiasService.getAddrObjectsByParentGuid(params.get("guid"),
                 Boolean.parseBoolean(params.getOrDefault("actual", "true")));
     }
 
@@ -71,20 +87,17 @@ public class UserController {
                 Boolean.parseBoolean(params.getOrDefault("actual", "true")));
     }
 
+    @ApiIgnore
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    public String user() {
+        return "user.html";
+    }
 
-
-    @ApiOperation(value = "Get information about objects satisfying parameters (guid, postalcode...)")
-    @ApiImplicitParams({@ApiImplicitParam(name = "parameters", dataType = "Parameters",
-            value = "parameters for search", required = true)})
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "Success", response = system.model.Object.class),
-            @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 403, message = "Forbidden")
-    })
-    @RequestMapping(value = "/rest/searchObjects", method = RequestMethod.POST)
+    @ApiIgnore
+    @RequestMapping(value = "/rest/getCurrentUserInfo", method = RequestMethod.GET)
     @ResponseBody
-    public List<java.lang.Object> searchObjects(@RequestBody LinkedHashMap<String, String> parameters){
-        return fiasService.searchObjects(parameters);
+    public List<String> getCurrentUserInfo(){
+        return fiasService.getCurrentUserInfo();
     }
 }
 

@@ -10,7 +10,7 @@ import java.util.*;
 @Repository
 public class HouseDao extends GenericDao<House>{
 
-    private ObjectDao objectDao;
+    private AddrObjectDao addrObjectDao;
     private EstateStatusDao estateStatusDao;
     private StructureStatusDao structureStatusDao;
     private HouseStateStatusDao houseStateStatusDao;
@@ -20,8 +20,8 @@ public class HouseDao extends GenericDao<House>{
         this.houseStateStatusDao = houseStateStatusDao;
     }
     @Autowired
-    public void setObjectDao(ObjectDao objectDao) {
-        this.objectDao = objectDao;
+    public void setAddrObjectDao(AddrObjectDao addrObjectDao) {
+        this.addrObjectDao = addrObjectDao;
     }
     @Autowired
     public void setEstateStatusDao(EstateStatusDao estateStatusDao) {
@@ -97,11 +97,11 @@ public class HouseDao extends GenericDao<House>{
 
     public String getFullAddress(String guid) {
         House house = getHouseByGuid(guid);
-        return objectDao.getFullAddress(house.getAOGUID()) + ", " + getHouseType(house) + " " + getHouseName(house);
+        return addrObjectDao.getFullAddress(house.getAOGUID()) + ", " + getHouseType(house) + " " + getHouseName(house);
     }
 
     private String getFullAddress(House house) {
-        return objectDao.getFullAddress(house.getAOGUID()) + ", " + getHouseType(house) + " " + getHouseName(house);
+        return addrObjectDao.getFullAddress(house.getAOGUID()) + ", " + getHouseType(house) + " " + getHouseName(house);
     }
 
     private String getHouseType(House house){
