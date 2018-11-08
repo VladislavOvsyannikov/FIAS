@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -79,7 +80,7 @@ public class FiasService {
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             String[] strings = in.readLine().split("\\.");
             for (int i = strings.length - 1; i >= 0; i--) res.append(strings[i]);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error(e.getMessage());
         }
         return res.toString();
@@ -157,9 +158,10 @@ public class FiasService {
     public List<java.lang.Object> searchObjects(LinkedHashMap<String, String> params) {
         List<java.lang.Object> res = new ArrayList<>();
         String searchType = params.get("searchType");
-        boolean isActual = Boolean.parseBoolean(params.get("actual"));
+        boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));
         params.remove("searchType");
-        params.remove("actual");
+        params.remove("onlyActual");
+        params.replace("guid", params.get("guid").replaceAll("-","").toLowerCase());
         if (searchType.contains("object")) {
             List<Object> objects = objectDao.getObjectsByParams(params, isActual);
             if (objects != null) res.addAll(objects);
@@ -180,6 +182,8 @@ public class FiasService {
     }
 
     public boolean submitRegistration(User user) {
+        if (user.getPassword().replaceAll(" ","").equals("") ||
+                user.getName().replaceAll(" ","").equals("")) return false;
         User oldUser = userDao.getUser(user.getName());
         if (oldUser == null) {
             User newUser = new User();

@@ -86,7 +86,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
     $scope.searchObjects = function () {
         let data = Object();
         data.guid = ($scope.guidSearch !== undefined && $scope.guidSearch !== "") ?
-            $scope.guidSearch.replace(new RegExp('-', 'g'), '').toLowerCase() : "";
+            $scope.guidSearch : "";
         data.postalcode = ($scope.postcodeSearch !== undefined && $scope.postcodeSearch !== "") ?
             $scope.postcodeSearch : "";
         if (data.guid !== "" || data.postalcode !== "") {
@@ -94,7 +94,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
             data.searchType += $scope.houseCheck ? "house" : "";
             data.searchType += $scope.steadCheck ? "stead" : "";
             data.searchType += $scope.roomCheck ? "room" : "";
-            data.actual = $scope.actualSearch;
+            data.onlyActual = $scope.actualSearch;
             $http.post(urlPrefix + "searchObjects", data, config).then(function (response) {
                 if (response.data.length > 0) {
                     $scope.searchMessage = "";
@@ -115,8 +115,8 @@ user.controller('userController', function ($rootScope, $scope, $http) {
         if (guid !== " ") {
             let data = Object();
             data.guid = guid;
-            data.searchType = "objecthousesteadroom";
-            data.actual = $scope.actualAdvancedSearch;
+            data.searchType = $rootScope.typeOfLastObject;
+            data.onlyActual = $scope.actualAdvancedSearch;
             $http.post(urlPrefix + "searchObjects", data, config).then(function (response) {
                 $scope.searchMessage = "";
                 $scope.resultObjects = response.data;
@@ -177,6 +177,7 @@ user.directive('dropdownListNext', function ($rootScope, $http, $timeout) {
                 }
                 guid = object.aoguid;
                 scope.search = object.shortname + ' ' + object.formalname;
+                $rootScope.typeOfLastObject = "object";
                 if (level === 0) {
                     scope.objectsList = nextObjects;
                     showDropdownList.push({value: showDropdownList.length + 1});
@@ -237,6 +238,7 @@ user.directive('dropdownListNext', function ($rootScope, $http, $timeout) {
                 }
                 guid = house.houseguid;
                 scope.search = house.type + ' ' + house.name;
+                $rootScope.typeOfLastObject = "house";
                 if (level === 0) {
                     scope.housesList = nextHouses;
                     scope.steadsList = nextObjects;
@@ -270,6 +272,7 @@ user.directive('dropdownListNext', function ($rootScope, $http, $timeout) {
                 }
                 guid = room.roomguid;
                 scope.search = room.type + ' ' + room.flatnumber;
+                $rootScope.typeOfLastObject = "room";
                 if (level === 0) {
                     scope.roomsList = nextObjects;
                     directiveScopes.push(scope);
@@ -284,7 +287,7 @@ user.directive('dropdownListNext', function ($rootScope, $http, $timeout) {
                 }
                 guid = stead.steadguid;
                 scope.search = 'участок ' + stead.number;
-
+                $rootScope.typeOfLastObject = "stead";
                 if (level === 0) {
                     scope.steadsList = nextObjects;
                     scope.housesList = nextHouses;
