@@ -1,6 +1,5 @@
 package system.controller;
 
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,20 +21,26 @@ public class CommonController {
         this.fiasService = fiasService;
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String login() {
-        return "login.html";
+    @RequestMapping(value = "/signin", method = RequestMethod.GET)
+    public String signIn() {
+        return "signin.html";
     }
 
-    @RequestMapping(value = "/registration", method = RequestMethod.GET)
-    public String registration() {
-        return "registration.html";
+    @RequestMapping(value = "/signup", method = RequestMethod.GET)
+    public String signUp() {
+        return "signup.html";
     }
 
-    @RequestMapping(value = "/submitRegistration", method = RequestMethod.POST)
+    @RequestMapping(value = "/signIn", method = RequestMethod.POST)
     @ResponseBody
-    public boolean submitRegistration(@RequestBody User user){
-        return fiasService.submitRegistration(user);
+    public boolean signIn(@RequestBody User user){
+        return fiasService.signIn(user);
+    }
+
+    @RequestMapping(value = "/signUp", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean signUp(@RequestBody User user){
+        return fiasService.signUp(user);
     }
 
     @RequestMapping(value = "/template.html", method = RequestMethod.GET)

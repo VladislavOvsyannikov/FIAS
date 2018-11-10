@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class FiasService {
@@ -215,7 +215,7 @@ public class FiasService {
         return fullAddress;
     }
 
-    public boolean submitRegistration(User user) {
+    public boolean signUp(User user) {
         if (user.getPassword().replaceAll(" ","").equals("") ||
                 user.getName().replaceAll(" ","").equals("")) return false;
         User oldUser = userDao.getUser(user.getName());
@@ -230,6 +230,13 @@ public class FiasService {
             return true;
         }
         return false;
+    }
+
+    public boolean signIn(User user) {
+        SecurityContextHolder.getContext().setAuthentication(tokenAuthenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getName(), user.getPassword())));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null;
     }
 
     public List<String> getCurrentUserInfo(){
