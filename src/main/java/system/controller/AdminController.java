@@ -5,16 +5,20 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import springfox.documentation.annotations.ApiIgnore;
+import system.model.User;
 import system.service.FiasService;
 
 import java.util.List;
 
 @Controller
+@Secured("ROLE_ADMIN")
 @Api(tags = "Admin", description = " ")
 public class AdminController {
 
@@ -74,8 +78,22 @@ public class AdminController {
     }
 
     @ApiIgnore
-    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    @RequestMapping(value = "/admin")
     public String admin() {
         return "admin.html";
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "/rest/signUp")
+    @ResponseBody
+    public boolean signUp(@RequestBody User user){
+        return fiasService.signUp(user);
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "/rest/getAllUsers")
+    @ResponseBody
+    public List<User> getAllUsersWithoutPasswords(){
+        return fiasService.getAllUsersWithoutPasswords();
     }
 }

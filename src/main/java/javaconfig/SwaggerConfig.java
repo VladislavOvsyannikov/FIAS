@@ -16,6 +16,7 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import system.model.AddrObject;
 import system.model.House;
 import system.model.Room;
 import system.model.Stead;
@@ -55,7 +56,8 @@ public class SwaggerConfig {
                 .globalResponseMessage(RequestMethod.GET, newArrayList(
                         new ResponseMessageBuilder().code(401).message("Unauthorized").build(),
                         new ResponseMessageBuilder().code(403).message("Forbidden").build()))
-                .additionalModels(resolver.resolve(Parameters.class),
+                .additionalModels(
+                        resolver.resolve(AddrObject.class),
                         resolver.resolve(House.class),
                         resolver.resolve(Stead.class),
                         resolver.resolve(Room.class));
@@ -82,19 +84,5 @@ public class SwaggerConfig {
         Set<String> consumes = new HashSet<>();
         consumes.add("application/json");
         return consumes;
-    }
-
-    private static class Parameters  {
-        @ApiModelProperty(example = "true")
-        public String onlyActual;
-
-        @ApiModelProperty(example = "addrObject house stead room")
-        public String searchType;
-
-        @ApiModelProperty(example = "d8327a56-80de-4df2-815c-4f6ab1224c50")
-        public String guid;
-
-        @ApiModelProperty(example = "385000")
-        public String postalcode;
     }
 }

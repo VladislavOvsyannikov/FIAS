@@ -48,15 +48,16 @@ public class AddrObjectDao extends GenericDao<AddrObject>{
     public List<AddrObject> getAddrObjectsByParams(LinkedHashMap<String, String> params, boolean isActual){
         List<String> strings = new ArrayList<>();
         for (String key : params.keySet()){
-            if (key.equals("guid") && !params.get(key).equals("")) strings.add("aoguid=\""+params.get(key)+"\"");
-            else if (!params.get(key).equals("")) strings.add(key+"=\""+params.get(key)+"\"");
+            if (key.equals("guid")) strings.add("aoguid=\""+params.get(key)+"\"");
+            else strings.add(key+"=\""+params.get(key)+"\"");
         }
         if (isActual) strings.add("livestatus=1");
         String queryPart = String.join(" and ", strings);
         List<AddrObject> addrObjects = getEntities("select * from object where "+queryPart, AddrObject.class);
         if (addrObjects != null && addrObjects.size() > 0) {
             if (!isActual) addrObjects = getAddrObjectsWithMaxEnddate(addrObjects);
-            for (AddrObject addrObject : addrObjects) addrObject.setFullAddress(getFullAddress(addrObject));
+            for (AddrObject addrObject : addrObjects)
+                addrObject.setFullAddress(getFullAddress(addrObject, addrObject.getPOSTALCODE()));
             return addrObjects;
         }
         return null;
@@ -81,28 +82,17 @@ public class AddrObjectDao extends GenericDao<AddrObject>{
         return res;
     }
 
-    public String getFullAddress(String guid){
-        AddrObject addrObject = getAddrObjectByGuid(guid);
+    String getFullAddress(AddrObject addrObject, String postalcode){
         String fullAddress = getFullType(addrObject) + " " + addrObject.getFORMALNAME();
         while (addrObject.getPARENTGUID() != null){
             addrObject = getAddrObjectByGuid(addrObject.getPARENTGUID());
             fullAddress = getFullType(addrObject) + " " + addrObject.getFORMALNAME() + ", " + fullAddress;
         }
-        return fullAddress;
+        return postalcode == null? fullAddress: postalcode + ", " + fullAddress;
     }
 
-    private String getFullAddress(AddrObject addrObject){
-        String fullAddress = getFullType(addrObject) + " " + addrObject.getFORMALNAME();
-        while (addrObject.getPARENTGUID() != null){
-            addrObject = getAddrObjectByGuid(addrObject.getPARENTGUID());
-            fullAddress = getFullType(addrObject) + " " + addrObject.getFORMALNAME() + ", " + fullAddress;
-        }
-        return fullAddress;
-    }
-
-    private AddrObject getAddrObjectByGuid(String guid){
+    AddrObject getAddrObjectByGuid(String guid){
         List<AddrObject> addrObjects = getEntities("select * from object where aoguid=\""+guid+"\"", AddrObject.class);
-        if (addrObjects.size() == 0) return null;
         addrObjects = getAddrObjectsWithMaxEnddate(addrObjects);
         return addrObjects.get(0);
     }

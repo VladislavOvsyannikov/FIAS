@@ -3,6 +3,7 @@ package system.dao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
+import system.model.User;
 import system.service.HibernateEntityManagerFactory;
 import system.service.Unrarrer;
 

@@ -16,7 +16,7 @@ public class MVCConfig implements WebMvcConfigurer {
     @Bean
     public InternalResourceViewResolver viewResolver() {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setPrefix("/WEB-INF/pages/");
+        viewResolver.setPrefix("resources/pages/");
         return viewResolver;
     }
 

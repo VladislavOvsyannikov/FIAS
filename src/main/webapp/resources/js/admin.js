@@ -33,7 +33,8 @@ admin.controller('adminController', function ($scope, $http) {
         $http.get(urlPrefix+"getNewVersions", config).then(function (response) {
             if (Array.isArray(response.data)) {
                 if (response.data === "") $scope.newVersions = "";
-                else if (response.data.length > 0) $scope.newVersions = "Next updates required: " + response.data;
+                else if (response.data.length > 0) $scope.newVersions = "Next updates required: " +
+                    response.data.toString().replace(/,/g,', ');
                 else $scope.newVersions = "All data are actual";
             }
         });
@@ -59,6 +60,32 @@ admin.controller('adminController', function ($scope, $http) {
         $scope.disabled = true;
         $http.get(urlPrefix+"installUpdates", config).then(function (response) {
             $scope.disabled = !response.data;
+        });
+    };
+
+    $scope.frame = "fias";
+
+    $scope.signUp = function () {
+        let data = {
+            name: $scope.name,
+            password: $scope.password
+        };
+        if ($scope.name == null || $scope.password == null || $scope.password === "" || $scope.name === "") {
+            $scope.signUpMessage = "Enter name and password";
+        } else {
+            $http.post(urlPrefix + "signUp", data, config).then(function (response) {
+                if (!response.data) $scope.signUpMessage = "This user already exists";
+                else {
+                    $scope.signUpMessage = "Registered successfully";
+                    $scope.getAllUsers();
+                }
+            });
+        }
+    };
+
+    $scope.getAllUsers = function () {
+        $http.get(urlPrefix + "getAllUsers", config).then(function (response) {
+            $scope.users = response.data;
         });
     };
 });

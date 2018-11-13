@@ -19,10 +19,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .addFilterAfter(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests().antMatchers("/admin").hasAuthority("ROLE_ADMIN")
-                                    .antMatchers("/user").hasAuthority("ROLE_USER")
-                                    .antMatchers("/rest/**").hasAuthority("ROLE_USER")
-                .and()
                 .formLogin().loginPage("/signin")
                 .and()
                 .exceptionHandling().accessDeniedPage("/signin")

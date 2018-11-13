@@ -2,6 +2,7 @@ package system.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import system.model.AddrObject;
 import system.model.House;
 
 import java.text.SimpleDateFormat;
@@ -50,8 +51,8 @@ public class HouseDao extends GenericDao<House>{
     public List<House> getHousesByParams(LinkedHashMap<String, String> params, boolean isActual) {
         List<String> strings = new ArrayList<>();
         for (String key : params.keySet()){
-            if (key.equals("guid") && !params.get(key).equals("")) strings.add("houseguid=\""+params.get(key)+"\"");
-            else if (!params.get(key).equals("")) strings.add(key+"=\""+params.get(key)+"\"");
+            if (key.equals("guid")) strings.add("houseguid=\""+params.get(key)+"\"");
+            else strings.add(key+"=\""+params.get(key)+"\"");
         }
         String queryPart = String.join(" and ", strings);
         List<House> houses = getEntities("select * from house where "+queryPart, House.class);
@@ -61,7 +62,7 @@ public class HouseDao extends GenericDao<House>{
                 houses.removeIf(house -> currentDate > house.getENDDATE());
             }else houses = getHousesWithMaxEnddate(houses);
             for (House house:houses) {
-                house.setFullAddress(getFullAddress(house));
+                house.setFullAddress(getFullAddress(house, house.getPOSTALCODE()));
                 house.setStateStatus(getStateStatus(house));
             }
             return houses;
@@ -88,20 +89,15 @@ public class HouseDao extends GenericDao<House>{
         return res;
     }
 
-    public House getHouseByGuid(String guid){
+    House getHouseByGuid(String guid){
         List<House> houses = getEntities("select * from house where houseguid=\""+guid+"\"", House.class);
-        if (houses.size() == 0) return null;
         houses = getHousesWithMaxEnddate(houses);
         return houses.get(0);
     }
 
-    public String getFullAddress(String guid) {
-        House house = getHouseByGuid(guid);
-        return addrObjectDao.getFullAddress(house.getAOGUID()) + ", " + getHouseType(house) + " " + getHouseName(house);
-    }
-
-    private String getFullAddress(House house) {
-        return addrObjectDao.getFullAddress(house.getAOGUID()) + ", " + getHouseType(house) + " " + getHouseName(house);
+    String getFullAddress(House house, String postalcode) {
+        AddrObject addrObject = addrObjectDao.getAddrObjectByGuid(house.getAOGUID());
+        return addrObjectDao.getFullAddress(addrObject, postalcode) + ", " + getHouseType(house) + " " + getHouseName(house);
     }
 
     private String getHouseType(House house){

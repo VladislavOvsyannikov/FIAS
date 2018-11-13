@@ -85,11 +85,9 @@ user.controller('userController', function ($rootScope, $scope, $http) {
 
     $scope.searchObjects = function () {
         let data = Object();
-        data.guid = ($scope.guidSearch !== undefined && $scope.guidSearch !== "") ?
-            $scope.guidSearch : "";
-        data.postalcode = ($scope.postcodeSearch !== undefined && $scope.postcodeSearch !== "") ?
-            $scope.postcodeSearch : "";
-        if (data.guid !== "" || data.postalcode !== "") {
+        if ($scope.guidSearch !== undefined && $scope.guidSearch !== "") data.guid = $scope.guidSearch;
+        if ($scope.postcodeSearch !== undefined && $scope.postcodeSearch !== "") data.postalcode = $scope.postcodeSearch;
+        if (Object.values(data).length > 0) {
             data.searchType = $scope.objectCheck ? "addrObject" : "";
             data.searchType += $scope.houseCheck ? "house" : "";
             data.searchType += $scope.steadCheck ? "stead" : "";
@@ -125,11 +123,6 @@ user.controller('userController', function ($rootScope, $scope, $http) {
             $scope.resultObjects = [];
             $scope.searchMessage = "Выберите объект";
         }
-    };
-
-    $scope.getFullAddress = function (object) {
-        return object.postalcode !== undefined && object.postalcode !== null ?
-            object.postalcode + ", " + object.fullAddress : object.fullAddress;
     };
 
     $scope.getGuid = function (object) {

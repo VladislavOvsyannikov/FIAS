@@ -8,8 +8,10 @@ import java.util.List;
 @Repository
 public class UserDao extends GenericDao<User> {
 
-    public List<User> getAllUsers(){
-        return getEntities("select * from user", User.class);
+    public List<User> getAllUsersWithoutPasswords() {
+        List<User> users = getEntities("select * from user", User.class);
+        for (User user : users) user.setPassword(null);
+        return users;
     }
 
     public User getUser(String name){

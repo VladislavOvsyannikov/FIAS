@@ -2,6 +2,7 @@ package system.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import system.model.AddrObject;
 import system.model.Stead;
 
 import java.util.ArrayList;
@@ -31,8 +32,8 @@ public class SteadDao extends GenericDao<Stead> {
     public List<Stead> getSteadsByParams(LinkedHashMap<String, String> params, boolean isActual) {
         List<String> strings = new ArrayList<>();
         for (String key : params.keySet()){
-            if (key.equals("guid") && !params.get(key).equals("")) strings.add("steadguid=\""+params.get(key)+"\"");
-            else if (!params.get(key).equals("")) strings.add(key+"=\""+params.get(key)+"\"");
+            if (key.equals("guid")) strings.add("steadguid=\""+params.get(key)+"\"");
+            else strings.add(key+"=\""+params.get(key)+"\"");
         }
         if (isActual) strings.add("livestatus=1");
         String queryPart = String.join(" and ", strings);
@@ -65,7 +66,8 @@ public class SteadDao extends GenericDao<Stead> {
     }
 
     private String getFullAddress(Stead stead) {
-        return addrObjectDao.getFullAddress(stead.getPARENTGUID()) + ", участок " + stead.getNUMBER();
+        AddrObject addrObject = addrObjectDao.getAddrObjectByGuid(stead.getPARENTGUID());
+        return addrObjectDao.getFullAddress(addrObject, stead.getPOSTALCODE()) + ", участок " + stead.getNUMBER();
     }
 }
 

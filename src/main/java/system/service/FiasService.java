@@ -44,7 +44,6 @@ public class FiasService {
     private RoomDao roomDao;
     private UserDao userDao;
 
-    @Secured("ROLE_ADMIN")
     public boolean installComplete() {
         String lastVersion = getLastVersion();
 //        downloader.downloadLastComplete(mainPath, lastVersion);
@@ -53,7 +52,6 @@ public class FiasService {
         return true;
     }
 
-    @Secured("ROLE_ADMIN")
     public boolean installOneUpdate() {
         String deltaVersion = getListOfNewVersions().get(0);
 //        downloader.downloadDeltaByVersion(mainPath, deltaVersion);
@@ -62,7 +60,6 @@ public class FiasService {
         return true;
     }
 
-    @Secured("ROLE_ADMIN")
     public boolean installUpdates() {
         List<String> listOfNewVersions = getListOfNewVersions();
         for (String deltaVersion : listOfNewVersions){
@@ -73,7 +70,6 @@ public class FiasService {
         return true;
     }
 
-    @Secured("ROLE_ADMIN")
     public String getLastVersion() {
         StringBuilder res = new StringBuilder();
         try {
@@ -87,12 +83,10 @@ public class FiasService {
         return res.toString();
     }
 
-    @Secured("ROLE_ADMIN")
     public String getCurrentVersion() {
         return versionDao.getCurrentVersion();
     }
 
-    @Secured("ROLE_ADMIN")
     public List<String> getListOfNewVersions() {
         String url = "https://fias.nalog.ru/WebServices/Public/DownloadService.asmx";
         HttpClient client = HttpClientBuilder.create().build();
@@ -160,10 +154,15 @@ public class FiasService {
         List<java.lang.Object> res = new ArrayList<>();
         String searchType = params.getOrDefault("searchType", "addrObject house stead room");
         params.remove("searchType");
-        boolean isActual = Boolean.parseBoolean(params.getOrDefault("onlyActual", "true"));
+        boolean isActual = Boolean.parseBoolean(params.getOrDefault("onlyActual", "false"));
         params.remove("onlyActual");
-        if (params.containsKey("guid"))
-            params.replace("guid", params.get("guid").replaceAll("-","").toLowerCase());
+        if (params.containsKey("guid")) {
+            String guid = params.get("guid").replaceAll("-","").toLowerCase();
+            if (guid.length() != 32) return res;
+            params.replace("guid", guid);
+        }
+        if (params.getOrDefault("postalcode", "000000").length() != 6) return res;
+
         if (params.size() > 0) {
             if (searchType.contains("addrObject")) {
                 List<AddrObject> addrObjects = addrObjectDao.getAddrObjectsByParams(params, isActual);
@@ -185,9 +184,18 @@ public class FiasService {
         return res;
     }
 
+    public List<Object> searchObjectsByParameters(String guid, String postalcode) {
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        if (guid != null && !guid.replaceAll(" ", "").equals(""))
+            params.put("guid", guid);
+        if (postalcode != null && !postalcode.replaceAll(" ", "").equals(""))
+            params.put("postalcode", postalcode);
+        return searchObjects(params);
+    }
+
     public Object searchObjectByGuid(String guid) {
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        guid = guid.replaceAll("[-\"]","").toLowerCase();
+        guid = guid.replaceAll("-","").toLowerCase();
         if (guid.length() != 32) return null;
         params.put("guid", guid);
         List<AddrObject> addrObject = addrObjectDao.getAddrObjectsByParams(params, false);
@@ -225,18 +233,20 @@ public class FiasService {
             newUser.setPassword(bCrypt(user.getPassword()));
             newUser.setRole("ROLE_USER");
             userDao.save(newUser);
-            SecurityContextHolder.getContext().setAuthentication(tokenAuthenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(user.getName(), user.getPassword())));
             return true;
         }
         return false;
     }
 
     public boolean signIn(User user) {
-        SecurityContextHolder.getContext().setAuthentication(tokenAuthenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getName(), user.getPassword())));
+        SecurityContextHolder.getContext().setAuthentication(tokenAuthenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(user.getName(), user.getPassword())));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null;
+    }
+
+    public List<User> getAllUsersWithoutPasswords() {
+        return userDao.getAllUsersWithoutPasswords();
     }
 
     public List<String> getCurrentUserInfo(){

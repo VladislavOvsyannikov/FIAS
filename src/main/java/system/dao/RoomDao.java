@@ -38,8 +38,8 @@ public class RoomDao extends GenericDao<Room>{
     public List<Room> getRoomsByParams(LinkedHashMap<String, String> params, boolean isActual) {
         List<String> strings = new ArrayList<>();
         for (String key : params.keySet()){
-            if (key.equals("guid") && !params.get(key).equals("")) strings.add("roomguid=\""+params.get(key)+"\"");
-            else if (!params.get(key).equals("")) strings.add(key+"=\""+params.get(key)+"\"");
+            if (key.equals("guid")) strings.add("roomguid=\""+params.get(key)+"\"");
+            else strings.add(key+"=\""+params.get(key)+"\"");
         }
         if (isActual) strings.add("livestatus=1");
         String queryPart = String.join(" and ", strings);
@@ -73,13 +73,12 @@ public class RoomDao extends GenericDao<Room>{
 
     private String getFullAddress(Room room) {
         House house = houseDao.getHouseByGuid(room.getHOUSEGUID());
-        if (house == null) return "HOUSE NOT FOUND(";                   //убрать
         room.setOkato(house.getOKATO());
         room.setOktmo(house.getOKTMO());
         room.setIfnsfl(house.getIFNSFL());
         room.setIfnsul(house.getIFNSUL());
         room.setStateStatus(houseDao.getStateStatus(house));
-        return houseDao.getFullAddress(room.getHOUSEGUID()) + ", " + getRoomType(room) + " " + room.getFLATNUMBER();
+        return houseDao.getFullAddress(house, room.getPOSTALCODE()) + ", " + getRoomType(room) + " " + room.getFLATNUMBER();
     }
 
     private String getRoomType(Room room){
