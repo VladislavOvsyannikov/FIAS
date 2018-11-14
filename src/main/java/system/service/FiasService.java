@@ -232,6 +232,7 @@ public class FiasService {
             newUser.setName(user.getName());
             newUser.setPassword(bCrypt(user.getPassword()));
             newUser.setRole("ROLE_USER");
+            newUser.setIsEnable(true);
             userDao.save(newUser);
             return true;
         }
@@ -247,6 +248,14 @@ public class FiasService {
 
     public List<User> getAllUsersWithoutPasswords() {
         return userDao.getAllUsersWithoutPasswords();
+    }
+
+    public void deleteUser(User user){
+        userDao.deleteUser(user);
+    }
+
+    public void blockUser(User user) {
+        userDao.blockUser(user.getId());
     }
 
     public List<String> getCurrentUserInfo(){

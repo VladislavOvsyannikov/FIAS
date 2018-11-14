@@ -2,32 +2,34 @@ package system.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
 import system.dao.GenericDao;
 
-import java.util.Arrays;
-
+@Service
 public class MySAXParser extends DefaultHandler {
 
     private static final Logger logger = LogManager.getLogger(MySAXParser.class);
 
-    private GenericDao<Object> genericDao = new GenericDao<>();
-    private String xmlFile;
-    private String databaseType;
-    private Object[] objects;
-    private int index = -1;
-    private boolean isSaveBatchEnd = true;
-    private int counter = 0;
-
-    MySAXParser(String xmlFile, String databaseType, int numberOfObjects) {
-        this.xmlFile = xmlFile;
-        this.databaseType = databaseType;
-        this.objects = new Object[numberOfObjects];
+    private GenericDao<Object> genericDao;
+    @Autowired
+    public void setGenericDao(GenericDao<Object> genericDao) {
+        this.genericDao = genericDao;
     }
 
+    private String fileName;
+    private String databaseType;
+    private int numberOfObjects;
+
+    private Object[] objects;
+    private int index = -1;
+    private int counter = 0;
+
     public void startDocument() {
-        logger.info("Start parse " + xmlFile);
+        objects = new Object[numberOfObjects];
+        logger.info("Start parse " + fileName);
     }
 
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
@@ -42,22 +44,10 @@ public class MySAXParser extends DefaultHandler {
             }
             objects[++index] = object;
             if (index == objects.length - 1) {
-                while (!isSaveBatchEnd){
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        logger.error(e.getMessage());
-                    }
-                }
-                Object[] entities = objects;
+                if (databaseType.equals("complete")) genericDao.saveBatch(objects, objects.length);
+                else genericDao.saveOrUpdateBatch(objects, objects.length);
                 counter += index+1;
-                isSaveBatchEnd = false;
-                new Thread(() -> {
-                    if (databaseType.equals("complete")) genericDao.saveBatch(entities, objects.length);
-                    else genericDao.saveOrUpdateBatch(entities, objects.length);
-                    isSaveBatchEnd = true;
-                    logger.info("Saved "+counter+" objects");
-                }).start();
+                logger.info("Saved "+counter+" objects");
                 objects = new Object[objects.length];
                 index = -1;
             }
@@ -66,19 +56,24 @@ public class MySAXParser extends DefaultHandler {
 
     public void endDocument() {
         if (index > -1) {
-            while (!isSaveBatchEnd){
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    logger.error(e.getMessage());
-                }
-            }
             if (databaseType.equals("complete")) genericDao.saveBatch(objects, index+1);
             else genericDao.saveOrUpdateBatch(objects, index+1);
             counter += index+1;
             logger.info("Saved "+counter+" objects");
         }
-        logger.info("Stop parse " + xmlFile);
+        logger.info("Stop parse " + fileName);
         logger.info("Parsed "+counter+" objects");
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void setDatabaseType(String databaseType) {
+        this.databaseType = databaseType;
+    }
+
+    public void setNumberOfObjects(int numberOfObjects) {
+        this.numberOfObjects = numberOfObjects;
     }
 }

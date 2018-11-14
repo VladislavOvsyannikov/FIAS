@@ -88,6 +88,18 @@ admin.controller('adminController', function ($scope, $http) {
             $scope.users = response.data;
         });
     };
+
+    $scope.deleteUser = function (user) {
+        $http.post(urlPrefix + "deleteUser", user, config).then(function (response) {
+            $scope.getAllUsers();
+        });
+    };
+
+    $scope.blockUser = function (user) {
+        $http.post(urlPrefix + "blockUser", user, config).then(function (response) {
+            $scope.getAllUsers();
+        });
+    };
 });
 
 admin.directive('navBar', function () {

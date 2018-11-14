@@ -59,17 +59,20 @@
                 <thead>
                 <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">Role</th>
-                    <th scope="col">Action1</th>
-                    <th scope="col">Action2</th>
+                    <th scope="col">isEnable</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="user in users">
                     <td>{{user.name}}</td>
-                    <td>{{user.role}}</td>
-                    <td>кнопка1</td>
-                    <td>кнопка2</td>
+                    <td>{{user.isEnable}}</td>
+                    <td>
+                        <button class="btn btn-warning" ng-click="blockUser(user)">{{user.isEnable?'Block':'Unblock'}}
+                        </button>
+                    </td>
+                    <td><button class="btn btn-danger" ng-click="deleteUser(user)">Delete</button></td>
                 </tr>
                 </tbody>
             </table>

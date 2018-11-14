@@ -11,14 +11,19 @@ import system.model.Version;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
+import java.util.Objects;
 
 @Service
 public class Installer {
 
     private static final Logger logger = LogManager.getLogger(Installer.class);
-
     private VersionDao versionDao;
+    private MySAXParser mySAXParser;
 
+    @Autowired
+    public void setMySAXParser(MySAXParser mySAXParser) {
+        this.mySAXParser = mySAXParser;
+    }
     @Autowired
     public void setVersionDao(VersionDao versionDao) {
         this.versionDao = versionDao;
@@ -39,10 +44,12 @@ public class Installer {
         if (folder.exists()) {
             try {
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
-                for (File file : folder.listFiles()) {
+                mySAXParser.setDatabaseType(databaseType);
+                mySAXParser.setNumberOfObjects(numberOfObjects);
+                for (File file : Objects.requireNonNull(folder.listFiles())) {
                     String fileName = file.getName();
                     if (!fileName.contains("_DEL_")){
-                        MySAXParser mySAXParser = new MySAXParser(fileName, databaseType, numberOfObjects);
+                        mySAXParser.setFileName(fileName);
                         saxParser.parse(file, mySAXParser);
                     }
                 }

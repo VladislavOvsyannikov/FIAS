@@ -19,6 +19,9 @@ public class User{
     @Column(name = "role", nullable = false)
     private String role;
 
+    @Column(name = "is_enable", nullable = false)
+    private boolean isEnable;
+
     public int getId() {
         return id;
     }
@@ -49,5 +52,13 @@ public class User{
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public boolean getIsEnable() {
+        return isEnable;
+    }
+
+    public void setIsEnable(boolean isEnable) {
+        this.isEnable = isEnable;
     }
 }

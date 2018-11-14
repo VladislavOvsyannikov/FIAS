@@ -14,9 +14,7 @@ public class ReflectionHelper {
         if (className.equals("Object")) className = "AddrObject";
         try {
             return Class.forName("system.model."+className).newInstance();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+        } catch (Exception ignored) {}
         return null;
     }
 

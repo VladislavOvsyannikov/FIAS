@@ -15,13 +15,12 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
     @Override
     public void onStartup(ServletContext servletContext){
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-        rootContext.register(MVCConfig.class, SecurityConfig.class, SpringSecurityInit.class);
+        rootContext.register(SecurityConfig.class, SpringSecurityInit.class, HibernateConfig.class);
         servletContext.addListener(new ContextLoaderListener(rootContext));
 
         AnnotationConfigWebApplicationContext servletAppContext = new AnnotationConfigWebApplicationContext();
         servletAppContext.register(MVCConfig.class, SecurityConfig.class, SpringSecurityInit.class, SwaggerConfig.class);
         DispatcherServlet dispatcherServlet = new DispatcherServlet(servletAppContext);
-        // throw NoHandlerFoundException to controller ExceptionHandler.class. Used for <error-page> analogue
         dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
 
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", dispatcherServlet);
@@ -35,7 +34,7 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[] {MVCConfig.class, SecurityConfig.class, SpringSecurityInit.class};
+        return new Class[] {SecurityConfig.class, SpringSecurityInit.class, HibernateConfig.class};
     }
 
     @Override

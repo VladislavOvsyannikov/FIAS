@@ -77,8 +77,7 @@ public class AdminController {
         return fiasService.installUpdates();
     }
 
-    @ApiIgnore
-    @RequestMapping(value = "/admin")
+    @ApiIgnore @RequestMapping(value = "/admin")
     public String admin() {
         return "admin.html";
     }
@@ -95,5 +94,18 @@ public class AdminController {
     @ResponseBody
     public List<User> getAllUsersWithoutPasswords(){
         return fiasService.getAllUsersWithoutPasswords();
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "/rest/deleteUser")
+    @ResponseBody
+    public void deleteUser(@RequestBody User user){
+        fiasService.deleteUser(user);
+    }
+    @ApiIgnore
+    @RequestMapping(value = "/rest/blockUser")
+    @ResponseBody
+    public void blockUser(@RequestBody User user){
+        fiasService.blockUser(user);
     }
 }

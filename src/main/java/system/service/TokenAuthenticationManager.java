@@ -55,10 +55,11 @@ public class TokenAuthenticationManager implements AuthenticationManager {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
         User user = userDao.getUser(username);
-        if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+        if (user != null && user.getIsEnable() && BCrypt.checkpw(password, user.getPassword())) {
             Map<String, Object> tokenData = new HashMap<>();
             tokenData.put("username", username);
             tokenData.put("role", user.getRole());
+            tokenData.put("isEnable", user.getIsEnable());
             tokenData.put("endDate", new Date().getTime() + 24 * 3600 * 1000);
             JwtBuilder jwtBuilder = Jwts.builder();
             jwtBuilder.setClaims(tokenData);
