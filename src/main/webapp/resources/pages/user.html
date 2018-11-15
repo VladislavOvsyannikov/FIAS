@@ -17,21 +17,18 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-5">
+        <div class="col-5" ng-init="initLists(); getObjectsByParentGuid()">
             <label>Расширенный поиск: {{downloadingMessage}}</label>
-            <div ng-init="getObjectsByParentGuid()">
-                <div ng-repeat="flag in getShowDropdownList()">
-                    <dropdown-list-next data-objects-list="objectsList"></dropdown-list-next>
-                    <br>
+                <div ng-repeat="flag in showDropdownList">
+                    <dropdown-list></dropdown-list><br>
                 </div>
-            </div>
             <div class="form-check-inline">
                 <button class="btn" type="submit" ng-click="getLastObjectInformation()">
                     Данные об объекте
                 </button>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="actual1"
-                           ng-init="$root.actualAdvancedSearch=true" ng-model="$root.actualAdvancedSearch">
+                           ng-init="actualAdvancedSearch=true" ng-model="actualAdvancedSearch">
                     <label class="form-check-label" for="actual1">Только актуальные</label>
                 </div>
             </div>
