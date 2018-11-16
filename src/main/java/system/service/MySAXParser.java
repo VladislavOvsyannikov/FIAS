@@ -14,6 +14,7 @@ public class MySAXParser extends DefaultHandler {
     private static final Logger logger = LogManager.getLogger(MySAXParser.class);
 
     private GenericDao<Object> genericDao;
+
     @Autowired
     public void setGenericDao(GenericDao<Object> genericDao) {
         this.genericDao = genericDao;
@@ -22,7 +23,6 @@ public class MySAXParser extends DefaultHandler {
     private String fileName;
     private String databaseType;
     private int numberOfObjects;
-
     private Object[] objects;
     private int index = -1;
     private int counter = 0;
@@ -39,15 +39,15 @@ public class MySAXParser extends DefaultHandler {
                 String field = attributes.getLocalName(i);
                 String value = attributes.getValue(i);
                 if (field.endsWith("ID") || field.endsWith("DATE") || field.endsWith("NORMDOC"))
-                    value = value.replaceAll("-","");
+                    value = value.replaceAll("-", "");
                 ReflectionHelper.setFieldValue(object, field, value);
             }
             objects[++index] = object;
             if (index == objects.length - 1) {
                 if (databaseType.equals("complete")) genericDao.saveBatch(objects, objects.length);
                 else genericDao.saveOrUpdateBatch(objects, objects.length);
-                counter += index+1;
-                logger.info("Saved "+counter+" objects");
+                counter += index + 1;
+                logger.info("Saved " + counter + " objects");
                 objects = new Object[objects.length];
                 index = -1;
             }
@@ -56,13 +56,13 @@ public class MySAXParser extends DefaultHandler {
 
     public void endDocument() {
         if (index > -1) {
-            if (databaseType.equals("complete")) genericDao.saveBatch(objects, index+1);
-            else genericDao.saveOrUpdateBatch(objects, index+1);
-            counter += index+1;
-            logger.info("Saved "+counter+" objects");
+            if (databaseType.equals("complete")) genericDao.saveBatch(objects, index + 1);
+            else genericDao.saveOrUpdateBatch(objects, index + 1);
+            counter += index + 1;
+            logger.info("Saved " + counter + " objects");
         }
         logger.info("Stop parse " + fileName);
-        logger.info("Parsed "+counter+" objects");
+        logger.info("Parsed " + counter + " objects");
     }
 
     public void setFileName(String fileName) {

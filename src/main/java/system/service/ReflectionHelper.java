@@ -1,6 +1,5 @@
 package system.service;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,8 +12,9 @@ public class ReflectionHelper {
     public static Object createInstance(String className) {
         if (className.equals("Object")) className = "AddrObject";
         try {
-            return Class.forName("system.model."+className).newInstance();
-        } catch (Exception ignored) {}
+            return Class.forName("system.model." + className).newInstance();
+        } catch (Exception ignored) {
+        }
         return null;
     }
 
@@ -28,6 +28,7 @@ public class ReflectionHelper {
                 field.set(object, Integer.decode(value));
             }
             field.setAccessible(false);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 }

@@ -8,7 +8,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,6 +35,7 @@ public class FiasService {
     private Downloader downloader;
     private Unrarrer unrarrer;
     private Installer installer;
+    private Deleter deleter;
     private TokenAuthenticationManager tokenAuthenticationManager;
     private AddrObjectDao addrObjectDao;
     private VersionDao versionDao;
@@ -49,6 +49,7 @@ public class FiasService {
 //        downloader.downloadLastComplete(mainPath, lastVersion);
 //        unrarrer.unrarLastComplete(mainPath, lastVersion);
 //        installer.installLastComplete(mainPath, lastVersion);
+//        deleter.deleteCompleteFiles(mainPath, lastVersion);
         return true;
     }
 
@@ -57,6 +58,7 @@ public class FiasService {
 //        downloader.downloadDeltaByVersion(mainPath, deltaVersion);
 //        unrarrer.unrarDeltaByVersion(mainPath, deltaVersion);
 //        installer.installDeltaByVersion(mainPath, deltaVersion);
+//        deleter.deleteDeltaFiles(mainPath, deltaVersion);
         return true;
     }
 
@@ -66,6 +68,7 @@ public class FiasService {
 //            downloader.downloadDeltaByVersion(mainPath, deltaVersion);
 //            unrarrer.unrarDeltaByVersion(mainPath, deltaVersion);
 //            installer.installDeltaByVersion(mainPath, deltaVersion);
+//            deleter.deleteDeltaFiles(mainPath, deltaVersion);
         }
         return true;
     }
@@ -289,6 +292,10 @@ public class FiasService {
     @Autowired
     public void setInstaller(Installer installer) {
         this.installer = installer;
+    }
+    @Autowired
+    public void setDeleter(Deleter deleter) {
+        this.deleter = deleter;
     }
     @Autowired
     public void setAddrObjectDao(AddrObjectDao addrObjectDao) {

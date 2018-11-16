@@ -22,7 +22,6 @@ import system.model.User;
 import javax.crypto.SecretKey;
 import java.util.*;
 
-
 @Service
 public class TokenAuthenticationManager implements AuthenticationManager {
 
@@ -46,7 +45,7 @@ public class TokenAuthenticationManager implements AuthenticationManager {
     private Authentication checkTokenAuthentication(TokenAuthentication authentication) {
         String token = authentication.getToken();
         Claims claims = (DefaultClaims) Jwts.parser().setSigningKey(key).parse(token).getBody();
-        if (claims.get("endDate", Long.class) > new Date().getTime()){
+        if (claims.get("endDate", Long.class) > new Date().getTime()) {
             return authentication;
         } else return null;
     }
@@ -71,7 +70,7 @@ public class TokenAuthenticationManager implements AuthenticationManager {
         } else return null;
     }
 
-    public List<String> getCurrentUserInfo(){
+    public List<String> getCurrentUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof TokenAuthentication) {
             List<String> res = new ArrayList<>();
@@ -80,6 +79,6 @@ public class TokenAuthenticationManager implements AuthenticationManager {
             res.add(claims.get("username", String.class));
             res.add(claims.get("role", String.class));
             return res;
-        }else return null;
+        } else return null;
     }
 }

@@ -1,6 +1,5 @@
 package system.service;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,7 @@ public class Installer {
     public void setMySAXParser(MySAXParser mySAXParser) {
         this.mySAXParser = mySAXParser;
     }
+
     @Autowired
     public void setVersionDao(VersionDao versionDao) {
         this.versionDao = versionDao;
@@ -34,7 +34,7 @@ public class Installer {
         installDatabase(mainPath, "complete", lastVersion, 100_000);
     }
 
-    public void installDeltaByVersion(String mainPath, String deltaVersion){
+    public void installDeltaByVersion(String mainPath, String deltaVersion) {
         installDatabase(mainPath, "delta", deltaVersion, 10_000);
     }
 
@@ -48,7 +48,7 @@ public class Installer {
                 mySAXParser.setNumberOfObjects(numberOfObjects);
                 for (File file : Objects.requireNonNull(folder.listFiles())) {
                     String fileName = file.getName();
-                    if (!fileName.contains("_DEL_")){
+                    if (!fileName.contains("_DEL_")) {
                         mySAXParser.setFileName(fileName);
                         saxParser.parse(file, mySAXParser);
                     }
@@ -60,6 +60,6 @@ public class Installer {
             } catch (Exception e) {
                 logger.error(e.getMessage());
             }
-        } else logger.warn("Folder not found");
+        } else logger.warn(databaseType + databaseVersion + " not exists");
     }
 }
