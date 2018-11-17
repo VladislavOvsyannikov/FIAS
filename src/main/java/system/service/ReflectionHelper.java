@@ -7,8 +7,6 @@ import java.lang.reflect.Field;
 
 public class ReflectionHelper {
 
-    private static final Logger logger = LogManager.getLogger(ReflectionHelper.class);
-
     public static Object createInstance(String className) {
         if (className.equals("Object")) className = "AddrObject";
         try {

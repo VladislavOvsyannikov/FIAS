@@ -10,7 +10,7 @@
     <script src="/resources/js/angular.min.js"></script>
     <script src="/resources/js/admin.js"></script>
 </head>
-<body ng-init="getLastVersion(); getCurrentVersion(); getNewVersions()">
+<body ng-init="refreshServerStatus(); getLastVersion();">
 
 <div>
     <nav-bar></nav-bar>
@@ -22,34 +22,33 @@
     </div>
     <div class="row">
         <div class="col-6 text-center">
-        <button class="btn btn-light" ng-click="frame = 'fias'">FIAS database</button>
-    </div>
+            <button class="btn btn-light" ng-click="frame = 'fias'">FIAS database</button>
+        </div>
         <div class="col-6 text-center">
             <button class="btn btn-light" ng-click="frame = 'users'">Users</button>
         </div>
     </div>
     <hr>
     <div class="row" ng-show="frame == 'fias'">
-        <div>
-            <a class="h4 mb-3 font-weight-normal">{{lastVersion}}</a><br>
-            <a class="h4 mb-3 font-weight-normal">{{currentVersion}}</a><br>
-            <a class="h4 mb-3 font-weight-normal">{{newVersions}}</a><br><br>
-        </div>
-        <div ng-if="currentVersion == 'Complete database download is required'" ng-init="disabled">
-            <button ng-click="installComplete()" class="btn btn-lg"
-                    ng-disabled="disabled">Install complete database
-            </button>
-            <br>
-        </div>
-        <div ng-if="newVersions != 'All data are actual' && newVersions != ''" ng-init="disabled">
-            <button ng-click="installOneUpdate()" class="btn btn-lg"
-                    ng-disabled="disabled">Install one update
-            </button>
-            <br><br>
-            <button ng-click="installUpdates()" class="btn btn-lg"
-                    ng-disabled="disabled">Install all updates
-            </button>
-            <br>
+        <div class="col-12">
+            <div class="h5 mb-3 font-weight-normal">Server status: {{serverStatus}}
+                <div ng-repeat="info in information">
+                    <a class="h5 mb-3 font-weight-normal">{{info}}</a>
+                </div>
+            </div>
+            <div ng-show="isComplete">
+                <button ng-click="updateDatabase('installComplete')" class="btn btn-lg"
+                        ng-disabled="disabled">Install complete database</button><br><br>
+            </div>
+            <div ng-show="isDelta">
+                <button ng-click="updateDatabase('installOneUpdate')" class="btn btn-lg"
+                        ng-disabled="disabled">Install one update</button><br><br>
+                <button ng-click="updateDatabase('installUpdates')" class="btn btn-lg"
+                        ng-disabled="disabled">Install all updates</button><br><br>
+            </div>
+            <div>
+                <a class="btn btn-primary" href="/lastLog" target="_blank">Last logs</a>
+            </div>
         </div>
     </div>
     <div class="row" ng-show="frame == 'users'" ng-init="getAllUsers()">
@@ -72,7 +71,9 @@
                         <button class="btn btn-warning" ng-click="blockUser(user)">{{user.isEnable?'Block':'Unblock'}}
                         </button>
                     </td>
-                    <td><button class="btn btn-danger" ng-click="deleteUser(user)">Delete</button></td>
+                    <td>
+                        <button class="btn btn-danger" ng-click="deleteUser(user)">Delete</button>
+                    </td>
                 </tr>
                 </tbody>
             </table>

@@ -31,7 +31,7 @@ public class Deleter {
         File file = new File(path + fileName);
         if (file.exists()) {
             if (file.delete()) logger.info("Archive " + fileName + " deleted ");
-            else logger.info("Archive " + fileName + " not deleted ");
+            else logger.warn("Archive " + fileName + " not deleted ");
         } else logger.warn("Archive " + fileName + " not exists");
     }
 
@@ -40,7 +40,7 @@ public class Deleter {
         if (folder.exists()) {
             for (File file : Objects.requireNonNull(folder.listFiles())) file.delete();
             if (folder.delete()) logger.info("Folder " + folderName + " deleted ");
-            else logger.info("Folder " + folderName + " not deleted ");
+            else logger.warn("Folder " + folderName + " not deleted ");
         } else logger.warn("Folder " + folderName + " not exists");
     }
 }

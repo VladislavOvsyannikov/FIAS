@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import springfox.documentation.annotations.ApiIgnore;
 import system.model.User;
+import system.service.FiasException;
 import system.service.FiasService;
 
 import java.util.List;
@@ -42,7 +43,11 @@ public class AdminController {
     @RequestMapping(value = "/rest/getLastVersion", method = RequestMethod.GET)
     @ResponseBody
     public String[] getLastVersion(){
-        return new String[]{fiasService.getLastVersion()};
+        try {
+            return new String[]{fiasService.getLastVersion()};
+        } catch (FiasException e) {
+            return new String[]{null};
+        }
     }
 
     @ApiOperation(value = "Get need update versions")
@@ -50,31 +55,35 @@ public class AdminController {
     @RequestMapping(value = "/rest/getNewVersions", method = RequestMethod.GET)
     @ResponseBody
     public List<String> getNewVersions(){
-        return fiasService.getListOfNewVersions();
+        try {
+            return fiasService.getListOfNewVersions();
+        } catch (FiasException e) {
+            return null;
+        }
     }
 
     @ApiOperation(value = "Install last complete database")
     @ApiResponses({@ApiResponse(code = 200, message = "Success", response = Boolean.class)})
     @RequestMapping(value = "/rest/installComplete", method = RequestMethod.GET)
     @ResponseBody
-    public boolean installComplete(){
-        return fiasService.installComplete();
+    public void installComplete(){
+        fiasService.installComplete();
     }
 
     @ApiOperation(value = "Install one database update")
     @ApiResponses({@ApiResponse(code = 200, message = "Success", response = Boolean.class)})
     @RequestMapping(value = "/rest/installOneUpdate", method = RequestMethod.GET)
     @ResponseBody
-    public boolean installOneUpdate(){
-        return fiasService.installOneUpdate();
+    public void installOneUpdate(){
+        fiasService.installOneUpdate();
     }
 
     @ApiOperation(value = "Install all database updates")
     @ApiResponses({@ApiResponse(code = 200, message = "Success", response = Boolean.class)})
     @RequestMapping(value = "/rest/installUpdates", method = RequestMethod.GET)
     @ResponseBody
-    public boolean installUpdates(){
-        return fiasService.installUpdates();
+    public void installUpdates(){
+        fiasService.installUpdates();
     }
 
     @ApiIgnore @RequestMapping(value = "/admin")
@@ -102,10 +111,18 @@ public class AdminController {
     public void deleteUser(@RequestBody User user){
         fiasService.deleteUser(user);
     }
+
     @ApiIgnore
     @RequestMapping(value = "/rest/blockUser")
     @ResponseBody
     public void blockUser(@RequestBody User user){
         fiasService.blockUser(user);
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "/lastLog")
+    @ResponseBody
+    public String lastLog() {
+        return fiasService.lastLog();
     }
 }

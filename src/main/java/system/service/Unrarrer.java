@@ -13,17 +13,17 @@ public class Unrarrer {
 
     private static final Logger logger = LogManager.getLogger(Unrarrer.class);
 
-    public void unrarLastComplete(String path, String lastVersion) {
+    public void unrarLastComplete(String path, String lastVersion) throws FiasException {
         String fileName = "complete" + lastVersion;
         unRarFile(path, fileName);
     }
 
-    public void unrarDeltaByVersion(String path, String deltaVersion) {
+    public void unrarDeltaByVersion(String path, String deltaVersion) throws FiasException {
         String fileName = "delta" + deltaVersion;
         unRarFile(path, fileName);
     }
 
-    private void unRarFile(String path, String fileName) {
+    private void unRarFile(String path, String fileName) throws FiasException {
         logger.info("Start unrar " + fileName + ".rar");
         File rar = new File(path + fileName + ".rar");
         if (rar.exists()) {
@@ -33,7 +33,8 @@ public class Unrarrer {
                 Junrar.extract(rar, folder);
                 logger.info("Unrar " + fileName + ".rar is completed");
             } catch (Exception e) {
-                logger.error(e.getMessage());
+                logger.error(e.getClass().getName() + ": " + e.getMessage());
+                throw new FiasException();
             }
         } else {
             logger.warn(fileName + ".rar not found");

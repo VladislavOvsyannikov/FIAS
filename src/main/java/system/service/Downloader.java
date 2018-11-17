@@ -16,19 +16,19 @@ public class Downloader {
     private static final Logger logger = LogManager.getLogger(Downloader.class);
 
 
-    public void downloadLastComplete(String path, String lastVersion) {
+    public void downloadLastComplete(String path, String lastVersion) throws FiasException {
         String fileName = "complete" + lastVersion + ".rar";
         String lastCompleteXmlUrl = "https://fias.nalog.ru/Public/Downloads/" + lastVersion + "/fias_xml.rar";
         downloadFile(path, lastCompleteXmlUrl, fileName);
     }
 
-    public void downloadDeltaByVersion(String path, String deltaVersion) {
+    public void downloadDeltaByVersion(String path, String deltaVersion) throws FiasException {
         String fileName = "delta" + deltaVersion + ".rar";
         String url = "https://fias.nalog.ru/Public/Downloads/" + deltaVersion + "/fias_delta_xml.rar";
         downloadFile(path, url, fileName);
     }
 
-    private void downloadFile(String path, String url, String fileName) {
+    private void downloadFile(String path, String url, String fileName) throws FiasException {
         File file = new File(path + fileName);
         if (!file.exists()) {
             logger.info("Start download " + fileName);
@@ -37,7 +37,8 @@ public class Downloader {
                 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
                 logger.info("Download " + fileName + " completed");
             } catch (Exception e) {
-                logger.error(e.getMessage());
+                logger.error(e.getClass().getName() + ": " + e.getMessage());
+                throw new FiasException();
             }
         } else logger.warn(fileName + " already exists");
     }

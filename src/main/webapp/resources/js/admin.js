@@ -2,7 +2,7 @@ let admin = angular.module('admin', []);
 let config = {headers: {'Content-Type': 'application/json;charset=utf-8;'}};
 let urlPrefix = "rest/";
 
-admin.controller('adminController', function ($scope, $http) {
+admin.controller('adminController', function ($scope, $http, $timeout) {
 
     $scope.getCurrentUserInfo = function () {
         $http.get(urlPrefix + "getCurrentUserInfo", config).then(function (response) {
@@ -13,54 +13,73 @@ admin.controller('adminController', function ($scope, $http) {
         });
     };
 
-    $scope.getLastVersion = function () {
-        $http.get(urlPrefix+"getLastVersion", config).then(function (response) {
-            if (Array.isArray(response.data))
-                $scope.lastVersion = "Last version: " + response.data[0];
+    $scope.getServerStatus = function () {
+        $http.get(urlPrefix + "getServerStatus", config).then(function (response) {
+            $scope.serverStatus = response.data[0];
+            if ($scope.serverStatus === "working") $scope.disabled = false;
+            if ($scope.serverStatus === "updating") $scope.disabled = true;
+            if ($scope.serverStatus === "update error") {
+                $scope.serverStatus += ", check logs";
+                $scope.disabled = false;
+            }
         });
     };
 
-    $scope.getCurrentVersion = function () {
-        $http.get(urlPrefix+"getCurrentVersion", config).then(function (response) {
-            if (Array.isArray(response.data)) {
-                if (response.data[0] === null) $scope.currentVersion = "Complete database download is required";
-                else $scope.currentVersion = "Current version: " + response.data[0];
-            }
+    $scope.refreshServerStatus = function () {
+        $scope.getServerStatus();
+        $timeout(function () {$scope.refreshServerStatus();}, 3000);
+    };
+
+    $scope.getLastVersion = function () {
+        $http.get(urlPrefix + "getLastVersion", config).then(function (response) {
+            $scope.lastVersion = response.data[0];
+            $scope.getNewVersions();
         });
     };
 
     $scope.getNewVersions = function () {
-        $http.get(urlPrefix+"getNewVersions", config).then(function (response) {
-            if (Array.isArray(response.data)) {
-                if (response.data === "") $scope.newVersions = "";
-                else if (response.data.length > 0) $scope.newVersions = "Next updates required: " +
-                    response.data.toString().replace(/,/g,', ');
-                else $scope.newVersions = "All data are actual";
+        $http.get(urlPrefix + "getNewVersions", config).then(function (response) {
+            $scope.newVersions =  response.data;
+            $scope.getCurrentVersion();
+        });
+    };
+
+    $scope.getCurrentVersion = function () {
+        $http.get(urlPrefix + "getCurrentVersion", config).then(function (response) {
+            $scope.currentVersion = response.data[0];
+            $scope.getInformation();
+        });
+    };
+
+    $scope.information = [];
+    $scope.getInformation = function () {
+        if ($scope.currentVersion === null) {
+            $scope.information.push("Complete database download is required");
+            $scope.isComplete = true;
+        } else {
+            $scope.information.push("Current version: " + $scope.currentVersion);
+            $scope.isComplete = false;
+        }
+        if ($scope.lastVersion !== null){
+            $scope.information.push("Last version: " + $scope.lastVersion);
+            if ($scope.currentVersion === $scope.lastVersion){
+                $scope.information.push("All data are actual");
+                $scope.isDelta = false;
+            }else if ($scope.currentVersion !== null) {
+                $scope.information.push("Next updates are required: " + $scope.newVersions.toString().replace(/,/g, ', '));
+                $scope.isDelta = true;
             }
-        });
+        } else {
+            $scope.information.push("Check connection with fias.nalog.ru");
+            $scope.isComplete = false;
+            $scope.isDelta = false;
+        }
     };
 
-    $scope.disabled = false;
-
-    $scope.installComplete = function () {
+    $scope.updateDatabase = function (action) {
         $scope.disabled = true;
-        $http.get(urlPrefix+"installComplete", config).then(function (response) {
-            $scope.disabled = !response.data;
-        });
-    };
-
-    $scope.installOneUpdate = function () {
-        $scope.disabled = true;
-        $http.get(urlPrefix+"installOneUpdate", config).then(function (response) {
-            $scope.disabled = !response.data;
-        });
-    };
-
-    $scope.installUpdates = function () {
-        $scope.disabled = true;
-        $http.get(urlPrefix+"installUpdates", config).then(function (response) {
-            $scope.disabled = !response.data;
-        });
+        $scope.serverStatus = "updating";
+        $http.get(urlPrefix + action, config);
     };
 
     $scope.frame = "fias";

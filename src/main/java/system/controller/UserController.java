@@ -106,6 +106,13 @@ public class UserController {
     }
 
     @ApiIgnore
+    @RequestMapping(value = "/rest/getServerStatus")
+    @ResponseBody
+    public String[] getServerStatus() {
+        return new String[]{FiasService.serverStatus};
+    }
+
+    @ApiIgnore
     @RequestMapping(value = "/user")
     public String user() {
         return "user.html";

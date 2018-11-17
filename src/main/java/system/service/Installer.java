@@ -30,15 +30,15 @@ public class Installer {
     }
 
 
-    public void installLastComplete(String mainPath, String lastVersion) {
+    public void installLastComplete(String mainPath, String lastVersion) throws FiasException {
         installDatabase(mainPath, "complete", lastVersion, 100_000);
     }
 
-    public void installDeltaByVersion(String mainPath, String deltaVersion) {
+    public void installDeltaByVersion(String mainPath, String deltaVersion) throws FiasException {
         installDatabase(mainPath, "delta", deltaVersion, 10_000);
     }
 
-    private void installDatabase(String mainPath, String databaseType, String databaseVersion, int numberOfObjects) {
+    private void installDatabase(String mainPath, String databaseType, String databaseVersion, int numberOfObjects) throws FiasException {
         String path = mainPath + databaseType + databaseVersion;
         File folder = new File(path);
         if (folder.exists()) {
@@ -58,7 +58,8 @@ public class Installer {
                 versionDao.save(version);
                 logger.info("Update to version " + databaseVersion + " is completed");
             } catch (Exception e) {
-                logger.error(e.getMessage());
+                logger.error(e.getClass().getName() + ": " + e.getMessage());
+                throw new FiasException();
             }
         } else logger.warn(databaseType + databaseVersion + " not exists");
     }

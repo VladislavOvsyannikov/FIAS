@@ -1,5 +1,6 @@
 package system.service;
 
+import com.google.common.base.Charsets;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -23,6 +24,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,7 +34,8 @@ import java.util.List;
 public class FiasService {
 
     private static final Logger logger = LogManager.getLogger(FiasService.class);
-    private String mainPath = "D:\\Fias\\";
+    private static final String MAIN_PATH = "D:\\Fias\\";
+    public static String serverStatus = "working";
     private Downloader downloader;
     private Unrarrer unrarrer;
     private Installer installer;
@@ -44,36 +48,54 @@ public class FiasService {
     private RoomDao roomDao;
     private UserDao userDao;
 
-    public boolean installComplete() {
-        String lastVersion = getLastVersion();
-//        downloader.downloadLastComplete(mainPath, lastVersion);
-//        unrarrer.unrarLastComplete(mainPath, lastVersion);
-//        installer.installLastComplete(mainPath, lastVersion);
-//        deleter.deleteCompleteFiles(mainPath, lastVersion);
-        return true;
-    }
-
-    public boolean installOneUpdate() {
-        String deltaVersion = getListOfNewVersions().get(0);
-//        downloader.downloadDeltaByVersion(mainPath, deltaVersion);
-//        unrarrer.unrarDeltaByVersion(mainPath, deltaVersion);
-//        installer.installDeltaByVersion(mainPath, deltaVersion);
-//        deleter.deleteDeltaFiles(mainPath, deltaVersion);
-        return true;
-    }
-
-    public boolean installUpdates() {
-        List<String> listOfNewVersions = getListOfNewVersions();
-        for (String deltaVersion : listOfNewVersions){
-//            downloader.downloadDeltaByVersion(mainPath, deltaVersion);
-//            unrarrer.unrarDeltaByVersion(mainPath, deltaVersion);
-//            installer.installDeltaByVersion(mainPath, deltaVersion);
-//            deleter.deleteDeltaFiles(mainPath, deltaVersion);
+    public void installComplete() {
+        serverStatus = "updating";
+        try {
+            String lastVersion = getLastVersion();
+//            downloader.downloadLastComplete(MAIN_PATH, lastVersion);
+//            unrarrer.unrarLastComplete(MAIN_PATH, lastVersion);
+//            installer.installLastComplete(MAIN_PATH, lastVersion);
+//            deleter.deleteCompleteFiles(MAIN_PATH, lastVersion);
+        } catch (FiasException e) {
+            serverStatus = "update error";
+            return;
         }
-        return true;
+        serverStatus = "working";
     }
 
-    public String getLastVersion() {
+    public void installOneUpdate() {
+        serverStatus = "updating";
+        try {
+            String deltaVersion = getListOfNewVersions().get(0);
+            downloader.downloadDeltaByVersion(MAIN_PATH, deltaVersion);
+//            unrarrer.unrarDeltaByVersion(MAIN_PATH, deltaVersion);
+//            installer.installDeltaByVersion(MAIN_PATH, deltaVersion);
+            deleter.deleteDeltaFiles(MAIN_PATH, deltaVersion);
+        } catch (FiasException e) {
+            serverStatus = "update error";
+            return;
+        }
+        serverStatus = "working";
+    }
+
+    public void installUpdates() {
+        serverStatus = "updating";
+        try {
+            List<String> listOfNewVersions = getListOfNewVersions();
+            for (String deltaVersion : listOfNewVersions) {
+//                downloader.downloadDeltaByVersion(MAIN_PATH, deltaVersion);
+//                unrarrer.unrarDeltaByVersion(MAIN_PATH, deltaVersion);
+//                installer.installDeltaByVersion(MAIN_PATH, deltaVersion);
+//                deleter.deleteDeltaFiles(MAIN_PATH, deltaVersion);
+            }
+        } catch (FiasException e) {
+            serverStatus = "update error";
+            return;
+        }
+        serverStatus = "working";
+    }
+
+    public String getLastVersion() throws FiasException{
         StringBuilder res = new StringBuilder();
         try {
             URL url = new URL("https://fias.nalog.ru/Public/Downloads/Actual/VerDate.txt");
@@ -81,7 +103,8 @@ public class FiasService {
             String[] strings = in.readLine().split("\\.");
             for (int i = strings.length - 1; i >= 0; i--) res.append(strings[i]);
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getClass().getName() + ": " + e.getMessage());
+            throw new FiasException();
         }
         return res.toString();
     }
@@ -90,7 +113,7 @@ public class FiasService {
         return versionDao.getCurrentVersion();
     }
 
-    public List<String> getListOfNewVersions() {
+    public List<String> getListOfNewVersions() throws FiasException {
         String url = "https://fias.nalog.ru/WebServices/Public/DownloadService.asmx";
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost post = new HttpPost(url);
@@ -109,13 +132,14 @@ public class FiasService {
                             "</soap:Envelope>"
             );
         } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getClass().getName() + ": " + e.getMessage());
         }
         post.setEntity(xmlString);
 
         List<String> versions = new ArrayList<>();
         StringBuilder res = new StringBuilder();
-        if (getCurrentVersion() == null) return null;
+        String currentVersion = getCurrentVersion();
+        if (currentVersion == null) return null;
         try {
             HttpResponse response = client.execute(post);
             BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -125,14 +149,16 @@ public class FiasService {
                 if (i % 2 != 0) {
                     String[] strings = text[i].split(" ")[3].split("\\.");
                     for (int j = strings.length - 1; j >= 0; j--) res.append(strings[j]);
-                    if (Integer.parseInt(res.toString()) > Integer.parseInt(getCurrentVersion())) {
+                    if (Integer.parseInt(res.toString()) > Integer.parseInt(currentVersion)) {
                         versions.add(res.toString());
                     }
                     res.setLength(0);
                 }
             }
+            br.close();
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getClass().getName() + ": " + e.getMessage());
+            throw new FiasException();
         }
         return versions;
     }
@@ -160,7 +186,7 @@ public class FiasService {
         boolean isActual = Boolean.parseBoolean(params.getOrDefault("onlyActual", "false"));
         params.remove("onlyActual");
         if (params.containsKey("guid")) {
-            String guid = params.get("guid").replaceAll("-","").toLowerCase();
+            String guid = params.get("guid").replaceAll("-", "").toLowerCase();
             if (guid.length() != 32) return res;
             params.replace("guid", guid);
         }
@@ -198,7 +224,7 @@ public class FiasService {
 
     public Object searchObjectByGuid(String guid) {
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        guid = guid.replaceAll("-","").toLowerCase();
+        guid = guid.replaceAll("-", "").toLowerCase();
         if (guid.length() != 32) return null;
         params.put("guid", guid);
         List<AddrObject> addrObject = addrObjectDao.getAddrObjectsByParams(params, false);
@@ -212,7 +238,7 @@ public class FiasService {
         return null;
     }
 
-    public String getFullAddress(String guid){
+    public String getFullAddress(String guid) {
         String fullAddress = "";
         Object object = searchObjectByGuid(guid);
         if (object == null) return fullAddress;
@@ -221,14 +247,14 @@ public class FiasService {
             field.setAccessible(true);
             fullAddress = (String) field.get(object);
         } catch (IllegalAccessException | NoSuchFieldException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getClass().getName() + ": " + e.getMessage());
         }
         return fullAddress;
     }
 
     public boolean signUp(User user) {
-        if (user.getPassword().replaceAll(" ","").equals("") ||
-                user.getName().replaceAll(" ","").equals("")) return false;
+        if (user.getPassword().replaceAll(" ", "").equals("") ||
+                user.getName().replaceAll(" ", "").equals("")) return false;
         User oldUser = userDao.getUser(user.getName());
         if (oldUser == null) {
             User newUser = new User();
@@ -253,7 +279,7 @@ public class FiasService {
         return userDao.getAllUsersWithoutPasswords();
     }
 
-    public void deleteUser(User user){
+    public void deleteUser(User user) {
         userDao.deleteUser(user);
     }
 
@@ -261,8 +287,19 @@ public class FiasService {
         userDao.blockUser(user.getId());
     }
 
-    public List<String> getCurrentUserInfo(){
+    public List<String> getCurrentUserInfo() {
         return tokenAuthenticationManager.getCurrentUserInfo();
+    }
+
+    public String lastLog() {
+        try {
+            return Files.lines(Paths.get(MAIN_PATH + "fiasLogs\\lastLog.log"), Charsets.UTF_8)
+                    .reduce("", (str1, str2) -> str1 + "<br>" + str2)
+                    .replaceFirst("<br>", "");
+        } catch (IOException e) {
+            logger.error(e.getClass().getName() + ": " + e.getMessage());
+            return null;
+        }
     }
 
     private String bCrypt(String string) {
@@ -273,42 +310,52 @@ public class FiasService {
     public void setHouseDao(HouseDao houseDao) {
         this.houseDao = houseDao;
     }
+
     @Autowired
     public void setRoomDao(RoomDao roomDao) {
         this.roomDao = roomDao;
     }
+
     @Autowired
     public void setSteadDao(SteadDao steadDao) {
         this.steadDao = steadDao;
     }
+
     @Autowired
     public void setDownloader(Downloader downloader) {
         this.downloader = downloader;
     }
+
     @Autowired
     public void setUnrarrer(Unrarrer unrarrer) {
         this.unrarrer = unrarrer;
     }
+
     @Autowired
     public void setInstaller(Installer installer) {
         this.installer = installer;
     }
+
     @Autowired
     public void setDeleter(Deleter deleter) {
         this.deleter = deleter;
     }
+
     @Autowired
     public void setAddrObjectDao(AddrObjectDao addrObjectDao) {
         this.addrObjectDao = addrObjectDao;
     }
+
     @Autowired
     public void setVersionDao(VersionDao versionDao) {
         this.versionDao = versionDao;
     }
+
     @Autowired
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
+
     @Autowired
     public void setTokenAuthenticationManager(TokenAuthenticationManager tokenAuthenticationManager) {
         this.tokenAuthenticationManager = tokenAuthenticationManager;
