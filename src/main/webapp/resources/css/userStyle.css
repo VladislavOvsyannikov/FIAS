@@ -21,6 +21,15 @@
     z-index: 1;
 }
 
+.showAddresses .list-group {
+    width: 96%;
+    opacity: 1;
+    height: 250px;
+    overflow-y: auto;
+    z-index: 1;
+}
+
+
 .list-group li {
     padding: 5px 10px;
     cursor: pointer;

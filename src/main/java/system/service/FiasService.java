@@ -68,7 +68,7 @@ public class FiasService {
         try {
             String deltaVersion = getListOfNewVersions().get(0);
             downloader.downloadDeltaByVersion(MAIN_PATH, deltaVersion);
-//            unrarrer.unrarDeltaByVersion(MAIN_PATH, deltaVersion);
+            unrarrer.unrarDeltaByVersion(MAIN_PATH, deltaVersion);
 //            installer.installDeltaByVersion(MAIN_PATH, deltaVersion);
             deleter.deleteDeltaFiles(MAIN_PATH, deltaVersion);
         } catch (FiasException e) {
@@ -163,20 +163,32 @@ public class FiasService {
         return versions;
     }
 
-    public List<AddrObject> getAddrObjectsByParentGuid(String guid, boolean isActual) {
-        return addrObjectDao.getAddrObjectsByParentGuid(guid, isActual);
+
+    public List<AddrObject> getAddrObjectsByName(LinkedHashMap<String, String> params){
+        String name = params.get("name");
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+        boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));
+        return addrObjectDao.getAddrObjectsByName(name, params.get("type"), isActual);
     }
 
-    public List<Stead> getSteadsByParentGuid(String guid, boolean isActual) {
-        return steadDao.getSteadsByParentGuid(guid, isActual);
+    public List<AddrObject> getAddrObjectsByParentGuid(LinkedHashMap<String, String> params) {
+        boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));
+        return addrObjectDao.getAddrObjectsByParentGuid(params.get("guid"), isActual);
     }
 
-    public List<House> getHousesByParentGuid(String guid, boolean isActual) {
-        return houseDao.getHousesByParentGuid(guid, isActual);
+    public List<Stead> getSteadsByParentGuid(LinkedHashMap<String, String> params) {
+        boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));
+        return steadDao.getSteadsByParentGuid(params.get("guid"), isActual);
     }
 
-    public List<Room> getRoomsListByParentGuid(String guid, boolean isActual) {
-        return roomDao.getRoomsListByParentGuid(guid, isActual);
+    public List<House> getHousesByParentGuid(LinkedHashMap<String, String> params) {
+        boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));
+        return houseDao.getHousesByParentGuid(params.get("guid"), isActual);
+    }
+
+    public List<Room> getRoomsListByParentGuid(LinkedHashMap<String, String> params) {
+        boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));
+        return roomDao.getRoomsListByParentGuid(params.get("guid"), isActual);
     }
 
     public List<Object> searchObjects(LinkedHashMap<String, String> params) {
@@ -212,6 +224,7 @@ public class FiasService {
         }
         return res;
     }
+
 
     public List<Object> searchObjectsByParameters(String guid, String postalcode) {
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
@@ -251,6 +264,7 @@ public class FiasService {
         }
         return fullAddress;
     }
+
 
     public boolean signUp(User user) {
         if (user.getPassword().replaceAll(" ", "").equals("") ||

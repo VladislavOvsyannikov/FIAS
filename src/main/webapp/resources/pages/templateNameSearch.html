@@ -1,0 +1,28 @@
+<div class="row">
+    <div class="col-8">
+        <input type="text" class="form-control" style="width: 100%" ng-model="nameSearch"
+               placeholder="Введите название адресообразующего элемента"
+               ng-disabled="downloadingMessage != ''"/>
+        <div class="search-object-list">
+            <div ng-if="addrObjectsByName.length > 0">
+                <ul class="list-group">
+                    <li ng-repeat="object in addrObjectsByName | orderBy:'fullAddress'"
+                        class="list-group-item" ng-click="chooseAddress(object)">
+                        {{object.fullAddress}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-1">
+        <button class="btn" type="submit" ng-click="getAddrObjectsByName()">Поиск</button>
+    </div>
+    <div class="col-3">
+        <div class="form-group">
+            <select class="form-control" style="width: 100%" ng-model="type" title="">
+                <option value="all">Любой тип</option>
+                <option ng-repeat="type in searchTypes">{{type}}</option>
+            </select>
+        </div>
+    </div>
+</div>

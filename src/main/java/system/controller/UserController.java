@@ -62,40 +62,43 @@ public class UserController {
     @ApiIgnore
     @RequestMapping(value = "/rest/searchObjects")
     @ResponseBody
-    public List<Object> searchObjects(@RequestBody LinkedHashMap<String, String> parameters){
-        return fiasService.searchObjects(parameters);
+    public List<Object> searchObjects(@RequestBody LinkedHashMap<String, String> params){
+        return fiasService.searchObjects(params);
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "/rest/getAddrObjectsByName")
+    @ResponseBody
+    public List<AddrObject> getAddrObjectsByName(@RequestBody LinkedHashMap<String, String> params){
+        return fiasService.getAddrObjectsByName(params);
     }
 
     @ApiIgnore
     @RequestMapping(value = "/rest/getAddrObjectsByParentGuid")
     @ResponseBody
     public List<AddrObject> getAddrObjectsByParentGuid(@RequestBody LinkedHashMap<String, String> params){
-        return fiasService.getAddrObjectsByParentGuid(params.get("guid"),
-                Boolean.parseBoolean(params.getOrDefault("actual", "true")));
+        return fiasService.getAddrObjectsByParentGuid(params);
     }
 
     @ApiIgnore
     @RequestMapping(value = "/rest/getSteadsByParentGuid")
     @ResponseBody
     public List<Stead> getSteadsByParentGuid(@RequestBody LinkedHashMap<String, String> params){
-        return fiasService.getSteadsByParentGuid(params.get("guid"),
-                Boolean.parseBoolean(params.getOrDefault("actual", "true")));
+        return fiasService.getSteadsByParentGuid(params);
     }
 
     @ApiIgnore
     @RequestMapping(value = "/rest/getHousesByParentGuid")
     @ResponseBody
     public List<House> getHousesByParentGuid(@RequestBody LinkedHashMap<String, String> params){
-        return fiasService.getHousesByParentGuid(params.get("guid"),
-                Boolean.parseBoolean(params.getOrDefault("actual", "true")));
+        return fiasService.getHousesByParentGuid(params);
     }
 
     @ApiIgnore
     @RequestMapping(value = "/rest/getRoomsListByParentGuid")
     @ResponseBody
     public List<Room> getRoomsListByParentGuid(@RequestBody LinkedHashMap<String, String> params){
-        return fiasService.getRoomsListByParentGuid(params.get("guid"),
-                Boolean.parseBoolean(params.getOrDefault("actual", "true")));
+        return fiasService.getRoomsListByParentGuid(params);
     }
 
     @ApiIgnore
@@ -122,6 +125,12 @@ public class UserController {
     @RequestMapping(value = "/template.html")
     public String template() {
         return "template.html";
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "/templateNameSearch.html")
+    public String templateNameSearch() {
+        return "templateNameSearch.html";
     }
 }
 

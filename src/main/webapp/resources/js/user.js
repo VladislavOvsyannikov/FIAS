@@ -5,7 +5,7 @@ let urlPrefix = "rest/";
 user.controller('userController', function ($rootScope, $scope, $http) {
 
     $scope.getCurrentUserInfo = function () {
-        $http.get(urlPrefix+"getCurrentUserInfo", config).then(function(response) {
+        $http.get(urlPrefix + "getCurrentUserInfo", config).then(function (response) {
             if (Array.isArray(response.data) && response.data.length > 0) {
                 $scope.userName = response.data[0];
                 $scope.userRole = response.data[1];
@@ -14,7 +14,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
     };
 
     $scope.getObjectsByParentGuid = function () {
-        let data = {guid: parentGuid, actual: $scope.actualAdvancedSearch};
+        let data = {guid: parentGuid, onlyActual: $rootScope.actualAdvancedSearch};
         $scope.downloadingMessage = "Downloading...";
         $http.post(urlPrefix + "getAddrObjectsByParentGuid", data, config).then(function (response) {
             $rootScope.objectsList = response.data;
@@ -28,7 +28,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
     };
 
     $scope.getSteadsByParentGuid = function () {
-        let data = {guid: parentGuid, actual: $scope.actualAdvancedSearch};
+        let data = {guid: parentGuid, onlyActual: $rootScope.actualAdvancedSearch};
         $scope.downloadingMessage = "Downloading...";
         $http.post(urlPrefix + "getSteadsByParentGuid", data, config).then(function (response) {
             $rootScope.steadsList = response.data;
@@ -36,7 +36,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
     };
 
     $scope.getHousesByParentGuid = function () {
-        let data = {guid: parentGuid, actual: $scope.actualAdvancedSearch};
+        let data = {guid: parentGuid, onlyActual: $rootScope.actualAdvancedSearch};
         $http.post(urlPrefix + "getHousesByParentGuid", data, config).then(function (response) {
             $rootScope.housesList = response.data;
             $scope.downloadingMessage = "";
@@ -45,7 +45,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
     };
 
     $scope.getRoomsListByParentGuid = function () {
-        let data = {guid: parentGuid, actual: $scope.actualAdvancedSearch};
+        let data = {guid: parentGuid, onlyActual: $rootScope.actualAdvancedSearch};
         $scope.downloadingMessage = "Downloading...";
         $http.post(urlPrefix + "getRoomsListByParentGuid", data, config).then(function (response) {
             $rootScope.roomsList = response.data;
@@ -71,7 +71,6 @@ user.controller('userController', function ($rootScope, $scope, $http) {
             $scope.showDropdownList.push({show: true});
         }
     };
-
 
     $scope.searchObjects = function () {
         let data = Object();
@@ -100,10 +99,8 @@ user.controller('userController', function ($rootScope, $scope, $http) {
 
     $scope.getLastObjectInformation = function () {
         if (parentGuid !== " ") {
-            let data = Object();
-            data.guid = parentGuid;
-            data.searchType = $rootScope.typeOfLastObject;
-            data.onlyActual = $scope.actualAdvancedSearch;
+            let data = {guid: parentGuid, searchType: $rootScope.typeOfLastObject,
+                onlyActual: $rootScope.actualAdvancedSearch};
             $http.post(urlPrefix + "searchObjects", data, config).then(function (response) {
                 $scope.searchMessage = "";
                 $scope.resultObjects = response.data;
@@ -126,26 +123,31 @@ user.controller('userController', function ($rootScope, $scope, $http) {
     };
 
     $scope.getStatus = function (object) {
-        let date = new Date().toJSON().slice(0, 10).replace(/-/g, '');
-        return (object.enddate >= parseInt(date)) ? "Актуальный" : "Неактуальный";
+        if (object.livestatus !== undefined) return object.livestatus === 1? "Актуальный" : "Неактуальный";
+        else {
+            let date = new Date().toJSON().slice(0, 10).replace(/-/g, '');
+            return (object.enddate >= parseInt(date)) ? "Актуальный" : "Неактуальный";
+        }
     }
 });
 
 let directiveScopesIds = [];
 let parentGuid = " ";
 
-user.directive('dropdownList', function ($rootScope, $http, $timeout) {
+user.directive('dropdownList', function ($rootScope, $timeout) {
     return {
         restrict: 'E',
         scope: true,
         templateUrl: 'template.html',
         link: function (scope, elelement) {
-            let $listContainer = angular.element(elelement[0].querySelectorAll('.search-object-list')[0]);
+            let list = angular.element(elelement[0].querySelectorAll('.search-object-list')[0]);
             elelement.find('input').bind('focus', function () {
-                $listContainer.addClass('show');
+                list.addClass('show');
             });
             elelement.find('input').bind('blur', function () {
-                $timeout(function () {$listContainer.removeClass('show')}, 200);
+                $timeout(function () {
+                    list.removeClass('show')
+                }, 150);
             });
 
             scope.chooseObject = function (object) {
@@ -156,14 +158,13 @@ user.directive('dropdownList', function ($rootScope, $http, $timeout) {
 
                 if (level === 0) {
                     scope.objectsList = $rootScope.objectsList;
-                    directiveScopesIds.push(scope.$id);
-                    scope.getObjectsByParentGuid();
-                }else{
+                    directiveScopesIds.push(scope);
+                } else {
                     scope.formatDirectiveScopes(level);
                     scope.initLists();
-                    scope.getObjectsByParentGuid();
                 }
-                $listContainer.removeClass('show');
+                scope.getObjectsByParentGuid();
+                list.removeClass('show');
             };
 
             scope.chooseHouse = function (house) {
@@ -175,14 +176,13 @@ user.directive('dropdownList', function ($rootScope, $http, $timeout) {
                 if (level === 0) {
                     scope.housesList = $rootScope.housesList;
                     scope.steadsList = $rootScope.steadsList;
-                    directiveScopesIds.push(scope.$id);
-                    scope.getRoomsListByParentGuid();
-                }else{
+                    directiveScopesIds.push(scope);
+                } else {
                     scope.formatDirectiveScopes(level);
                     scope.initLists();
-                    scope.getRoomsListByParentGuid();
                 }
-                $listContainer.removeClass('show');
+                scope.getRoomsListByParentGuid();
+                list.removeClass('show');
             };
 
             scope.chooseStead = function (stead) {
@@ -194,13 +194,13 @@ user.directive('dropdownList', function ($rootScope, $http, $timeout) {
                 if (level === 0) {
                     scope.steadsList = $rootScope.steadsList;
                     scope.housesList = $rootScope.housesList;
-                    directiveScopesIds.push(scope.$id);
-                }else{
+                    directiveScopesIds.push(scope);
+                } else {
                     scope.formatDirectiveScopes(level);
                     scope.initLists();
                     scope.formatShow();
                 }
-                $listContainer.removeClass('show');
+                list.removeClass('show');
             };
 
             scope.chooseRoom = function (room) {
@@ -211,15 +211,15 @@ user.directive('dropdownList', function ($rootScope, $http, $timeout) {
 
                 if (level === 0) {
                     scope.roomsList = $rootScope.roomsList;
-                    directiveScopesIds.push(scope.$id);
+                    directiveScopesIds.push(scope);
                 }
-                $listContainer.removeClass('show');
+                list.removeClass('show');
             };
 
             scope.getCurrentLevel = function () {
                 let level = 0;
                 for (let i = 0; i < directiveScopesIds.length; i++) {
-                    if (scope.$id === directiveScopesIds[i]) level = i + 1;
+                    if (scope.$id === directiveScopesIds[i].$id) level = i + 1;
                 }
                 return level;
             };
@@ -227,6 +227,70 @@ user.directive('dropdownList', function ($rootScope, $http, $timeout) {
             scope.formatDirectiveScopes = function (currentLevel) {
                 while (directiveScopesIds.length > currentLevel) directiveScopesIds.pop();
             };
+
+            $rootScope.clickImitation = function (object) {
+                scope.chooseObject(object);
+            };
+        }
+    }
+});
+
+user.directive('nameSearch', function ($rootScope, $http, $timeout) {
+    return {
+        restrict: 'E',
+        scope: true,
+        templateUrl: 'templateNameSearch.html',
+        link: function (scope, elelement) {
+            let list = angular.element(elelement[0].querySelectorAll('.search-object-list')[0]);
+            elelement.find('input').bind('focus', function () {
+                list.addClass('showAddresses');
+            });
+            elelement.find('input').bind('blur', function () {
+                $timeout(function () {
+                    list.removeClass('showAddresses')
+                }, 150);
+            });
+            elelement.find('button').bind('blur', function () {
+                $timeout(function () {
+                    list.removeClass('showAddresses')
+                }, 150);
+            });
+
+            scope.chooseAddress = function (object) {
+                scope.nameSearch = object.fullAddress;
+                let names = object.fullAddress.split(' ');
+                object.shortname = names[names.length - 2];
+
+                if (directiveScopesIds.length > 0) {
+                    parentGuid = object.aoguid;
+                    $rootScope.typeOfLastObject = "addrObject";
+                    while (directiveScopesIds.length > 1) directiveScopesIds.pop();
+                    scope.initLists();
+                    directiveScopesIds[0].search = object.shortname + ' ' + object.formalname;
+                    scope.getObjectsByParentGuid();
+                } else $rootScope.clickImitation(object);
+
+                list.removeClass('showAddresses');
+            };
+
+            scope.getAddrObjectsByName = function () {
+                if (scope.nameSearch.length > 2) {
+                    let data = {name: scope.nameSearch, type: scope.type, onlyActual: $rootScope.actualAdvancedSearch};
+                    scope.downloadingMessage = "Downloading...";
+                    $http.post(urlPrefix + "getAddrObjectsByName", data, config).then(function (response) {
+                        scope.downloadingMessage = "";
+                        if (response.data.length > 0){
+                            scope.addrObjectsByName = response.data;
+                            list.addClass('showAddresses');
+                        }
+                    });
+                } else scope.addrObjectsByName = [];
+            };
+
+            scope.type = "all";
+            scope.downloadingMessage = "";
+            scope.searchTypes = ["Город","Область","Район","Край", "Республика", "Автономный округ",
+                "Автономная область", "Улица", "Проспект", "Село", "Деревня", "Поселок", "Поселок городского типа"];
         }
     }
 });

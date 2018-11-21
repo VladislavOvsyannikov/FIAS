@@ -10,7 +10,8 @@ import javax.persistence.*;
 @Table(name = "object", schema = "fias", indexes = {
         @Index(columnList = "parentguid", name = "parentguidobject"),
         @Index(columnList = "aoguid", name = "aoguid"),
-        @Index(columnList = "postalcode", name = "postalcode")})
+        @Index(columnList = "postalcode", name = "postalcode"),
+        @Index(columnList = "formalname", name = "formalname")})
 public class AddrObject {
 
     @Transient

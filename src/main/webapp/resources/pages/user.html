@@ -13,22 +13,27 @@
 </head>
 <body>
 
-<div><nav-bar></nav-bar></div>
+<div>
+    <nav-bar></nav-bar>
+</div>
 
 <div class="container">
+    <br>
+    <div><name-search></name-search></div>
     <div class="row">
         <div class="col-5" ng-init="initLists(); getObjectsByParentGuid()">
             <label>Расширенный поиск: {{downloadingMessage}}</label>
-                <div ng-repeat="flag in showDropdownList">
-                    <dropdown-list></dropdown-list><br>
-                </div>
+            <div ng-repeat="flag in showDropdownList">
+                <dropdown-list></dropdown-list>
+                <br>
+            </div>
             <div class="form-check-inline">
                 <button class="btn" type="submit" ng-click="getLastObjectInformation()">
                     Данные об объекте
                 </button>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="actual1"
-                           ng-init="actualAdvancedSearch=true" ng-model="actualAdvancedSearch">
+                           ng-init="$root.actualAdvancedSearch=true" ng-model="$root.actualAdvancedSearch">
                     <label class="form-check-label" for="actual1">Только актуальные</label>
                 </div>
             </div>
