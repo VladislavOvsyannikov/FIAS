@@ -36,7 +36,7 @@ public class HouseDao extends GenericDao<House>{
 
     public List<House> getHousesByParentGuid(String guid, boolean isActual) {
         List<House> houses = getEntities(
-                "select * from house where aoguid=\""+guid+"\"", House.class);
+                "select * from house where aoguid='"+guid+"'", House.class);
         if (isActual) {
             int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date()));
             houses.removeIf(house -> currentDate > house.getENDDATE());
@@ -51,8 +51,8 @@ public class HouseDao extends GenericDao<House>{
     public List<House> getHousesByParams(LinkedHashMap<String, String> params, boolean isActual) {
         List<String> strings = new ArrayList<>();
         for (String key : params.keySet()){
-            if (key.equals("guid")) strings.add("houseguid=\""+params.get(key)+"\"");
-            else strings.add(key+"=\""+params.get(key)+"\"");
+            if (key.equals("guid")) strings.add("houseguid='"+params.get(key)+"'");
+            else strings.add(key+"='"+params.get(key)+"'");
         }
         String queryPart = String.join(" and ", strings);
         List<House> houses = getEntities("select * from house where "+queryPart, House.class);
@@ -90,7 +90,7 @@ public class HouseDao extends GenericDao<House>{
     }
 
     House getHouseByGuid(String guid){
-        List<House> houses = getEntities("select * from house where houseguid=\""+guid+"\"", House.class);
+        List<House> houses = getEntities("select * from house where houseguid='"+guid+"'", House.class);
         houses = getHousesWithMaxEnddate(houses);
         return houses.get(0);
     }

@@ -29,7 +29,7 @@ public class RoomDao extends GenericDao<Room>{
     public List<Room> getRoomsListByParentGuid(String guid, boolean isActual) {
         String queryPart = isActual? " and livestatus=1": "";
         List<Room> rooms = getEntities(
-                "select * from room where houseguid=\""+guid+"\"" + queryPart, Room.class);
+                "select * from room where houseguid='"+guid+"'" + queryPart, Room.class);
         if(!isActual) rooms = getRoomsWithMaxEnddate(rooms);
         for (Room room:rooms) room.setType(getRoomType(room));
         return rooms;
@@ -38,8 +38,8 @@ public class RoomDao extends GenericDao<Room>{
     public List<Room> getRoomsByParams(LinkedHashMap<String, String> params, boolean isActual) {
         List<String> strings = new ArrayList<>();
         for (String key : params.keySet()){
-            if (key.equals("guid")) strings.add("roomguid=\""+params.get(key)+"\"");
-            else strings.add(key+"=\""+params.get(key)+"\"");
+            if (key.equals("guid")) strings.add("roomguid='"+params.get(key)+"'");
+            else strings.add(key+"='"+params.get(key)+"'");
         }
         if (isActual) strings.add("livestatus=1");
         String queryPart = String.join(" and ", strings);

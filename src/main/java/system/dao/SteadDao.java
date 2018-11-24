@@ -24,7 +24,7 @@ public class SteadDao extends GenericDao<Stead> {
     public List<Stead> getSteadsByParentGuid(String guid, boolean isActual) {
         String queryPart = isActual? " and livestatus=1": "";
         List<Stead> steads = getEntities(
-                "select * from stead where parentguid=\""+guid+"\"" + queryPart, Stead.class);
+                "select * from stead where parentguid='"+guid+"'" + queryPart, Stead.class);
         if (!isActual) steads = getSteadsWithMaxEnddate(steads);
         return steads;
     }
@@ -32,8 +32,8 @@ public class SteadDao extends GenericDao<Stead> {
     public List<Stead> getSteadsByParams(LinkedHashMap<String, String> params, boolean isActual) {
         List<String> strings = new ArrayList<>();
         for (String key : params.keySet()){
-            if (key.equals("guid")) strings.add("steadguid=\""+params.get(key)+"\"");
-            else strings.add(key+"=\""+params.get(key)+"\"");
+            if (key.equals("guid")) strings.add("steadguid='"+params.get(key)+"'");
+            else strings.add(key+"='"+params.get(key)+"'");
         }
         if (isActual) strings.add("livestatus=1");
         String queryPart = String.join(" and ", strings);

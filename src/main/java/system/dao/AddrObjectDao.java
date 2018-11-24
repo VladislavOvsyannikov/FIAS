@@ -25,7 +25,7 @@ public class AddrObjectDao extends GenericDao<AddrObject> {
         else {
             String queryPart = isActual ? " and livestatus=1" : "";
             List<AddrObject> addrObjects = getEntities(
-                    "select * from object where parentguid=\"" + guid + "\"" + queryPart, AddrObject.class);
+                    "select * from object where parentguid='" + guid + "'" + queryPart, AddrObject.class);
             if (!isActual) addrObjects = getAddrObjectsWithMaxEnddate(addrObjects);
             for (AddrObject addrObject : addrObjects) addrObject.setSHORTNAME(getFullType(addrObject));
             return addrObjects;
@@ -45,8 +45,8 @@ public class AddrObjectDao extends GenericDao<AddrObject> {
     public List<AddrObject> getAddrObjectsByParams(LinkedHashMap<String, String> params, boolean isActual) {
         List<String> strings = new ArrayList<>();
         for (String key : params.keySet()) {
-            if (key.equals("guid")) strings.add("aoguid=\"" + params.get(key) + "\"");
-            else strings.add(key + "=\"" + params.get(key) + "\"");
+            if (key.equals("guid")) strings.add("aoguid='" + params.get(key) + "'");
+            else strings.add(key + "='" + params.get(key) + "'");
         }
         if (isActual) strings.add("livestatus=1");
         String queryPart = String.join(" and ", strings);
@@ -91,7 +91,7 @@ public class AddrObjectDao extends GenericDao<AddrObject> {
     }
 
     AddrObject getAddrObjectByGuid(String guid) {
-        List<AddrObject> addrObjects = getEntities("select * from object where aoguid=\"" + guid + "\"", AddrObject.class);
+        List<AddrObject> addrObjects = getEntities("select * from object where aoguid='" + guid + "'", AddrObject.class);
         addrObjects = getAddrObjectsWithMaxEnddate(addrObjects);
         return addrObjects.get(0);
     }
@@ -107,47 +107,47 @@ public class AddrObjectDao extends GenericDao<AddrObject> {
             case ("all"):
                 break;
             case ("Город"):
-                queryPart = queryPart + " and (shortname=\"г\" or shortname=\"г.\")";
+                queryPart = queryPart + " and (shortname='г' or shortname='г.')";
                 break;
             case ("Область"):
-                queryPart = queryPart + " and (shortname=\"обл\" or shortname=\"обл.\")";
+                queryPart = queryPart + " and (shortname='обл' or shortname='обл.')";
                 break;
             case ("Район"):
-                queryPart = queryPart + " and shortname=\"р-н\"";
+                queryPart = queryPart + " and shortname='р-н'";
                 break;
             case ("Край"):
-                queryPart = queryPart + " and shortname=\"край\"";
+                queryPart = queryPart + " and shortname='край'";
                 break;
             case ("Республика"):
-                queryPart = queryPart + " and (shortname=\"Респ\" or shortname=\"Респ.\")";
+                queryPart = queryPart + " and (shortname='Респ' or shortname='Респ.')";
                 break;
             case ("Автономный округ"):
-                queryPart = queryPart + " and shortname=\"АО\"";
+                queryPart = queryPart + " and shortname='АО'";
                 break;
             case ("Автономная область"):
-                queryPart = queryPart + " and shortname=\"Аобл\"";
+                queryPart = queryPart + " and shortname='Аобл'";
                 break;
             case ("Улица"):
-                queryPart = queryPart + " and (shortname=\"ул\" or shortname=\"ул.\")";
+                queryPart = queryPart + " and (shortname='ул' or shortname='ул.')";
                 break;
             case ("Проспект"):
-                queryPart = queryPart + " and shortname=\"пр-кт\"";
+                queryPart = queryPart + " and shortname='пр-кт'";
                 break;
             case ("Село"):
-                queryPart = queryPart + " and (shortname=\"с\" or shortname=\"с.\")";
+                queryPart = queryPart + " and (shortname='с' or shortname='с.')";
                 break;
             case ("Деревня"):
-                queryPart = queryPart + " and (shortname=\"д\" or shortname=\"д.\")";
+                queryPart = queryPart + " and (shortname='д' or shortname='д.')";
                 break;
             case ("Поселок"):
-                queryPart = queryPart + " and (shortname=\"п\" or shortname=\"п.\")";
+                queryPart = queryPart + " and (shortname='п' or shortname='п.')";
                 break;
             case ("Поселок городского типа"):
-                queryPart = queryPart + " and (shortname=\"пгт\" or shortname=\"пгт.\")";
+                queryPart = queryPart + " and (shortname='пгт' or shortname='пгт.')";
                 break;
         }
         List<AddrObject> addrObjects = getEntities(
-                "select * from object where formalname like \"" + name + "%\"" + queryPart, AddrObject.class);
+                "select * from object where formalname like '" + name + "%'" + queryPart, AddrObject.class);
         if (!isActual) addrObjects = getAddrObjectsWithMaxEnddate(addrObjects);
         for (AddrObject addrObject : addrObjects)
             addrObject.setFullAddress(getFullAddress(addrObject, addrObject.getPOSTALCODE()));

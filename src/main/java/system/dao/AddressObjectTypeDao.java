@@ -22,7 +22,7 @@ public class AddressObjectTypeDao extends GenericDao<AddressObjectType> {
             }
         }
         return getEntity(
-                "select * from adress_object_type where level="+level+" and scname=\""+shortName+"\" limit 1",
+                "select * from adress_object_type where level="+level+" and scname='"+shortName+"' limit 1",
                 AddressObjectType.class).getSOCRNAME().toLowerCase();
     }
 }

@@ -8,7 +8,7 @@ public class VersionDao extends GenericDao<Version>{
 
     public String getCurrentVersion() {
         Version version = getEntity(
-                "select * from history_of_update order by id desc limit 1", Version.class);
+                "select * from history_of_update order by id DESC", Version.class);
         if (version!=null) return version.getVersion();
         return null;
     }

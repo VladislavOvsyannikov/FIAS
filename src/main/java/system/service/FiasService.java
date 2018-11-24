@@ -33,9 +33,11 @@ import java.util.List;
 @Service
 public class FiasService {
 
-    private static final Logger logger = LogManager.getLogger(FiasService.class);
     private static final String MAIN_PATH = "D:\\Fias\\";
+    static final boolean AUTO_UPDATE = true;
     public static String serverStatus = "working";
+
+    private static final Logger logger = LogManager.getLogger(FiasService.class);
     private Downloader downloader;
     private Unrarrer unrarrer;
     private Installer installer;
@@ -51,42 +53,12 @@ public class FiasService {
     public void installComplete() {
         serverStatus = "updating";
         try {
-            String lastVersion = getLastVersion();
-//            downloader.downloadLastComplete(MAIN_PATH, lastVersion);
-//            unrarrer.unrarLastComplete(MAIN_PATH, lastVersion);
-//            installer.installLastComplete(MAIN_PATH, lastVersion);
-//            deleter.deleteCompleteFiles(MAIN_PATH, lastVersion);
-        } catch (FiasException e) {
-            serverStatus = "update error";
-            return;
-        }
-        serverStatus = "working";
-    }
-
-    public void installOneUpdate() {
-        serverStatus = "updating";
-        try {
-            String deltaVersion = getListOfNewVersions().get(0);
-            downloader.downloadDeltaByVersion(MAIN_PATH, deltaVersion);
-            unrarrer.unrarDeltaByVersion(MAIN_PATH, deltaVersion);
-//            installer.installDeltaByVersion(MAIN_PATH, deltaVersion);
-            deleter.deleteDeltaFiles(MAIN_PATH, deltaVersion);
-        } catch (FiasException e) {
-            serverStatus = "update error";
-            return;
-        }
-        serverStatus = "working";
-    }
-
-    public void installUpdates() {
-        serverStatus = "updating";
-        try {
-            List<String> listOfNewVersions = getListOfNewVersions();
-            for (String deltaVersion : listOfNewVersions) {
-//                downloader.downloadDeltaByVersion(MAIN_PATH, deltaVersion);
-//                unrarrer.unrarDeltaByVersion(MAIN_PATH, deltaVersion);
-//                installer.installDeltaByVersion(MAIN_PATH, deltaVersion);
-//                deleter.deleteDeltaFiles(MAIN_PATH, deltaVersion);
+            if (getCurrentVersion() == null) {
+                String lastVersion = getLastVersion();
+                downloader.downloadLastComplete(MAIN_PATH, lastVersion);
+                unrarrer.unrarLastComplete(MAIN_PATH, lastVersion);
+                installer.installLastComplete(MAIN_PATH, lastVersion);
+                deleter.deleteCompleteFiles(MAIN_PATH, lastVersion);
             }
         } catch (FiasException e) {
             serverStatus = "update error";
@@ -95,7 +67,47 @@ public class FiasService {
         serverStatus = "working";
     }
 
-    public String getLastVersion() throws FiasException{
+    public void installOneUpdate() {
+        if (getCurrentVersion() != null) {
+            serverStatus = "updating";
+            try {
+                List<String> listOfNewVersions = getListOfNewVersions();
+                if (listOfNewVersions.size() > 0) {
+                    String deltaVersion = listOfNewVersions.get(0);
+                    downloader.downloadDeltaByVersion(MAIN_PATH, deltaVersion);
+                    unrarrer.unrarDeltaByVersion(MAIN_PATH, deltaVersion);
+                    installer.installDeltaByVersion(MAIN_PATH, deltaVersion);
+                    deleter.deleteDeltaFiles(MAIN_PATH, deltaVersion);
+                }
+            } catch (FiasException e) {
+                serverStatus = "update error";
+                return;
+            }
+            serverStatus = "working";
+        } else logger.info("Complete database not exist");
+    }
+
+    public void installUpdates() {
+        if (getCurrentVersion() != null) {
+            serverStatus = "updating";
+            try {
+                List<String> listOfNewVersions = getListOfNewVersions();
+                if (listOfNewVersions.size() > 0)
+                    for (String deltaVersion : listOfNewVersions) {
+                        downloader.downloadDeltaByVersion(MAIN_PATH, deltaVersion);
+                        unrarrer.unrarDeltaByVersion(MAIN_PATH, deltaVersion);
+                        installer.installDeltaByVersion(MAIN_PATH, deltaVersion);
+                        deleter.deleteDeltaFiles(MAIN_PATH, deltaVersion);
+                    }
+            } catch (FiasException e) {
+                serverStatus = "update error";
+                return;
+            }
+            serverStatus = "working";
+        } else logger.info("Complete database not exist");
+    }
+
+    public String getLastVersion() throws FiasException {
         StringBuilder res = new StringBuilder();
         try {
             URL url = new URL("https://fias.nalog.ru/Public/Downloads/Actual/VerDate.txt");
@@ -164,7 +176,7 @@ public class FiasService {
     }
 
 
-    public List<AddrObject> getAddrObjectsByName(LinkedHashMap<String, String> params){
+    public List<AddrObject> getAddrObjectsByName(LinkedHashMap<String, String> params) {
         String name = params.get("name");
         name = name.substring(0, 1).toUpperCase() + name.substring(1);
         boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));

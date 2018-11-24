@@ -15,7 +15,7 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
     @Override
     public void onStartup(ServletContext servletContext){
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-        rootContext.register(SecurityConfig.class, SpringSecurityInit.class, HibernateConfig.class);
+        rootContext.register(SecurityConfig.class, SpringSecurityInit.class, HibernateConfig.class, SpringQuartzScheduler.class);
         servletContext.addListener(new ContextLoaderListener(rootContext));
 
         AnnotationConfigWebApplicationContext servletAppContext = new AnnotationConfigWebApplicationContext();
@@ -34,7 +34,7 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class[] {SecurityConfig.class, SpringSecurityInit.class, HibernateConfig.class};
+        return new Class[] {SecurityConfig.class, SpringSecurityInit.class, HibernateConfig.class, SpringQuartzScheduler.class};
     }
 
     @Override
