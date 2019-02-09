@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EstateStatuses>
+    <EstateStatus ESTSTATID="0" NAME="Не определено"/>
+    <EstateStatus ESTSTATID="1" NAME="Владение"/>
+    <EstateStatus ESTSTATID="2" NAME="Дом"/>
+    <EstateStatus ESTSTATID="3" NAME="Домовладение"/>
+    <EstateStatus ESTSTATID="4" NAME="Гараж"/>
+    <EstateStatus ESTSTATID="5" NAME="Здание"/>
+    <EstateStatus ESTSTATID="6" NAME="Шахта"/>
+</EstateStatuses>

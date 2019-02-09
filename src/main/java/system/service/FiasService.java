@@ -1,137 +1,163 @@
 package system.service;
 
 import com.google.common.base.Charsets;
-import org.apache.http.HttpResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-import system.dao.*;
-import system.model.*;
-import system.model.AddrObject;
+import system.domain.AddrObject;
+import system.domain.House;
+import system.domain.Room;
+import system.domain.Stead;
+import system.domain.User;
+import system.dto.AddrObjectDto;
+import system.dto.HouseDto;
+import system.dto.RoomDto;
+import system.dto.SteadDto;
+import system.dto.UserDto;
+import system.mapper.AddrObjectMapper;
+import system.mapper.HouseMapper;
+import system.mapper.RoomMapper;
+import system.mapper.SteadMapper;
+import system.mapper.UserMapper;
+import system.repository.AddrObjectRepository;
+import system.repository.HouseRepository;
+import system.repository.RoomRepository;
+import system.repository.SteadRepository;
+import system.repository.UserRepository;
+import system.repository.VersionRepository;
 
+import javax.persistence.EntityManager;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
+@Log4j2
 @Service
+@RequiredArgsConstructor
 public class FiasService {
 
-    private static final String MAIN_PATH = "D:\\Fias\\";
-    static final boolean AUTO_UPDATE = true;
-    public static String serverStatus = "working";
+    static final boolean AUTO_UPDATE = false;
+    private static final String MAIN_PATH = "D:/Fias";
 
-    private static final Logger logger = LogManager.getLogger(FiasService.class);
-    private Downloader downloader;
-    private Unrarrer unrarrer;
-    private Installer installer;
-    private Deleter deleter;
-    private TokenAuthenticationManager tokenAuthenticationManager;
-    private AddrObjectDao addrObjectDao;
-    private VersionDao versionDao;
-    private SteadDao steadDao;
-    private HouseDao houseDao;
-    private RoomDao roomDao;
-    private UserDao userDao;
+    private FiasModuleStatus fiasModuleStatus = FiasModuleStatus.WORKING;
+    private final Downloader downloader;
+    private final Unrarrer unrarrer;
+    private final Installer installer;
+    private final Deleter deleter;
+    private final FiasHelper fiasHelper;
+    private final VersionRepository versionRepository;
+    private final AddrObjectRepository addrObjectRepository;
+    private final HouseRepository houseRepository;
+    private final EntityManager entityManager;
+    private final SteadRepository steadRepository;
+    private final RoomRepository roomRepository;
+    private final AddrObjectMapper addrObjectMapper;
+    private final HouseMapper houseMapper;
+    private final SteadMapper steadMapper;
+    private final RoomMapper roomMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final TokenAuthenticationManager tokenAuthenticationManager;
 
     public void installComplete() {
-        serverStatus = "updating";
-        try {
-            if (getCurrentVersion() == null) {
-                String lastVersion = getLastVersion();
-                downloader.downloadLastComplete(MAIN_PATH, lastVersion);
-                unrarrer.unrarLastComplete(MAIN_PATH, lastVersion);
-                installer.installLastComplete(MAIN_PATH, lastVersion);
-                deleter.deleteCompleteFiles(MAIN_PATH, lastVersion);
-            }
-        } catch (FiasException e) {
-            serverStatus = "update error";
-            return;
-        }
-        serverStatus = "working";
-    }
-
-    public void installOneUpdate() {
-        if (getCurrentVersion() != null) {
-            serverStatus = "updating";
-            try {
-                List<String> listOfNewVersions = getListOfNewVersions();
-                if (listOfNewVersions.size() > 0) {
-                    String deltaVersion = listOfNewVersions.get(0);
-                    downloader.downloadDeltaByVersion(MAIN_PATH, deltaVersion);
-                    unrarrer.unrarDeltaByVersion(MAIN_PATH, deltaVersion);
-                    installer.installDeltaByVersion(MAIN_PATH, deltaVersion);
-                    deleter.deleteDeltaFiles(MAIN_PATH, deltaVersion);
+        if (isNull(getCurrentVersion())) {
+            String lastVersion = getLastVersion();
+            if (nonNull(lastVersion)) {
+                fiasModuleStatus = FiasModuleStatus.UPDATING;
+                try {
+                    String mainPath = getMainPath();
+                    downloader.downloadLastComplete(mainPath, lastVersion);
+                    unrarrer.unrarLastComplete(mainPath, lastVersion);
+                    installer.installLastComplete(mainPath, lastVersion);
+                    deleter.deleteCompleteFiles(mainPath, lastVersion);
+                } catch (FiasException e) {
+                    fiasModuleStatus = FiasModuleStatus.UPDATE_ERROR;
+                    return;
                 }
-            } catch (FiasException e) {
-                serverStatus = "update error";
-                return;
+                fiasModuleStatus = FiasModuleStatus.WORKING;
             }
-            serverStatus = "working";
-        } else logger.info("Complete database not exist");
+        } else log.info("Complete database exists, install update");
     }
 
-    public void installUpdates() {
-        if (getCurrentVersion() != null) {
-            serverStatus = "updating";
-            try {
-                List<String> listOfNewVersions = getListOfNewVersions();
-                if (listOfNewVersions.size() > 0)
+    public void installUpdates(Boolean isOneUpdate) {
+        if (nonNull(getCurrentVersion())) {
+            List<String> listOfNewVersions = getListOfNewVersions();
+            if (nonNull(listOfNewVersions)) {
+                fiasModuleStatus = FiasModuleStatus.UPDATING;
+                try {
                     for (String deltaVersion : listOfNewVersions) {
-                        downloader.downloadDeltaByVersion(MAIN_PATH, deltaVersion);
-                        unrarrer.unrarDeltaByVersion(MAIN_PATH, deltaVersion);
-                        installer.installDeltaByVersion(MAIN_PATH, deltaVersion);
-                        deleter.deleteDeltaFiles(MAIN_PATH, deltaVersion);
+                        String mainPath = getMainPath();
+                        downloader.downloadDeltaByVersion(mainPath, deltaVersion);
+                        unrarrer.unrarDeltaByVersion(mainPath, deltaVersion);
+                        installer.installDeltaByVersion(mainPath, deltaVersion);
+                        deleter.deleteDeltaFiles(mainPath, deltaVersion);
+                        if (isOneUpdate) break;
                     }
-            } catch (FiasException e) {
-                serverStatus = "update error";
-                return;
+                } catch (FiasException e) {
+                    fiasModuleStatus = FiasModuleStatus.UPDATE_ERROR;
+                    return;
+                }
+                fiasModuleStatus = FiasModuleStatus.WORKING;
             }
-            serverStatus = "working";
-        } else logger.info("Complete database not exist");
+        } else log.info("Complete database not exist");
     }
 
-    public String getLastVersion() throws FiasException {
+    String getMainPath() {
+        if (new File(MAIN_PATH).exists()) return MAIN_PATH;
+        log.warn(String.format("Путь %s не найдён", MAIN_PATH));
+        return System.getProperty("java.io.tmpdir");
+    }
+
+    public String getCurrentVersion() {
+        return versionRepository.getCurrentVersion();
+    }
+
+    public String getLastVersion() {
         StringBuilder res = new StringBuilder();
-        try {
-            URL url = new URL("https://fias.nalog.ru/Public/Downloads/Actual/VerDate.txt");
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+        String updUrlStr = "https://fias.nalog.ru/Public/Downloads/Actual/VerDate.txt";
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new URL(updUrlStr).openStream()))) {
             String[] strings = in.readLine().split("\\.");
             for (int i = strings.length - 1; i >= 0; i--) res.append(strings[i]);
         } catch (IOException e) {
-            logger.error(e.getClass().getName() + ": " + e.getMessage());
-            throw new FiasException();
+            log.error(e);
+            return null;
         }
         return res.toString();
     }
 
-    public String getCurrentVersion() {
-        return versionDao.getCurrentVersion();
-    }
-
-    public List<String> getListOfNewVersions() throws FiasException {
+    public List<String> getListOfNewVersions() {
+        String currentVersion = getCurrentVersion();
+        if (currentVersion == null) return null;
         String url = "https://fias.nalog.ru/WebServices/Public/DownloadService.asmx";
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost post = new HttpPost(url);
         post.setHeader("Host", "fias.nalog.ru");
         post.setHeader("Content-Type", "text/xml;charset=utf-8");
-        post.setHeader("SOAPAction", "http://fias.nalog.ru/WebServices/Public/DownloadService.asmx/GetAllDownloadFileInfo");
+        post.setHeader("SOAPAction", "https://fias.nalog.ru/WebServices/Public/DownloadService.asmx/GetAllDownloadFileInfo");
 
         StringEntity xmlString = null;
         try {
@@ -139,22 +165,18 @@ public class FiasService {
                     "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                             "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
                             "  <soap:Body>\n" +
-                            "    <GetAllDownloadFileInfo xmlns=\"http://fias.nalog.ru/WebServices/Public/DownloadService.asmx\" />\n" +
+                            "    <GetAllDownloadFileInfo xmlns=\"https://fias.nalog.ru/WebServices/Public/DownloadService.asmx\" />\n" +
                             "  </soap:Body>\n" +
                             "</soap:Envelope>"
             );
         } catch (UnsupportedEncodingException e) {
-            logger.error(e.getClass().getName() + ": " + e.getMessage());
+            log.error(e);
         }
         post.setEntity(xmlString);
 
         List<String> versions = new ArrayList<>();
         StringBuilder res = new StringBuilder();
-        String currentVersion = getCurrentVersion();
-        if (currentVersion == null) return null;
-        try {
-            HttpResponse response = client.execute(post);
-            BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(client.execute(post).getEntity().getContent()))) {
             String line = br.readLine().replaceAll("/", "");
             String[] text = line.split("<TextVersion>");
             for (int i = 0; i < text.length; i++) {
@@ -167,223 +189,218 @@ public class FiasService {
                     res.setLength(0);
                 }
             }
-            br.close();
         } catch (IOException e) {
-            logger.error(e.getClass().getName() + ": " + e.getMessage());
-            throw new FiasException();
+            log.error(e);
+            return null;
         }
         return versions;
     }
 
 
-    public List<AddrObject> getAddrObjectsByName(LinkedHashMap<String, String> params) {
-        String name = params.get("name");
-        name = name.substring(0, 1).toUpperCase() + name.substring(1);
-        boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));
-        return addrObjectDao.getAddrObjectsByName(name, params.get("type"), isActual);
-    }
-
-    public List<AddrObject> getAddrObjectsByParentGuid(LinkedHashMap<String, String> params) {
-        boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));
-        return addrObjectDao.getAddrObjectsByParentGuid(params.get("guid"), isActual);
-    }
-
-    public List<Stead> getSteadsByParentGuid(LinkedHashMap<String, String> params) {
-        boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));
-        return steadDao.getSteadsByParentGuid(params.get("guid"), isActual);
-    }
-
-    public List<House> getHousesByParentGuid(LinkedHashMap<String, String> params) {
-        boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));
-        return houseDao.getHousesByParentGuid(params.get("guid"), isActual);
-    }
-
-    public List<Room> getRoomsListByParentGuid(LinkedHashMap<String, String> params) {
-        boolean isActual = Boolean.parseBoolean(params.get("onlyActual"));
-        return roomDao.getRoomsListByParentGuid(params.get("guid"), isActual);
-    }
-
-    public List<Object> searchObjects(LinkedHashMap<String, String> params) {
-        List<java.lang.Object> res = new ArrayList<>();
-        String searchType = params.getOrDefault("searchType", "addrObject house stead room");
-        params.remove("searchType");
-        boolean isActual = Boolean.parseBoolean(params.getOrDefault("onlyActual", "false"));
-        params.remove("onlyActual");
-        if (params.containsKey("guid")) {
-            String guid = params.get("guid").replaceAll("-", "").toLowerCase();
-            if (guid.length() != 32) return res;
-            params.replace("guid", guid);
+    public List<AddrObjectDto> getAddrObjectsStartList() {
+        List<AddrObject> addrObjects = addrObjectRepository.getAddrObjectsStartList();
+        for (AddrObject addrObject : addrObjects) {
+            addrObject.setSHORTNAME(fiasHelper.getFullAddrObjectType(addrObject));
+            if (addrObject.getFORMALNAME().contains("Чувашская")) addrObject.setFORMALNAME("Чувашская");
         }
-        if (params.getOrDefault("postalcode", "000000").length() != 6) return res;
+        return addrObjectMapper.toDto(addrObjects);
+    }
 
-        if (params.size() > 0) {
-            if (searchType.contains("addrObject")) {
-                List<AddrObject> addrObjects = addrObjectDao.getAddrObjectsByParams(params, isActual);
-                if (addrObjects != null) res.addAll(addrObjects);
-            }
-            if (searchType.contains("house")) {
-                List<House> houses = houseDao.getHousesByParams(params, isActual);
-                if (houses != null) res.addAll(houses);
-            }
-            if (searchType.contains("stead")) {
-                List<Stead> steads = steadDao.getSteadsByParams(params, isActual);
-                if (steads != null) res.addAll(steads);
-            }
-            if (searchType.contains("room")) {
-                List<Room> rooms = roomDao.getRoomsByParams(params, isActual);
-                if (rooms != null) res.addAll(rooms);
-            }
+    public List<AddrObjectDto> getAddrObjectsByParentGuid(String guid, Boolean isActual) {
+        guid = guid.replaceAll("-", "").toLowerCase();
+        if (guid.length() != 32) return new ArrayList<>();
+        if (isNull(isActual)) isActual = false;
+        List<AddrObject> addrObjects = isActual ? addrObjectRepository.getActualAddrObjectsByParentGuid(guid) :
+                addrObjectRepository.getAddrObjectsByParentguid(guid);
+        if (!isActual) addrObjects = fiasHelper.getObjectsWithMaxEnddate(addrObjects);
+        for (AddrObject addrObject : addrObjects) addrObject.setSHORTNAME(fiasHelper.getFullAddrObjectType(addrObject));
+        return addrObjectMapper.toDto(addrObjects);
+    }
+
+    public List<HouseDto> getHousesByParentGuid(String guid, Boolean isActual) {
+        guid = guid.replaceAll("-", "").toLowerCase();
+        if (guid.length() != 32) return new ArrayList<>();
+        if (isNull(isActual)) isActual = false;
+        List<House> houses = houseRepository.getHousesByParentguid(guid);
+        if (isActual) {
+            int currentDate = Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+            houses.removeIf(house -> currentDate > house.getENDDATE());
+        } else houses = fiasHelper.getObjectsWithMaxEnddate(houses);
+        for (House house : houses) {
+            house.setHouseType(fiasHelper.getHouseType(house));
+            house.setHouseName(fiasHelper.getHouseName(house));
+        }
+        return houseMapper.toDto(houses);
+    }
+
+    public List<SteadDto> getSteadsByParentGuid(String guid, Boolean isActual) {
+        guid = guid.replaceAll("-", "").toLowerCase();
+        if (guid.length() != 32) return new ArrayList<>();
+        if (isNull(isActual)) isActual = false;
+        List<Stead> steads = isActual ? steadRepository.getActualSteadsByParentguid(guid) :
+                steadRepository.getSteadsByParentguid(guid);
+        if (!isActual) steads = fiasHelper.getObjectsWithMaxEnddate(steads);
+        return steadMapper.toDto(steads);
+    }
+
+    public List<RoomDto> getRoomsListByParentGuid(String guid, Boolean isActual) {
+        guid = guid.replaceAll("-", "").toLowerCase();
+        if (guid.length() != 32) return new ArrayList<>();
+        if (isNull(isActual)) isActual = false;
+        List<Room> rooms = isActual ? roomRepository.getActualRoomsByHouseguid(guid) :
+                roomRepository.getRoomsByHouseguid(guid);
+        if (!isActual) rooms = fiasHelper.getObjectsWithMaxEnddate(rooms);
+        for (Room room : rooms) room.setRoomType(fiasHelper.getRoomType(room));
+        return roomMapper.toDto(rooms);
+    }
+
+    public List<AddrObjectDto> getAddrObjectsByName(String name, NameSearchType type, Boolean isActual) {
+        if (isNull(isActual)) isActual = false;
+        if (isNull(type)) type = NameSearchType.ALL;
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+        String queryPart = isActual ? " and a.LIVESTATUS=1" : "";
+        queryPart += type.getQueryPart();
+        List<AddrObject> addrObjects = entityManager.createQuery(
+                "select a from AddrObject a where a.FORMALNAME like '" + name + "%'" + queryPart, AddrObject.class).getResultList();
+        if (!isActual) addrObjects = fiasHelper.getObjectsWithMaxEnddate(addrObjects);
+        for (AddrObject addrObject : addrObjects)
+            addrObject.setFullAddress(fiasHelper.getFullAddress(addrObject, addrObject.getPOSTALCODE()));
+        return addrObjectMapper.toDto(addrObjects);
+    }
+
+    public CustomPair searchOldAddrObjectsByGuid(String guid) {
+        guid = guid.replaceAll("-", "").toLowerCase();
+        if (guid.length() != 32) return null;
+        List<AddrObject> addrObjects = addrObjectRepository.getAddrObjectsByAoguid(guid);
+        if (addrObjects.isEmpty()) return null;
+        addrObjects.sort(Comparator.comparing(AddrObject::getENDDATE));
+        AddrObject actual = addrObjects.get(addrObjects.size() - 1).getLIVESTATUS() == 1 ?
+                addrObjects.remove(addrObjects.size() - 1) : null;
+        List<AddrObject> old = !addrObjects.isEmpty() ? addrObjects : null;
+        return new CustomPair(addrObjectMapper.toDto(old), addrObjectMapper.toDto(actual));
+    }
+
+    public List<Object> searchObjectsByParameters(String guid, String postalcode, ParameterSearchType type, Boolean isActual) {
+        if (isNull(guid) && isNull(postalcode)) return new ArrayList<>();
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        if (nonNull(guid)) {
+            guid = guid.replaceAll("-", "").toLowerCase();
+            if (guid.length() != 32) return new ArrayList<>();
+            else params.put("guid", guid);
+        }
+        if (nonNull(postalcode)) {
+            if (postalcode.length() != 6) return new ArrayList<>();
+            else params.put("postalcode", postalcode);
+        }
+        if (params.isEmpty()) return new ArrayList<>();
+        if (isNull(isActual)) isActual = false;
+        if (isNull(type)) type = ParameterSearchType.ALL;
+
+        List<Object> res = new ArrayList<>();
+        if (type.equals(ParameterSearchType.ALL) || type.equals(ParameterSearchType.ADDRESS_OBJECT)) {
+            List<AddrObject> addrObjects = fiasHelper.getAddrObjectsByParams(params, isActual);
+            if (!addrObjects.isEmpty()) res.addAll(addrObjectMapper.toDto(addrObjects));
+        }
+        if (type.equals(ParameterSearchType.ALL) || type.equals(ParameterSearchType.HOUSE)) {
+            List<House> houses = fiasHelper.getHousesByParams(params, isActual);
+            if (!houses.isEmpty()) res.addAll(houseMapper.toDto(houses));
+        }
+        if (type.equals(ParameterSearchType.ALL) || type.equals(ParameterSearchType.STEAD)) {
+            List<Stead> steads = fiasHelper.getSteadsByParams(params, isActual);
+            if (!steads.isEmpty()) res.addAll(steadMapper.toDto(steads));
+        }
+        if (type.equals(ParameterSearchType.ALL) || type.equals(ParameterSearchType.ROOM)) {
+            List<Room> rooms = fiasHelper.getRoomsByParams(params, isActual);
+            if (!rooms.isEmpty()) res.addAll(roomMapper.toDto(rooms));
         }
         return res;
     }
 
-
-    public List<Object> searchObjectsByParameters(String guid, String postalcode) {
-        LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        if (guid != null && !guid.replaceAll(" ", "").equals(""))
-            params.put("guid", guid);
-        if (postalcode != null && !postalcode.replaceAll(" ", "").equals(""))
-            params.put("postalcode", postalcode);
-        return searchObjects(params);
-    }
-
     public Object searchObjectByGuid(String guid) {
-        LinkedHashMap<String, String> params = new LinkedHashMap<>();
         guid = guid.replaceAll("-", "").toLowerCase();
         if (guid.length() != 32) return null;
-        params.put("guid", guid);
-        List<AddrObject> addrObject = addrObjectDao.getAddrObjectsByParams(params, false);
-        if (addrObject != null) return addrObject.get(0);
-        List<House> house = houseDao.getHousesByParams(params, false);
-        if (house != null) return house.get(0);
-        List<Stead> stead = steadDao.getSteadsByParams(params, false);
-        if (stead != null) return stead.get(0);
-        List<Room> room = roomDao.getRoomsByParams(params, false);
-        if (room != null) return room.get(0);
+
+        AddrObject addrObject = fiasHelper.getAddrObjectByGuid(guid);
+        if (nonNull(addrObject)) {
+            addrObject.setFullAddress(fiasHelper.getFullAddress(addrObject, addrObject.getPOSTALCODE()));
+            return addrObjectMapper.toDto(addrObject);
+        }
+        House house = fiasHelper.getHouseByGuid(guid);
+        if (nonNull(house)) {
+            house.setFullAddress(fiasHelper.getFullAddress(house, house.getPOSTALCODE()));
+            return houseMapper.toDto(house);
+        }
+        Stead stead = fiasHelper.getSteadByGuid(guid);
+        if (nonNull(stead)) {
+            stead.setFullAddress(fiasHelper.getFullAddress(stead));
+            return steadMapper.toDto(stead);
+        }
+        Room room = fiasHelper.getRoomByGuid(guid);
+        if (nonNull(room)) {
+            room.setFullAddress(fiasHelper.getFullAddress(room));
+            return roomMapper.toDto(room);
+        }
         return null;
     }
 
+    @SneakyThrows
     public String getFullAddress(String guid) {
-        String fullAddress = "";
         Object object = searchObjectByGuid(guid);
-        if (object == null) return fullAddress;
-        try {
-            Field field = object.getClass().getDeclaredField("fullAddress");
-            field.setAccessible(true);
-            fullAddress = (String) field.get(object);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            logger.error(e.getClass().getName() + ": " + e.getMessage());
-        }
-        return fullAddress;
+        if (object == null) return null;
+        return (String) FieldUtils.readField(
+                FieldUtils.getField(object.getClass(), "fullAddress", true), object, true);
     }
 
+    public FiasModuleStatus getFiasModuleStatus() {
+        return fiasModuleStatus;
+    }
 
-    public boolean signUp(User user) {
-        if (user.getPassword().replaceAll(" ", "").equals("") ||
-                user.getName().replaceAll(" ", "").equals("")) return false;
-        User oldUser = userDao.getUser(user.getName());
-        if (oldUser == null) {
+    public boolean signUp(String name, String password) {
+        if (name.replaceAll(" ", "").equals("") ||
+                password.replaceAll(" ", "").equals("")) return false;
+        User oldUser = userRepository.findByName(name).orElse(null);
+        if (isNull(oldUser)) {
             User newUser = new User();
-            newUser.setName(user.getName());
-            newUser.setPassword(bCrypt(user.getPassword()));
+            newUser.setName(name);
+            newUser.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
             newUser.setRole("ROLE_USER");
             newUser.setIsEnable(true);
-            userDao.save(newUser);
+            userRepository.save(newUser);
             return true;
         }
         return false;
     }
 
-    public boolean signIn(User user) {
+    public Boolean signIn(String name, String password) {
         SecurityContextHolder.getContext().setAuthentication(tokenAuthenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(user.getName(), user.getPassword())));
+                .authenticate(new UsernamePasswordAuthenticationToken(name, password)));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication != null;
+        return nonNull(authentication);
     }
 
-    public List<User> getAllUsersWithoutPasswords() {
-        return userDao.getAllUsersWithoutPasswords();
+    public List<UserDto> getAllUsersWithoutPasswords() {
+        return userMapper.toDto(userRepository.getByRole("ROLE_USER"));
     }
 
-    public void deleteUser(User user) {
-        userDao.deleteUser(user);
+    public void deleteUser(Integer id) {
+        userRepository.deleteById(id);
     }
 
-    public void blockUser(User user) {
-        userDao.blockUser(user.getId());
+    public void blockUser(Integer id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (isNull(user)) return;
+        user.setIsEnable(false);
+        userRepository.save(user);
     }
 
-    public List<String> getCurrentUserInfo() {
-        return tokenAuthenticationManager.getCurrentUserInfo();
-    }
+//    public List<String> getCurrentUserInfo() {
+//        return tokenAuthenticationManager.getCurrentUserInfo();
+//    }
 
+    @SneakyThrows
     public String lastLog() {
-        try {
-            return Files.lines(Paths.get(MAIN_PATH + "fiasLogs\\lastLog.log"), Charsets.UTF_8)
-                    .reduce("", (str1, str2) -> str1 + "<br>" + str2)
-                    .replaceFirst("<br>", "");
-        } catch (IOException e) {
-            logger.error(e.getClass().getName() + ": " + e.getMessage());
-            return null;
-        }
-    }
-
-    private String bCrypt(String string) {
-        return BCrypt.hashpw(string, BCrypt.gensalt());
-    }
-
-    @Autowired
-    public void setHouseDao(HouseDao houseDao) {
-        this.houseDao = houseDao;
-    }
-
-    @Autowired
-    public void setRoomDao(RoomDao roomDao) {
-        this.roomDao = roomDao;
-    }
-
-    @Autowired
-    public void setSteadDao(SteadDao steadDao) {
-        this.steadDao = steadDao;
-    }
-
-    @Autowired
-    public void setDownloader(Downloader downloader) {
-        this.downloader = downloader;
-    }
-
-    @Autowired
-    public void setUnrarrer(Unrarrer unrarrer) {
-        this.unrarrer = unrarrer;
-    }
-
-    @Autowired
-    public void setInstaller(Installer installer) {
-        this.installer = installer;
-    }
-
-    @Autowired
-    public void setDeleter(Deleter deleter) {
-        this.deleter = deleter;
-    }
-
-    @Autowired
-    public void setAddrObjectDao(AddrObjectDao addrObjectDao) {
-        this.addrObjectDao = addrObjectDao;
-    }
-
-    @Autowired
-    public void setVersionDao(VersionDao versionDao) {
-        this.versionDao = versionDao;
-    }
-
-    @Autowired
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
-    @Autowired
-    public void setTokenAuthenticationManager(TokenAuthenticationManager tokenAuthenticationManager) {
-        this.tokenAuthenticationManager = tokenAuthenticationManager;
+        return Files.lines(Paths.get(MAIN_PATH + "fiasLogs\\lastLog.log"), Charsets.UTF_8)
+                .reduce("", (str1, str2) -> str1 + "<br>" + str2)
+                .replaceFirst("<br>", "");
     }
 }

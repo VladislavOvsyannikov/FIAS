@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<HouseStateStatuses>
+    <HouseStateStatus HOUSESTID="0" NAME="без особого состояния"/>
+    <HouseStateStatus HOUSESTID="1" NAME="Новостройка (Нов)"/>
+    <HouseStateStatus HOUSESTID="2" NAME="-Снос по ветхости (СнВ)"/>
+    <HouseStateStatus HOUSESTID="3" NAME="-Снос по реконструкции (СнР)"/>
+    <HouseStateStatus HOUSESTID="4" NAME="+-Перевод в нежилое строение (Ж-Н)"/>
+    <HouseStateStatus HOUSESTID="5" NAME="Корпус отселяется (Отс)"/>
+    <HouseStateStatus HOUSESTID="6" NAME="Корпус отселен (О+)"/>
+    <HouseStateStatus HOUSESTID="7" NAME="Вновь проинвентаризовано (Инв)"/>
+    <HouseStateStatus HOUSESTID="8" NAME="+-Перевод из нежилого фонда (Н-Ж)"/>
+    <HouseStateStatus HOUSESTID="9" NAME="-Исключено из фонда на время ККР (ИКР)"/>
+    <HouseStateStatus HOUSESTID="10" NAME="Возвращено в фонд после ККР (ВКР)"/>
+    <HouseStateStatus HOUSESTID="11" NAME="Объединение ранее учтенных (Объ)"/>
+    <HouseStateStatus HOUSESTID="12" NAME="Деление ранее учтенного (Дел)"/>
+    <HouseStateStatus HOUSESTID="13" NAME="-Часть до объединения (ЧдО)"/>
+    <HouseStateStatus HOUSESTID="14" NAME="-Целое до деления (ЦдР)"/>
+    <HouseStateStatus HOUSESTID="15" NAME="-Погибло или уничтожено"/>
+    <HouseStateStatus HOUSESTID="16" NAME="-Удалено как дубликат"/>
+    <HouseStateStatus HOUSESTID="17" NAME="После реконструкции"/>
+    <HouseStateStatus HOUSESTID="18" NAME="-Удалено как самостоятельное строение"/>
+    <HouseStateStatus HOUSESTID="19" NAME="Восстановлено после ошибочной установки состояния сноса"/>
+    <HouseStateStatus HOUSESTID="20" NAME="-Новостройка как часть до объединения"/>
+    <HouseStateStatus HOUSESTID="21" NAME="Переведено из личного фонда в другой фонд"/>
+    <HouseStateStatus HOUSESTID="22" NAME="Списано с учета жилого фонда"/>
+    <HouseStateStatus HOUSESTID="23" NAME="-Проект"/>
+    <HouseStateStatus HOUSESTID="24" NAME="-Подготовка технического паспорта"/>
+    <HouseStateStatus HOUSESTID="25" NAME="-Предварительная регистрация адреса"/>
+    <HouseStateStatus HOUSESTID="26" NAME="-Регистрация адреса"/>
+    <HouseStateStatus HOUSESTID="27" NAME="-Снос по аварийности"/>
+    <HouseStateStatus HOUSESTID="28" NAME="-Перевод из нежилого фонда в служебные"/>
+    <HouseStateStatus HOUSESTID="29" NAME="Перевод из служебного в нежилой фонд"/>
+    <HouseStateStatus HOUSESTID="30" NAME="Самовольно возведенный объект"/>
+    <HouseStateStatus HOUSESTID="31" NAME="-Строение без технического паспорта"/>
+    <HouseStateStatus HOUSESTID="32" NAME="-Самовольно возведенное строение без техпаспорта"/>
+    <HouseStateStatus HOUSESTID="33" NAME="Аварийное здание"/>
+    <HouseStateStatus HOUSESTID="34" NAME="-Снос БТП по ветхости"/>
+    <HouseStateStatus HOUSESTID="35" NAME="-Снос БТП по реконструкции"/>
+    <HouseStateStatus HOUSESTID="36" NAME="Восстановлено после разрушения (только после сост15)"/>
+    <HouseStateStatus HOUSESTID="37" NAME="-Внесено в раздел IV техпаспорта"/>
+    <HouseStateStatus HOUSESTID="38" NAME="-Снос объекта с состоянием проект"/>
+    <HouseStateStatus HOUSESTID="39" NAME="-Ошибочный ввод ст/к"/>
+    <HouseStateStatus HOUSESTID="40" NAME="-Объект, незавершенный строительством"/>
+    <HouseStateStatus HOUSESTID="41" NAME="Информация по данныи ОТИ"/>
+    <HouseStateStatus HOUSESTID="42" NAME="нежилое строение"/>
+</HouseStateStatuses>

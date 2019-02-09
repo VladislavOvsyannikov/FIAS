@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Rooms>
+    <Room ROOMID="1" ROOMGUID="01-raaaaaaaaaaaaaaaaaaaaaaaaaaaaa" HOUSEGUID="01-haaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          LIVESTATUS="1" FLATTYPE="2" FLATNUMBER="10" ENDDATE="2050-00-00"/>
+    <Room ROOMID="2" ROOMGUID="02-raaaaaaaaaaaaaaaaaaaaaaaaaaaaa" HOUSEGUID="03-haaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          LIVESTATUS="1" FLATTYPE="2" FLATNUMBER="30" ENDDATE="2050-00-00" POSTALCODE="123654"/>
+    <Room ROOMID="3" ROOMGUID="03-raaaaaaaaaaaaaaaaaaaaaaaaaaaaa" HOUSEGUID="03-haaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          LIVESTATUS="0" FLATTYPE="2" FLATNUMBER="40" ENDDATE="2000-00-00"/>
+    <Room ROOMID="7" ROOMGUID="03-raaaaaaaaaaaaaaaaaaaaaaaaaaaaa" HOUSEGUID="03-haaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          LIVESTATUS="1" FLATTYPE="2" FLATNUMBER="41" ENDDATE="2050-00-00"/>
+    <Room ROOMID="8" ROOMGUID="03-raaaaaaaaaaaaaaaaaaaaaaaaaaaaa" HOUSEGUID="03-haaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          LIVESTATUS="0" FLATTYPE="2" FLATNUMBER="42" ENDDATE="2010-00-00"/>
+    <Room ROOMID="4" ROOMGUID="04-raaaaaaaaaaaaaaaaaaaaaaaaaaaaa" HOUSEGUID="03-haaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          LIVESTATUS="0" FLATTYPE="2" FLATNUMBER="50" ENDDATE="2000-00-00"/>
+    <Room ROOMID="5" ROOMGUID="04-raaaaaaaaaaaaaaaaaaaaaaaaaaaaa" HOUSEGUID="03-haaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          LIVESTATUS="0" FLATTYPE="2" FLATNUMBER="51" ENDDATE="2010-00-00"/>
+    <Room ROOMID="6" ROOMGUID="04-raaaaaaaaaaaaaaaaaaaaaaaaaaaaa" HOUSEGUID="03-haaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          LIVESTATUS="0" FLATTYPE="2" FLATNUMBER="52" ENDDATE="1950-00-00"/>
+</Rooms>

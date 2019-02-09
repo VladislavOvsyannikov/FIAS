@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AddressObjectTypes>
+    <AddressObjectType LEVEL="1" SOCRNAME="город" SCNAME="г" KOD_T_ST="1"/>
+    <AddressObjectType LEVEL="7" SOCRNAME="улица" SCNAME="ул" KOD_T_ST="2"/>
+</AddressObjectTypes>

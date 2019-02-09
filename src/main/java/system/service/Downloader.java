@@ -1,7 +1,6 @@
 package system.service;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -10,36 +9,32 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
+@Log4j2
 @Service
 public class Downloader {
 
-    private static final Logger logger = LogManager.getLogger(Downloader.class);
-
-
     public void downloadLastComplete(String path, String lastVersion) throws FiasException {
-        String fileName = "complete" + lastVersion + ".rar";
-        String lastCompleteXmlUrl = "https://fias.nalog.ru/Public/Downloads/" + lastVersion + "/fias_xml.rar";
-        downloadFile(path, lastCompleteXmlUrl, fileName);
+        String url = "https://fias.nalog.ru/Public/Downloads/" + lastVersion + "/fias_xml.rar";
+        downloadFile(path, url, "complete" + lastVersion + ".rar");
     }
 
     public void downloadDeltaByVersion(String path, String deltaVersion) throws FiasException {
-        String fileName = "delta" + deltaVersion + ".rar";
         String url = "https://fias.nalog.ru/Public/Downloads/" + deltaVersion + "/fias_delta_xml.rar";
-        downloadFile(path, url, fileName);
+        downloadFile(path, url, "delta" + deltaVersion + ".rar");
     }
 
     private void downloadFile(String path, String url, String fileName) throws FiasException {
         File file = new File(path + fileName);
         if (!file.exists()) {
-            logger.info("Start download " + fileName);
+            log.info("Start download " + fileName);
             try (ReadableByteChannel rbc = Channels.newChannel(new URL(url).openStream());
                  FileOutputStream fos = new FileOutputStream(path + fileName)) {
                 fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-                logger.info("Download " + fileName + " completed");
+                log.info("Download " + fileName + " completed");
             } catch (Exception e) {
-                logger.error(e.getClass().getName() + ": " + e.getMessage());
+                log.error(e);
                 throw new FiasException();
             }
-        } else logger.warn(fileName + " already exists");
+        } else log.warn(fileName + " already exists");
     }
 }

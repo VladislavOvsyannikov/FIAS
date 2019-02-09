@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Houses>
+    <House HOUSEID="1" HOUSEGUID="01-haaaaaaaaaaaaaaaaaaaaaaaaaaaaa" AOGUID="02-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+           HOUSENUM="1" ENDDATE="2050-00-00" ESTSTATUS="2" STATSTATUS="0"/>
+    <House HOUSEID="2" HOUSEGUID="02-haaaaaaaaaaaaaaaaaaaaaaaaaaaaa" AOGUID="02-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+           HOUSENUM="2" ENDDATE="2050-00-00" ESTSTATUS="2" STATSTATUS="0"/>
+    <House HOUSEID="3" HOUSEGUID="02-haaaaaaaaaaaaaaaaaaaaaaaaaaaaa" AOGUID="02-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+           HOUSENUM="3" ENDDATE="1950-00-00" ESTSTATUS="2" STATSTATUS="0"/>
+    <House HOUSEID="4" HOUSEGUID="03-haaaaaaaaaaaaaaaaaaaaaaaaaaaaa" AOGUID="03-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+           HOUSENUM="4" ENDDATE="2050-00-00" ESTSTATUS="2" STATSTATUS="0"/>
+</Houses>

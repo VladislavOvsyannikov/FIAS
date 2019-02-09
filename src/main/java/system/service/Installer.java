@@ -1,46 +1,35 @@
 package system.service;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-import system.dao.VersionDao;
-import system.model.Version;
+import system.domain.Version;
+import system.repository.VersionRepository;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.util.Objects;
 
+@Log4j2
 @Service
+@RequiredArgsConstructor
 public class Installer {
 
-    private static final Logger logger = LogManager.getLogger(Installer.class);
-    private VersionDao versionDao;
-    private MySAXParser mySAXParser;
-
-    @Autowired
-    public void setMySAXParser(MySAXParser mySAXParser) {
-        this.mySAXParser = mySAXParser;
-    }
-
-    @Autowired
-    public void setVersionDao(VersionDao versionDao) {
-        this.versionDao = versionDao;
-    }
-
+    private final VersionRepository versionRepository;
+    private final MySAXParser mySAXParser;
 
     public void installLastComplete(String mainPath, String lastVersion) throws FiasException {
-        installDatabase(mainPath, "complete", lastVersion, 100_000);
+        File folder = new File(mainPath + "complete" + lastVersion);
+        installDatabase(folder, "complete", lastVersion, 100_000);
     }
 
     public void installDeltaByVersion(String mainPath, String deltaVersion) throws FiasException {
-        installDatabase(mainPath, "delta", deltaVersion, 10_000);
+        File folder = new File(mainPath + "delta" + deltaVersion);
+        installDatabase(folder, "delta", deltaVersion, 10_000);
     }
 
-    private void installDatabase(String mainPath, String databaseType, String databaseVersion, int numberOfObjects) throws FiasException {
-        String path = mainPath + databaseType + databaseVersion;
-        File folder = new File(path);
+    public void installDatabase(File folder, String databaseType, String version, int numberOfObjects) throws FiasException {
         if (folder.exists()) {
             try {
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
@@ -53,14 +42,14 @@ public class Installer {
                         saxParser.parse(file, mySAXParser);
                     }
                 }
-                Version version = new Version();
-                version.setVersion(databaseVersion);
-                versionDao.save(version);
-                logger.info("Update to version " + databaseVersion + " is completed");
+                Version ver = new Version();
+                ver.setVersion(version);
+                versionRepository.save(ver);
+                log.info("Update to version " + version + " is completed");
             } catch (Exception e) {
-                logger.error(e.getClass().getName() + ": " + e.getMessage());
+                log.error(e);
                 throw new FiasException();
             }
-        } else logger.warn(databaseType + databaseVersion + " not exists");
+        } else log.warn(folder.getName() + " not exists");
     }
 }

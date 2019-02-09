@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AddressObjects>
+    <Object AOID="1" AOGUID="01-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" LIVESTATUS="1" SHORTNAME="г" FORMALNAME="Спб"
+            AOLEVEL="1" ENDDATE="2050-00-00"/>
+    <Object AOID="2" AOGUID="01-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" LIVESTATUS="0" SHORTNAME="г" FORMALNAME="Ленинград"
+            AOLEVEL="1" ENDDATE="1950-00-00"/>
+    <Object AOID="3" AOGUID="02-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" PARENTGUID="01-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            LIVESTATUS="1" SHORTNAME="ул" FORMALNAME="улица1" AOLEVEL="7" ENDDATE="2050-00-00"/>
+    <Object AOID="4" AOGUID="03-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" PARENTGUID="01-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            LIVESTATUS="1" SHORTNAME="ул" FORMALNAME="улица2" AOLEVEL="7" ENDDATE="2050-00-00"/>
+</AddressObjects>

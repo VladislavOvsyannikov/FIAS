@@ -1,8 +1,5 @@
 package system.service;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.lang.reflect.Field;
 
 public class ReflectionHelper {
@@ -10,7 +7,7 @@ public class ReflectionHelper {
     public static Object createInstance(String className) {
         if (className.equals("Object")) className = "AddrObject";
         try {
-            return Class.forName("system.model." + className).newInstance();
+            return Class.forName("system.domain." + className).getDeclaredConstructor().newInstance();
         } catch (Exception ignored) {
         }
         return null;

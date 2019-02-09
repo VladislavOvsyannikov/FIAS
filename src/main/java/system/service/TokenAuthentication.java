@@ -3,8 +3,7 @@ package system.service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.*;
-
+import java.util.Collection;
 
 public class TokenAuthentication implements Authentication {
 

@@ -2,127 +2,132 @@ package system.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import springfox.documentation.annotations.ApiIgnore;
-import system.model.User;
-import system.service.FiasException;
+import system.dto.UserDto;
+import system.service.FiasModuleStatus;
 import system.service.FiasService;
 
 import java.util.List;
 
+import static java.util.Objects.nonNull;
+
 @Controller
 @Secured("ROLE_ADMIN")
+@RequestMapping("/fias")
+@RequiredArgsConstructor
 @Api(tags = "Admin", description = " ")
 public class AdminController {
 
-    private FiasService fiasService;
+    private final FiasService fiasService;
 
-    @Autowired
-    public void setFiasService(FiasService fiasService) {
-        this.fiasService = fiasService;
+    @ResponseBody
+    @GetMapping(value = "/module-status")
+    @ApiOperation("Статус модуля ФИАС")
+    ResponseEntity<FiasModuleStatus> getFiasModuleStatus() {
+        return new ResponseEntity<>(fiasService.getFiasModuleStatus(), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Get current local database version")
-    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = String[].class)})
-    @RequestMapping(value = "/rest/getCurrentVersion", method = RequestMethod.GET)
     @ResponseBody
-    public String[] getCurrentVersion(){
-        return new String[]{fiasService.getCurrentVersion()};
+    @GetMapping(value = "/current-version")
+    @ApiOperation("Текущая версия локальной базы ФИАС")
+    ResponseEntity<String> getCurrentVersion() {
+        String version = fiasService.getCurrentVersion();
+        return nonNull(version) ? new ResponseEntity<>(version, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @ApiOperation(value = "Get last global database version")
-    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = String[].class)})
-    @RequestMapping(value = "/rest/getLastVersion", method = RequestMethod.GET)
     @ResponseBody
-    public String[] getLastVersion(){
-        try {
-            return new String[]{fiasService.getLastVersion()};
-        } catch (FiasException e) {
-            return new String[]{null};
-        }
+    @GetMapping(value = "/last-version")
+    @ApiOperation("Последняя версия базы ФИАС")
+    ResponseEntity<String> getLastVersion() {
+        String version = fiasService.getLastVersion();
+        return nonNull(version) ? new ResponseEntity<>(version, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @ApiOperation(value = "Get need update versions")
-    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = String[].class)})
-    @RequestMapping(value = "/rest/getNewVersions", method = RequestMethod.GET)
     @ResponseBody
-    public List<String> getNewVersions(){
-        try {
-            return fiasService.getListOfNewVersions();
-        } catch (FiasException e) {
-            return null;
-        }
+    @GetMapping(value = "/new-versions")
+    @ApiOperation("Необходимые версии обновления")
+    ResponseEntity<List<String>> getNewVersions() {
+        List<String> versions = fiasService.getListOfNewVersions();
+        return nonNull(versions) ? new ResponseEntity<>(versions, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @ApiOperation(value = "Install last complete database")
-    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = Boolean.class)})
-    @RequestMapping(value = "/rest/installComplete", method = RequestMethod.GET)
     @ResponseBody
-    public void installComplete(){
+    @GetMapping(value = "/complete")
+    @ApiOperation("Установка полной базы ФИАС")
+    void installComplete() {
         fiasService.installComplete();
     }
 
-    @ApiOperation(value = "Install one database update")
-    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = Boolean.class)})
-    @RequestMapping(value = "/rest/installOneUpdate", method = RequestMethod.GET)
     @ResponseBody
-    public void installOneUpdate(){
-        fiasService.installOneUpdate();
+    @GetMapping(value = "/update")
+    @ApiOperation("Установка одного обновления базы ФИАС")
+    void installOneUpdate() {
+        fiasService.installUpdates(true);
     }
 
-    @ApiOperation(value = "Install all database updates")
-    @ApiResponses({@ApiResponse(code = 200, message = "Success", response = Boolean.class)})
-    @RequestMapping(value = "/rest/installUpdates", method = RequestMethod.GET)
     @ResponseBody
-    public void installUpdates(){
-        fiasService.installUpdates();
+    @GetMapping(value = "/updates")
+    @ApiOperation("Установка всех обновлений базы ФИАС")
+    void installUpdates() {
+        fiasService.installUpdates(false);
     }
 
-    @ApiIgnore @RequestMapping(value = "/admin")
+    @ApiIgnore
+    @ResponseBody
+    @GetMapping(value = "/sign-up")
+    public ResponseEntity<Boolean> signUp(@RequestParam(value = "name") String name,
+                                          @RequestParam(value = "password") String password) {
+        return fiasService.signUp(name, password) ? new ResponseEntity<>(true, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @ApiIgnore
+    @ResponseBody
+    @GetMapping(value = "/users")
+    public ResponseEntity<List<UserDto>> getAllUsersWithoutPasswords() {
+        List<UserDto> users = fiasService.getAllUsersWithoutPasswords();
+        return users.isEmpty() ? new ResponseEntity<>(HttpStatus.BAD_REQUEST) :
+                new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @ApiIgnore
+    @ResponseBody
+    @DeleteMapping(value = "/user")
+    public void deleteUser(@RequestParam(value = "id") Integer id) {
+        fiasService.deleteUser(id);
+    }
+
+    @ApiIgnore
+    @ResponseBody
+    @PostMapping(value = "/user")
+    public void blockUser(@RequestParam(value = "id") Integer id) {
+        fiasService.blockUser(id);
+    }
+
+    @ApiIgnore
+    @ResponseBody
+    @GetMapping(value = "/last-log")
+    public ResponseEntity<String> lastLog() {
+        return new ResponseEntity<>(fiasService.lastLog(), HttpStatus.OK);
+    }
+
+    @ApiIgnore
+    @RequestMapping(value = "/admin")
     public String admin() {
         return "admin.html";
-    }
-
-    @ApiIgnore
-    @RequestMapping(value = "/rest/signUp")
-    @ResponseBody
-    public boolean signUp(@RequestBody User user){
-        return fiasService.signUp(user);
-    }
-
-    @ApiIgnore
-    @RequestMapping(value = "/rest/getAllUsers")
-    @ResponseBody
-    public List<User> getAllUsersWithoutPasswords(){
-        return fiasService.getAllUsersWithoutPasswords();
-    }
-
-    @ApiIgnore
-    @RequestMapping(value = "/rest/deleteUser")
-    @ResponseBody
-    public void deleteUser(@RequestBody User user){
-        fiasService.deleteUser(user);
-    }
-
-    @ApiIgnore
-    @RequestMapping(value = "/rest/blockUser")
-    @ResponseBody
-    public void blockUser(@RequestBody User user){
-        fiasService.blockUser(user);
-    }
-
-    @ApiIgnore
-    @RequestMapping(value = "/lastLog")
-    @ResponseBody
-    public String lastLog() {
-        return fiasService.lastLog();
     }
 }
