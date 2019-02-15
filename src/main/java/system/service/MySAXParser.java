@@ -17,7 +17,7 @@ public class MySAXParser extends DefaultHandler {
 
     private final EntityManagerFactory entityManagerFactory;
     private String fileName;
-    private String databaseType;
+    private DatabaseAction action;
     private int numberOfObjects;
     private Object[] objects;
     private int index;
@@ -44,10 +44,9 @@ public class MySAXParser extends DefaultHandler {
             }
             objects[++index] = object;
             if (index == objects.length - 1) {
-                if (databaseType.equals("complete")) saveBatch(objects, objects.length);
-                else saveOrUpdateBatch(objects, objects.length);
+                doAction(action, objects, objects.length);
                 counter += index + 1;
-                log.info("Saved " + counter + " objects");
+                log.info("Parsed " + counter + " objects");
                 index = -1;
             }
         }
@@ -56,13 +55,25 @@ public class MySAXParser extends DefaultHandler {
     @Override
     public void endDocument() {
         if (index > -1) {
-            if (databaseType.equals("complete")) saveBatch(objects, index + 1);
-            else saveOrUpdateBatch(objects, index + 1);
+            doAction(action, objects, index + 1);
             counter += index + 1;
-            log.info("Saved " + counter + " objects");
         }
         log.info("Stop parse " + fileName);
         log.info("Parsed " + counter + " objects");
+    }
+
+    private void doAction(DatabaseAction action, Object[] entities, int numberOfObjects) {
+        switch (action) {
+            case SAVE:
+                saveBatch(entities, numberOfObjects);
+                break;
+            case UPDATE:
+                updateBatch(entities, numberOfObjects);
+                break;
+            case DELETE:
+                deleteBatch(entities, numberOfObjects);
+                break;
+        }
     }
 
     private void saveBatch(Object[] entities, int numberOfObjects) {
@@ -86,7 +97,7 @@ public class MySAXParser extends DefaultHandler {
         }
     }
 
-    private void saveOrUpdateBatch(Object[] entities, int numberOfObjects) {
+    private void updateBatch(Object[] entities, int numberOfObjects) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction entityTransaction = entityManager.getTransaction();
         try {
@@ -107,6 +118,28 @@ public class MySAXParser extends DefaultHandler {
         }
     }
 
+    private void deleteBatch(Object[] entities, int numberOfObjects) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        try {
+            entityTransaction.begin();
+            for (int i = 0; i < numberOfObjects; i++) {
+                if (i > 0 && i % 200 == 0) {
+                    entityManager.flush();
+                    entityManager.clear();
+                }
+                entityManager.remove(entityManager.contains(entities[i]) ? entities[i]
+                        : entityManager.merge(entities[i]));
+            }
+            entityTransaction.commit();
+        } catch (RuntimeException e) {
+            if (entityTransaction.isActive()) entityTransaction.rollback();
+            log.error(e);
+        } finally {
+            entityManager.close();
+        }
+    }
+
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
@@ -115,7 +148,7 @@ public class MySAXParser extends DefaultHandler {
         this.numberOfObjects = numberOfObjects;
     }
 
-    public void setDatabaseType(String databaseType) {
-        this.databaseType = databaseType;
+    public void setAction(DatabaseAction action) {
+        this.action = action;
     }
 }

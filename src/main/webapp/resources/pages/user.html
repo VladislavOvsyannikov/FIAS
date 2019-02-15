@@ -2,7 +2,7 @@
 <html lang="en" ng-app="user" ng-controller="userController">
 <head>
     <meta charset="UTF-8">
-    <title>Fias</title>
+    <title>ФИАС</title>
     <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
     <link href="/resources/css/userStyle.css" rel="stylesheet">
     <script src="/resources/js/bootstrap.min.js"></script>
@@ -19,7 +19,9 @@
 
 <div class="container">
     <br>
-    <div><name-search></name-search></div>
+    <div>
+        <name-search></name-search>
+    </div>
     <div class="row">
         <div class="col-5" ng-init="initLists(); getObjectsByParentGuid()">
             <label>Расширенный поиск: {{downloadingMessage}}</label>
@@ -32,51 +34,54 @@
                     Данные об объекте
                 </button>
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="actual1"
-                           ng-init="$root.actualAdvancedSearch=true" ng-model="$root.actualAdvancedSearch">
+                    <input type="checkbox" class="form-check-input" id="actual1" ng-model="$root.actualAdvancedSearch">
                     <label class="form-check-label" for="actual1">Только актуальные</label>
                 </div>
             </div>
         </div>
+        <div class="col-7">
+            <hr class="style">
+            <div class="row">
+                <div class="col-8">
+                    <label>Поиск по параметрам:</label>
+                    <input type="text" class="form-control" ng-model="guidSearch" placeholder="GUID"/>
+                    <br>
+                    <input type="text" class="form-control" ng-model="postcodeSearch" placeholder="Почтовый индекс"/>
+                    <br>
+                    <div class="form-check-inline">
+                        <button class="btn" type="submit" ng-click="searchObjects()">Поиск</button>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="actual2"
+                                   ng-init="actualSearch=true" ng-model="actualSearch">
+                            <label class="form-check-label" for="actual2">Только актуальные</label>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="col-5">
-            <label>Поиск по параметрам:</label>
-            <input type="text" class="form-control" ng-model="guidSearch" placeholder="GUID"/>
-            <br>
-            <input type="text" class="form-control" ng-model="postcodeSearch" placeholder="Почтовый индекс"/>
-            <br>
-            <div class="form-check-inline">
-                <button class="btn" type="submit" ng-click="searchObjects()">Поиск</button>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="actual2"
-                           ng-init="actualSearch=true" ng-model="actualSearch">
-                    <label class="form-check-label" for="actual2">Только актуальные</label>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-2">
-            <div class="form-group">
-                <label>Искать среди:</label>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="object"
-                           ng-init="objectCheck=true" ng-model="objectCheck">
-                    <label class="form-check-label" for="object">Адресообразующие элементы</label>
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="house"
-                           ng-init="houseCheck=true" ng-model="houseCheck">
-                    <label class="form-check-label" for="house">Дома</label>
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="stead"
-                           ng-init="steadCheck=true" ng-model="steadCheck">
-                    <label class="form-check-label" for="stead">Земельные участки</label>
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="room"
-                           ng-init="roomCheck=true" ng-model="roomCheck">
-                    <label class="form-check-label" for="room">Помещения</label>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Искать среди:</label>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="object"
+                                   ng-init="objectCheck=true" ng-model="objectCheck">
+                            <label class="form-check-label" for="object">Адресообразующие элементы</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="house"
+                                   ng-init="houseCheck=true" ng-model="houseCheck">
+                            <label class="form-check-label" for="house">Дома</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="stead"
+                                   ng-init="steadCheck=true" ng-model="steadCheck">
+                            <label class="form-check-label" for="stead">Земельные участки</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="room"
+                                   ng-init="roomCheck=true" ng-model="roomCheck">
+                            <label class="form-check-label" for="room">Помещения</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -112,7 +117,7 @@
                 <td class="d-inline-block col-sm-1 text-center h6 small">{{object.ifnsfl}}</td>
                 <td class="d-inline-block col-sm-1 text-center h6 small">{{object.ifnsul}}</td>
                 <td class="d-inline-block col-sm-2 text-center h6 small">{{object.cadnum}}</td>
-                <td class="d-inline-block col-sm-1 text-center h6 small">{{object.stateStatus}}</td>
+                <td class="d-inline-block col-sm-1 text-center h6 small">{{object.houseStateStatus}}</td>
             </tr>
             </tbody>
         </table>

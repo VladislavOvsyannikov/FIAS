@@ -18,11 +18,15 @@ import system.dto.AddrObjectDto;
 import system.dto.HouseDto;
 import system.dto.RoomDto;
 import system.dto.SteadDto;
+import system.repository.AddrObjectRepository;
+import system.repository.FlatTypeRepository;
+import system.repository.HouseStateStatusRepository;
+import system.repository.RoomRepository;
 import system.repository.SteadRepository;
 import system.repository.VersionRepository;
 
-import javax.persistence.EntityManager;
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -46,14 +50,20 @@ public class FiasServiceIT extends AbstractTestNGSpringContextTests {
     @Autowired
     private SteadRepository steadRepository;
     @Autowired
-    private EntityManager entityManager;
+    private AddrObjectRepository addrObjectRepository;
+    @Autowired
+    private FlatTypeRepository flatTypeRepository;
+    @Autowired
+    private RoomRepository roomRepository;
+    @Autowired
+    private HouseStateStatusRepository houseStateStatusRepository;
     private String guidPart = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
     @BeforeClass
     @SneakyThrows
     public void installFiasComplete01() {
         File folder = ResourceUtils.getFile("classpath:complete01");
-        this.installer.installDatabase(folder, "complete", "01", 10);
+        this.installer.installDatabase(folder, DatabaseAction.SAVE, "01", 10);
     }
 
     @AfterMethod
@@ -92,9 +102,11 @@ public class FiasServiceIT extends AbstractTestNGSpringContextTests {
 
     @Test
     public void installDatabaseTest() {
-        assertThat((long) entityManager.createQuery("select count(flat) from FlatType flat").getSingleResult()).isEqualTo(10);
-        assertThat((long) entityManager.createQuery("select count(house) from HouseStateStatus house").getSingleResult()).isEqualTo(43);
-        assertThat((long) entityManager.createQuery("select count(room) from Room room").getSingleResult()).isEqualTo(8);
+        assertThat(flatTypeRepository.count()).isEqualTo(10);
+        assertThat(houseStateStatusRepository.count()).isEqualTo(43);
+        assertThat(roomRepository.count()).isEqualTo(8);
+        assertThat(addrObjectRepository.count()).isEqualTo(4);
+
     }
 
     @Test
@@ -133,7 +145,7 @@ public class FiasServiceIT extends AbstractTestNGSpringContextTests {
     @Test
     public void searchObjectsByParametersTest() {
         List<Object> objects = fiasService
-                .searchObjectsByParameters("02-h" + guidPart, null, ParameterSearchType.ALL, false);
+                .searchObjectsByParameters("02-h" + guidPart, null, Collections.singletonList(ParameterSearchType.ALL), false);
 
         assertThat(objects.size()).isEqualTo(1);
 
@@ -197,7 +209,7 @@ public class FiasServiceIT extends AbstractTestNGSpringContextTests {
     @SneakyThrows
     public void installFiasDelta02() {
         File folder = ResourceUtils.getFile("classpath:delta02");
-        installer.installDatabase(folder, "delta", "02", 2);
+        installer.installDatabase(folder, DatabaseAction.UPDATE, "02", 2);
 
         assertThat(steadRepository.count()).isEqualTo(6);
         assertThat(steadRepository.findById("1").get().getNUMBER()).isEqualTo("120");

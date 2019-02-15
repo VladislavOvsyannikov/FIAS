@@ -24,6 +24,28 @@ import javax.persistence.Transient;
 @EqualsAndHashCode(of = "AOID", callSuper = false)
 public class AddrObject extends AbstractFiasObject {
 
+    public AddrObject(){
+    }
+
+    public AddrObject(String aoGuid, String formalName, String shortName, int aoLevel, int endDate){
+        this.AOGUID = aoGuid;
+        this.FORMALNAME = formalName;
+        this.SHORTNAME = shortName;
+        this.AOLEVEL = aoLevel;
+        this.ENDDATE = endDate;
+    }
+
+    public AddrObject(String aoGuid, String parentGuid, String postalCode, String formalName, String shortName,
+                      int aoLevel, int endDate){
+        this.AOGUID = aoGuid;
+        this.PARENTGUID = parentGuid;
+        this.POSTALCODE = postalCode;
+        this.FORMALNAME = formalName;
+        this.SHORTNAME = shortName;
+        this.AOLEVEL = aoLevel;
+        this.ENDDATE = endDate;
+    }
+
     @Id
     @Column(name = "aoid", nullable = false, length = 32)
     private String AOID;

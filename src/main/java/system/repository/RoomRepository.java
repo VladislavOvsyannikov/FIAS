@@ -10,10 +10,11 @@ import java.util.List;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, String> {
 
-    @Query("SELECT r from Room r where r.HOUSEGUID=?1 and r.LIVESTATUS=1")
+    @Query("SELECT new Room(r.ROOMGUID, r.ENDDATE, r.FLATTYPE, r.FLATNUMBER) " +
+            "from Room r where r.HOUSEGUID=?1 and r.LIVESTATUS=1")
     List<Room> getActualRoomsByHouseguid(String houseguid);
 
-    @Query("SELECT r from Room r where r.HOUSEGUID=?1")
+    @Query("SELECT new Room(r.ROOMGUID, r.ENDDATE, r.FLATTYPE, r.FLATNUMBER) from Room r where r.HOUSEGUID=?1")
     List<Room> getRoomsByHouseguid(String houseguid);
 
     @Query("SELECT r from Room r where r.ROOMGUID=?1")

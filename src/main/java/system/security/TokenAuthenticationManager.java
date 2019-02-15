@@ -1,4 +1,4 @@
-package system.service;
+package system.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import system.domain.User;
@@ -71,15 +72,15 @@ public class TokenAuthenticationManager implements AuthenticationManager {
         } else return null;
     }
 
-//    public List<String> getCurrentUserInfo() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication instanceof TokenAuthentication) {
-//            List<String> res = new ArrayList<>();
-//            String token = ((TokenAuthentication) authentication).getToken();
-//            Claims claims = (DefaultClaims) Jwts.parser().setSigningKey(KEY).parse(token).getBody();
-//            res.add(claims.get("username", String.class));
-//            res.add(claims.get("role", String.class));
-//            return res;
-//        } else return null;
-//    }
+    public List<String> getCurrentUserInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof TokenAuthentication) {
+            List<String> res = new ArrayList<>();
+            String token = ((TokenAuthentication) authentication).getToken();
+            Claims claims = (DefaultClaims) Jwts.parser().setSigningKey(KEY).parse(token).getBody();
+            res.add(claims.get("username", String.class));
+            res.add(claims.get("role", String.class));
+            return res;
+        } else return null;
+    }
 }

@@ -1,23 +1,26 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/swagger-ui.html">FIAS</a>
+        <a class="navbar-brand">ФИАС</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
                 aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav" ng-init="userName=''; userRole=''; getCurrentUserInfo()">
+                <div>
+                    <a class="nav-item nav-link" href="/swagger-ui.html" target="_blank">APIs</a>
+                </div>
                 <div ng-show="userRole == 'ROLE_USER' || userRole == 'ROLE_ADMIN'">
-                    <a class="nav-item nav-link" href="/user">User</a>
+                    <a class="nav-item nav-link" href="/fias/user">Поиск</a>
                 </div>
                 <div ng-show="userRole == 'ROLE_ADMIN'">
-                    <a class="nav-item nav-link" href="/admin">Admin</a>
+                    <a class="nav-item nav-link" href="/fias/admin">Администрирование</a>
                 </div>
                 <div ng-show="userName == ''">
-                    <a class="nav-item nav-link" href="/signin">Sign in</a>
+                    <a class="nav-item nav-link" href="/fias/signin">Вход</a>
                 </div>
                 <div ng-show="userName != ''">
-                    <a class="nav-item nav-link" href="/signout">Sign out</a>
+                    <a class="nav-item nav-link" href="/fias/signout">Выход</a>
                 </div>
                 <div ng-show="userName != ''">
                     <a class="nav-item nav-link">Вы вошли как {{userName}}</a>

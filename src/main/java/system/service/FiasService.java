@@ -35,6 +35,7 @@ import system.repository.RoomRepository;
 import system.repository.SteadRepository;
 import system.repository.UserRepository;
 import system.repository.VersionRepository;
+import system.security.TokenAuthenticationManager;
 
 import javax.persistence.EntityManager;
 import java.io.BufferedReader;
@@ -47,6 +48,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -61,7 +63,7 @@ import static java.util.Objects.nonNull;
 public class FiasService {
 
     static final boolean AUTO_UPDATE = false;
-    private static final String MAIN_PATH = "D:/Fias";
+    private static final String MAIN_PATH = "D:/Fias/";
 
     private FiasModuleStatus fiasModuleStatus = FiasModuleStatus.WORKING;
     private final Downloader downloader;
@@ -227,8 +229,8 @@ public class FiasService {
             houses.removeIf(house -> currentDate > house.getENDDATE());
         } else houses = fiasHelper.getObjectsWithMaxEnddate(houses);
         for (House house : houses) {
-            house.setHouseType(fiasHelper.getHouseType(house));
-            house.setHouseName(fiasHelper.getHouseName(house));
+            house.setType(fiasHelper.getHouseType(house));
+            house.setName(fiasHelper.getHouseName(house));
         }
         return houseMapper.toDto(houses);
     }
@@ -250,7 +252,7 @@ public class FiasService {
         List<Room> rooms = isActual ? roomRepository.getActualRoomsByHouseguid(guid) :
                 roomRepository.getRoomsByHouseguid(guid);
         if (!isActual) rooms = fiasHelper.getObjectsWithMaxEnddate(rooms);
-        for (Room room : rooms) room.setRoomType(fiasHelper.getRoomType(room));
+        for (Room room : rooms) room.setType(fiasHelper.getRoomType(room));
         return roomMapper.toDto(rooms);
     }
 
@@ -261,7 +263,8 @@ public class FiasService {
         String queryPart = isActual ? " and a.LIVESTATUS=1" : "";
         queryPart += type.getQueryPart();
         List<AddrObject> addrObjects = entityManager.createQuery(
-                "select a from AddrObject a where a.FORMALNAME like '" + name + "%'" + queryPart, AddrObject.class).getResultList();
+                "select new AddrObject(a.AOGUID, a.PARENTGUID, a.POSTALCODE, a.FORMALNAME, a.SHORTNAME, a.AOLEVEL, a.ENDDATE) " +
+                        "from AddrObject a where a.FORMALNAME like '" + name + "%'" + queryPart, AddrObject.class).getResultList();
         if (!isActual) addrObjects = fiasHelper.getObjectsWithMaxEnddate(addrObjects);
         for (AddrObject addrObject : addrObjects)
             addrObject.setFullAddress(fiasHelper.getFullAddress(addrObject, addrObject.getPOSTALCODE()));
@@ -280,7 +283,7 @@ public class FiasService {
         return new CustomPair(addrObjectMapper.toDto(old), addrObjectMapper.toDto(actual));
     }
 
-    public List<Object> searchObjectsByParameters(String guid, String postalcode, ParameterSearchType type, Boolean isActual) {
+    public List<Object> searchObjectsByParameters(String guid, String postalcode, List<ParameterSearchType> types, Boolean isActual) {
         if (isNull(guid) && isNull(postalcode)) return new ArrayList<>();
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         if (nonNull(guid)) {
@@ -294,22 +297,22 @@ public class FiasService {
         }
         if (params.isEmpty()) return new ArrayList<>();
         if (isNull(isActual)) isActual = false;
-        if (isNull(type)) type = ParameterSearchType.ALL;
+        if (isNull(types)) types = Collections.singletonList(ParameterSearchType.ALL);
 
         List<Object> res = new ArrayList<>();
-        if (type.equals(ParameterSearchType.ALL) || type.equals(ParameterSearchType.ADDRESS_OBJECT)) {
+        if (types.contains(ParameterSearchType.ALL) || types.contains(ParameterSearchType.ADDRESS_OBJECT)) {
             List<AddrObject> addrObjects = fiasHelper.getAddrObjectsByParams(params, isActual);
             if (!addrObjects.isEmpty()) res.addAll(addrObjectMapper.toDto(addrObjects));
         }
-        if (type.equals(ParameterSearchType.ALL) || type.equals(ParameterSearchType.HOUSE)) {
+        if (types.contains(ParameterSearchType.ALL) || types.contains(ParameterSearchType.HOUSE)) {
             List<House> houses = fiasHelper.getHousesByParams(params, isActual);
             if (!houses.isEmpty()) res.addAll(houseMapper.toDto(houses));
         }
-        if (type.equals(ParameterSearchType.ALL) || type.equals(ParameterSearchType.STEAD)) {
+        if (types.contains(ParameterSearchType.ALL) || types.contains(ParameterSearchType.STEAD)) {
             List<Stead> steads = fiasHelper.getSteadsByParams(params, isActual);
             if (!steads.isEmpty()) res.addAll(steadMapper.toDto(steads));
         }
-        if (type.equals(ParameterSearchType.ALL) || type.equals(ParameterSearchType.ROOM)) {
+        if (types.contains(ParameterSearchType.ALL) || types.contains(ParameterSearchType.ROOM)) {
             List<Room> rooms = fiasHelper.getRoomsByParams(params, isActual);
             if (!rooms.isEmpty()) res.addAll(roomMapper.toDto(rooms));
         }
@@ -389,17 +392,17 @@ public class FiasService {
     public void blockUser(Integer id) {
         User user = userRepository.findById(id).orElse(null);
         if (isNull(user)) return;
-        user.setIsEnable(false);
+        user.setIsEnable(!user.getIsEnable());
         userRepository.save(user);
     }
 
-//    public List<String> getCurrentUserInfo() {
-//        return tokenAuthenticationManager.getCurrentUserInfo();
-//    }
+    public List<String> getCurrentUserInfo() {
+        return tokenAuthenticationManager.getCurrentUserInfo();
+    }
 
     @SneakyThrows
     public String lastLog() {
-        return Files.lines(Paths.get(MAIN_PATH + "fiasLogs\\lastLog.log"), Charsets.UTF_8)
+        return Files.lines(Paths.get(MAIN_PATH + "fiasLogs/lastLog.log"), Charsets.UTF_8)
                 .reduce("", (str1, str2) -> str1 + "<br>" + str2)
                 .replaceFirst("<br>", "");
     }

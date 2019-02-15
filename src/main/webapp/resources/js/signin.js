@@ -9,17 +9,14 @@ login.controller('loginController', function ($scope, $http, $window) {
     };
 
     $scope.signIn = function () {
-        let data = {
-            name: $scope.name,
-            password: $scope.password
-        };
         if ($scope.name == null || $scope.password == null || $scope.password === "" || $scope.name === "") {
-            $scope.message = "Enter name and password";
+            $scope.message = "Введите имя пользователя и пароль";
         } else {
-            $http.post("signIn", data, config).then(function (response) {
-                if (!response.data) $scope.message = "Name or password incorrect";
-                else $window.location.href = '/user'
-            });
+            $http.get("/fias/sign-in?name=" + $scope.name + "&password=" + $scope.password, config)
+                .then(function (response) {
+                    if (!response.data) $scope.message = "Имя пользователя или пароль указаны неверно";
+                    else $window.location.href = '/fias/user'
+                });
         }
     };
 });

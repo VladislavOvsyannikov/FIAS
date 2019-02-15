@@ -13,11 +13,11 @@ public class HouseDto {
 
     private int ENDDATE;
 
-    private String houseName;
+    private String name;
 
     private String fullAddress;
 
-    private String houseType;
+    private String type;
 
     private String houseStateStatus;
 

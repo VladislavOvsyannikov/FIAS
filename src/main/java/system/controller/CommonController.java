@@ -19,18 +19,18 @@ public class CommonController {
 
     @ResponseBody
     @GetMapping(value = "/sign-in")
-    public boolean signIn(@RequestParam(value = "name") String name,
-                          @RequestParam(value = "password") String password) {
+    Boolean signIn(@RequestParam(value = "name") String name,
+                    @RequestParam(value = "password") String password) {
         return fiasService.signIn(name, password);
     }
 
     @RequestMapping(value = "/signin")
-    public String signIn() {
+    String signIn() {
         return "signin.html";
     }
 
     @RequestMapping(value = "/navbar.html")
-    public String navbar() {
+    String navbar() {
         return "navbar.html";
     }
 }

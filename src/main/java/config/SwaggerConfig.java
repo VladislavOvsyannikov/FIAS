@@ -14,10 +14,10 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-import system.domain.AddrObject;
-import system.domain.House;
-import system.domain.Room;
-import system.domain.Stead;
+import system.dto.AddrObjectDto;
+import system.dto.HouseDto;
+import system.dto.RoomDto;
+import system.dto.SteadDto;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -51,16 +51,16 @@ public class SwaggerConfig {
                         new ResponseMessageBuilder().code(401).message("Unauthorized").build(),
                         new ResponseMessageBuilder().code(403).message("Forbidden").build()))
                 .additionalModels(
-                        resolver.resolve(AddrObject.class),
-                        resolver.resolve(House.class),
-                        resolver.resolve(Stead.class),
-                        resolver.resolve(Room.class));
+                        resolver.resolve(AddrObjectDto.class),
+                        resolver.resolve(HouseDto.class),
+                        resolver.resolve(SteadDto.class),
+                        resolver.resolve(RoomDto.class));
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("FIAS")
-                .description("FIAS API")
+                .description("FIAS APIs")
                 .version("1.0")
                 .contact(new Contact("Vladislav Ovsyannikov", null, null))
                 .build();

@@ -6,7 +6,7 @@
         <div class="search-object-list">
             <div ng-if="addrObjectsByName.length > 0">
                 <ul class="list-group">
-                    <li ng-repeat="object in addrObjectsByName | orderBy:'fullAddress'"
+                    <li ng-repeat="object in addrObjectsByName | myNameSearchFilter:nameSearch | orderBy:'fullAddress.length'"
                         class="list-group-item" ng-click="chooseAddress(object)">
                         {{object.fullAddress}}
                     </li>

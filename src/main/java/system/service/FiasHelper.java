@@ -132,9 +132,9 @@ public class FiasHelper {
     String getFullAddress(Room room) {
         House house = getHouseByGuid(room.getHOUSEGUID());
         room.setOKATO(house.getOKATO());
-        room.setOKATO(house.getOKTMO());
+        room.setOKTMO(house.getOKTMO());
         room.setIFNSFL(house.getIFNSFL());
-        room.setIFNSFL(house.getIFNSUL());
+        room.setIFNSUL(house.getIFNSUL());
         room.setHouseStateStatus(getHouseStateStatus(house));
         return getFullAddress(house, room.getPOSTALCODE()) + ", " + getRoomType(room) + " " + room.getFLATNUMBER();
     }

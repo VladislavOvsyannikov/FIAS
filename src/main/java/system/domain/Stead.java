@@ -23,6 +23,15 @@ import javax.persistence.Transient;
 @EqualsAndHashCode(of = "STEADID", callSuper = false)
 public class Stead extends AbstractFiasObject {
 
+    public Stead(){
+    }
+
+    public Stead(String steadGuid, String number, int endDate){
+        this.STEADGUID = steadGuid;
+        this.NUMBER = number;
+        this.ENDDATE = endDate;
+    }
+
     @Id
     @Column(name = "steadid", nullable = false, length = 32)
     private String STEADID;
@@ -74,10 +83,6 @@ public class Stead extends AbstractFiasObject {
     //Кадастровый номер
     @Column(name = "cadnum", length = 100)
     private String CADNUM;
-
-    //Внешний ключ на нормативный документ
-    @Column(name = "normdoc", length = 32)
-    private String NORMDOC;
 
     @Transient
     private String fullAddress;

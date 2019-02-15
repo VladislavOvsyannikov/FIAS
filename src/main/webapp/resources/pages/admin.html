@@ -2,7 +2,7 @@
 <html lang="en" ng-app="admin" ng-controller="adminController">
 <head>
     <meta charset="UTF-8">
-    <title>Fias</title>
+    <title>ФИАС</title>
     <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
     <script src="/resources/js/bootstrap.min.js"></script>
     <script src="/resources/js/popper.min.js"></script>
@@ -37,17 +37,17 @@
                 </div>
             </div>
             <div ng-show="isComplete">
-                <button ng-click="updateDatabase('installComplete')" class="btn btn-lg"
+                <button ng-click="updateDatabase('complete')" class="btn btn-lg"
                         ng-disabled="disabled">Install complete database</button><br><br>
             </div>
             <div ng-show="isDelta">
-                <button ng-click="updateDatabase('installOneUpdate')" class="btn btn-lg"
+                <button ng-click="updateDatabase('update')" class="btn btn-lg"
                         ng-disabled="disabled">Install one update</button><br><br>
-                <button ng-click="updateDatabase('installUpdates')" class="btn btn-lg"
+                <button ng-click="updateDatabase('updates')" class="btn btn-lg"
                         ng-disabled="disabled">Install all updates</button><br><br>
             </div>
             <div>
-                <a class="btn btn-primary" href="/lastLog" target="_blank">Last logs</a>
+                <a class="btn btn-primary" href="/fias/last-log" target="_blank">Last logs</a>
             </div>
         </div>
     </div>
@@ -68,11 +68,11 @@
                     <td>{{user.name}}</td>
                     <td>{{user.isEnable}}</td>
                     <td>
-                        <button class="btn btn-warning" ng-click="blockUser(user)">{{user.isEnable?'Block':'Unblock'}}
+                        <button class="btn btn-warning" ng-click="blockUser(user.id)">{{user.isEnable?'Block':'Unblock'}}
                         </button>
                     </td>
                     <td>
-                        <button class="btn btn-danger" ng-click="deleteUser(user)">Delete</button>
+                        <button class="btn btn-danger" ng-click="deleteUser(user.id)">Delete</button>
                     </td>
                 </tr>
                 </tbody>

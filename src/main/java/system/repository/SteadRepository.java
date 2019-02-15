@@ -10,10 +10,10 @@ import java.util.List;
 @Repository
 public interface SteadRepository extends JpaRepository<Stead, String> {
 
-    @Query("SELECT s from Stead s where s.PARENTGUID=?1 and s.LIVESTATUS=1")
+    @Query("SELECT new Stead(s.STEADGUID, s.NUMBER, s.ENDDATE) from Stead s where s.PARENTGUID=?1 and s.LIVESTATUS=1")
     List<Stead> getActualSteadsByParentguid(String parentguid);
 
-    @Query("SELECT s from Stead s where s.PARENTGUID=?1")
+    @Query("SELECT new Stead(s.STEADGUID, s.NUMBER, s.ENDDATE) from Stead s where s.PARENTGUID=?1")
     List<Stead> getSteadsByParentguid(String parentguid);
 
     @Query("SELECT s from Stead s where s.STEADGUID=?1")

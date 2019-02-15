@@ -17,7 +17,7 @@ public class RoomDto {
 
     private String fullAddress;
 
-    private String roomType;
+    private String type;
 
     private String houseStateStatus;
 

@@ -23,6 +23,20 @@ import javax.persistence.Transient;
 @EqualsAndHashCode(of = "HOUSEID", callSuper = false)
 public class House extends AbstractFiasObject {
 
+    public House(){
+    }
+
+    public House(String houseGuid, int endDate, String houseNum, String buildNum, String sctucNum,
+                 int estStatus, int strStatus){
+        this.HOUSEGUID = houseGuid;
+        this.ENDDATE = endDate;
+        this.HOUSENUM = houseNum;
+        this.BUILDNUM = buildNum;
+        this.STRUCNUM = sctucNum;
+        this.ESTSTATUS = estStatus;
+        this.STRSTATUS = strStatus;
+    }
+
     @Id
     @Column(name = "houseid", nullable = false, length = 32)
     private String HOUSEID;
@@ -95,10 +109,10 @@ public class House extends AbstractFiasObject {
     private String fullAddress;
 
     @Transient
-    private String houseType;
+    private String type;
 
     @Transient
-    private String houseName;
+    private String name;
 
     @Transient
     private String houseStateStatus;

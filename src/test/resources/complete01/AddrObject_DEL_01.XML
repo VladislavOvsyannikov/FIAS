@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AddressObjects>
+    <Object AOID="101" AOGUID="это надо удалить1" PARENTGUID="123"/>
+    <Object AOID="102" AOGUID="это надо удалить2" PARENTGUID="123"/>
+    <Object AOID="103" AOGUID="это надо удалить3" PARENTGUID="123"/>
+    <Object AOID="103" AOGUID="это надо удалить3" PARENTGUID="123"/>
+    <Object AOID="104" AOGUID="это надо удалить4" PARENTGUID="123"/>
+</AddressObjects>

@@ -21,23 +21,32 @@ public class Installer {
 
     public void installLastComplete(String mainPath, String lastVersion) throws FiasException {
         File folder = new File(mainPath + "complete" + lastVersion);
-        installDatabase(folder, "complete", lastVersion, 100_000);
+        installDatabase(folder, DatabaseAction.SAVE, lastVersion, 100_000);
     }
 
     public void installDeltaByVersion(String mainPath, String deltaVersion) throws FiasException {
         File folder = new File(mainPath + "delta" + deltaVersion);
-        installDatabase(folder, "delta", deltaVersion, 10_000);
+        installDatabase(folder, DatabaseAction.UPDATE, deltaVersion, 10_000);
     }
 
-    public void installDatabase(File folder, String databaseType, String version, int numberOfObjects) throws FiasException {
+    public void installDatabase(File folder, DatabaseAction action, String version, int numberOfObjects) throws FiasException {
         if (folder.exists()) {
             try {
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
-                mySAXParser.setDatabaseType(databaseType);
+                mySAXParser.setAction(action);
                 mySAXParser.setNumberOfObjects(numberOfObjects);
                 for (File file : Objects.requireNonNull(folder.listFiles())) {
                     String fileName = file.getName();
                     if (!fileName.contains("_DEL_")) {
+                        mySAXParser.setFileName(fileName);
+                        saxParser.parse(file, mySAXParser);
+                    }
+                }
+                mySAXParser.setAction(DatabaseAction.DELETE);
+                mySAXParser.setNumberOfObjects(1000);
+                for (File file : Objects.requireNonNull(folder.listFiles())) {
+                    String fileName = file.getName();
+                    if (fileName.contains("_DEL_")) {
                         mySAXParser.setFileName(fileName);
                         saxParser.parse(file, mySAXParser);
                     }

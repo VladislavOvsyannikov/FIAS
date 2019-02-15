@@ -8,4 +8,7 @@
             LIVESTATUS="1" SHORTNAME="ул" FORMALNAME="улица1" AOLEVEL="7" ENDDATE="2050-00-00"/>
     <Object AOID="4" AOGUID="03-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" PARENTGUID="01-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
             LIVESTATUS="1" SHORTNAME="ул" FORMALNAME="улица2" AOLEVEL="7" ENDDATE="2050-00-00"/>
+    <Object AOID="101" AOGUID="это надо удалить1" PARENTGUID="123"/>
+    <Object AOID="102" AOGUID="это надо удалить2" PARENTGUID="123"/>
+    <Object AOID="103" AOGUID="это надо удалить3" PARENTGUID="123"/>
 </AddressObjects>

@@ -14,8 +14,7 @@ public enum NameSearchType {
     VILLAGE,
     HAMLET,
     SETTLEMENT,
-    URBAN_TYPE_SETTLEMENT,
-    UNSET;
+    URBAN_TYPE_SETTLEMENT;
 
     public String getQueryPart() {
         switch (this) {
