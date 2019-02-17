@@ -22,7 +22,7 @@ import java.util.List;
 @Secured("ROLE_ADMIN")
 @RequestMapping("/fias")
 @RequiredArgsConstructor
-@Api(tags = "Admin", description = " ")
+@Api(tags = "Администрирование", description = " ")
 public class AdminController {
 
     private final FiasService fiasService;

@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
- * Информация по номерам домов улиц городов и населенных пунктов
+ * Информация о домах
  */
 
 @Entity

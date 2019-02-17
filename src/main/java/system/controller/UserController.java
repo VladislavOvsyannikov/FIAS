@@ -26,7 +26,7 @@ import java.util.List;
 @Secured("ROLE_USER")
 @RequestMapping("/fias")
 @RequiredArgsConstructor
-@Api(tags = "User", description = " ")
+@Api(tags = "Сервис", description = " ")
 public class UserController {
 
     private final FiasService fiasService;

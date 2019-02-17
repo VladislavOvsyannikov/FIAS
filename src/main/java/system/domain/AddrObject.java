@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
- * Информация классификатора адресообразующих элементов
+ * Информация об адресообразующих элементов
  */
 
 @Entity
