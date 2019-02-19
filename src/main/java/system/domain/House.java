@@ -19,6 +19,14 @@ import javax.persistence.Transient;
         @Index(columnList = "aoguid", name = "parentguidhouse"),
         @Index(columnList = "houseguid", name = "houseguid"),
         @Index(columnList = "postalcode", name = "postalcode")})
+//        @Index(columnList = "aoguid", name = "houseIndex1"),
+//        @Index(columnList = "houseguid", name = "houseIndex2"),
+//        @Index(columnList = "postalcode", name = "houseIndex3"),
+//        @Index(columnList = "ifnsfl", name = "houseIndex4"),
+//        @Index(columnList = "ifnsul", name = "houseIndex5"),
+//        @Index(columnList = "okato", name = "houseIndex6"),
+//        @Index(columnList = "oktmo", name = "houseIndex7"),
+//        @Index(columnList = "cadnum", name = "houseIndex8")})
 @Data
 @EqualsAndHashCode(of = "HOUSEID", callSuper = false)
 public class House extends AbstractFiasObject {
@@ -104,6 +112,10 @@ public class House extends AbstractFiasObject {
     //Признак строения
     @Column(name = "strstatus", length = 2)
     private int STRSTATUS;
+
+    //Внешний ключ на нормативный документ
+    @Column(name = "normdoc", length = 32)
+    private String NORMDOC;
 
     @Transient
     private String fullAddress;

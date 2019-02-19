@@ -11,13 +11,15 @@ user.controller('userController', function ($rootScope, $scope, $http) {
         });
     };
 
+    $rootScope.downloadMessage = "";
+    $rootScope.downloadingMessage = "";
     $rootScope.actualAdvancedSearch = true;
     $scope.getObjectsByParentGuid = function () {
-        $scope.downloadingMessage = "Downloading...";
+        $rootScope.downloadingMessage = "Загрузка...";
         $http.get(urlPrefix + "addr-objects-parent?guid=" + parentGuid + "&isActual=" + $rootScope.actualAdvancedSearch, config)
             .then(function (response) {
                 $rootScope.objectsList = response.data;
-                $scope.downloadingMessage = "";
+                $rootScope.downloadingMessage = "";
                 $scope.formatShow();
                 if ($rootScope.objectsList.length === 0) {
                     $scope.getSteadsByParentGuid();
@@ -28,7 +30,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
 
     $scope.getSteadsByParentGuid = function () {
         let data = {guid: parentGuid, onlyActual: $rootScope.actualAdvancedSearch};
-        $scope.downloadingMessage = "Downloading...";
+        $rootScope.downloadingMessage = "Загрузка...";
         $http.get(urlPrefix + "steads-parent?guid=" + parentGuid + "&isActual=" + $rootScope.actualAdvancedSearch, config)
             .then(function (response) {
                 $rootScope.steadsList = response.data;
@@ -40,20 +42,20 @@ user.controller('userController', function ($rootScope, $scope, $http) {
         $http.get(urlPrefix + "houses-parent?guid=" + parentGuid + "&isActual=" + $rootScope.actualAdvancedSearch, config)
             .then(function (response) {
                 $rootScope.housesList = response.data;
-                $scope.downloadingMessage = "";
+                $rootScope.downloadingMessage = "";
                 $scope.formatShow();
             });
     };
 
     $scope.getRoomsListByParentGuid = function () {
         let data = {guid: parentGuid, onlyActual: $rootScope.actualAdvancedSearch};
-        $scope.downloadingMessage = "Downloading...";
+        $rootScope.downloadingMessage = "Загрузка...";
         $http.get(urlPrefix + "rooms-parent?guid=" + parentGuid + "&isActual=" + $rootScope.actualAdvancedSearch, config)
             .then(function (response) {
                 $rootScope.roomsList = response.data;
                 $rootScope.steadsList = [];
                 $rootScope.housesList = [];
-                $scope.downloadingMessage = "";
+                $rootScope.downloadingMessage = "";
                 $scope.formatShow();
             });
     };
@@ -74,10 +76,19 @@ user.controller('userController', function ($rootScope, $scope, $http) {
         }
     };
 
+    $scope.searchingMessage = "";
+    $scope.orderByField = 'fullAddress';
+    $scope.reverseSort = false;
     $scope.searchObjects = function () {
         let queryPart = ($scope.guidSearch !== undefined && $scope.guidSearch !== "") ? "guid=" + $scope.guidSearch : "";
         queryPart += ($scope.postcodeSearch !== undefined && $scope.postcodeSearch !== "") ? "&postalcode=" + $scope.postcodeSearch : "";
+        queryPart += ($scope.cadnumSearch !== undefined && $scope.cadnumSearch !== "") ? "&cadnum=" + $scope.cadnumSearch : "";
+        queryPart += ($scope.okatoSearch !== undefined && $scope.okatoSearch !== "") ? "&okato=" + $scope.okatoSearch : "";
+        queryPart += ($scope.oktmoSearch !== undefined && $scope.oktmoSearch !== "") ? "&oktmo=" + $scope.oktmoSearch : "";
+        queryPart += ($scope.flSearch !== undefined && $scope.flSearch !== "") ? "&fl=" + $scope.flSearch : "";
+        queryPart += ($scope.ulSearch !== undefined && $scope.ulSearch !== "") ? "&ul=" + $scope.ulSearch : "";
         if (queryPart.length > 0) {
+            $scope.searchingMessage = "Поиск...";
             let types = [];
             if ($scope.objectCheck) types.push("ADDRESS_OBJECT");
             if ($scope.houseCheck) types.push("HOUSE");
@@ -85,31 +96,32 @@ user.controller('userController', function ($rootScope, $scope, $http) {
             if ($scope.roomCheck) types.push("ROOM");
             $http.get(urlPrefix + "objects-parameters?" + queryPart + "&isActual=" + $scope.actualSearch
                 + ((types.length > 0) ? "&searchTypes=" + types.join(",") : ""), config).then(function (response) {
+                $scope.searchingMessage = "";
                 if (response.data.length > 0) {
                     $scope.searchMessage = "";
                     $scope.resultObjects = response.data;
+                    $scope.currentPage = 0;
+                    $scope.paginate(0);
                 } else {
                     $scope.searchMessage = "Не найдено";
                     $scope.resultObjects = [];
+                    $scope.pagedObjects = [];
                 }
             });
-        } else {
-            $scope.resultObjects = [];
-            $scope.searchMessage = "Все поля для поиска по параметрам пусты";
-        }
+        } else $scope.searchMessage = "Все поля пусты";
     };
 
     $scope.getLastObjectInformation = function () {
         if (parentGuid !== "") {
+            $rootScope.downloadMessage = "";
+            $rootScope.downloadingMessage = "Загрузка...";
             $http.get(urlPrefix + "objects-parameters?guid=" + parentGuid + "&searchTypes="
                 + $rootScope.typeOfLastObject + "&isActual=" + $rootScope.actualAdvancedSearch, config).then(function (response) {
-                $scope.searchMessage = "";
                 $scope.resultObjects = response.data;
+                $scope.pagedObjects = $scope.resultObjects;
+                $rootScope.downloadingMessage = "";
             });
-        } else {
-            $scope.resultObjects = [];
-            $scope.searchMessage = "Выберите объект";
-        }
+        } else $rootScope.downloadMessage = "Выберите объект";
     };
 
     $scope.getGuid = function (object) {
@@ -129,7 +141,23 @@ user.controller('userController', function ($rootScope, $scope, $http) {
             let date = new Date().toJSON().slice(0, 10).replace(/-/g, '');
             return (object.enddate >= parseInt(date)) ? "Актуальный" : "Неактуальный";
         }
-    }
+    };
+
+    $scope.pageSize = 10;
+    $scope.totalPages = function () {
+        return Math.ceil($scope.resultObjects.length / $scope.pageSize);
+    };
+
+    $scope.pageButtonDisabled = function (dir) {
+        if (dir === -1) return $scope.currentPage === 0;
+        return $scope.currentPage >= $scope.resultObjects.length / $scope.pageSize - 1;
+    };
+
+    $scope.paginate = function (nextOrPrev) {
+        $scope.currentPage += nextOrPrev;
+        $scope.pagedObjects = $scope.resultObjects.slice($scope.currentPage * $scope.pageSize,
+            ($scope.currentPage + 1) * $scope.pageSize);
+    };
 });
 
 let directiveScopesIds = [];
@@ -152,6 +180,7 @@ user.directive('dropdownList', function ($rootScope, $timeout) {
             });
 
             scope.chooseObject = function (object) {
+                $rootScope.downloadMessage = "";
                 parentGuid = object.aoguid;
                 scope.search = object.shortname + ' ' + object.formalname;
                 $rootScope.typeOfLastObject = "ADDRESS_OBJECT";
@@ -169,6 +198,7 @@ user.directive('dropdownList', function ($rootScope, $timeout) {
             };
 
             scope.chooseHouse = function (house) {
+                $rootScope.downloadMessage = "";
                 parentGuid = house.houseguid;
                 scope.search = house.type + ' ' + house.name;
                 $rootScope.typeOfLastObject = "HOUSE";
@@ -187,6 +217,7 @@ user.directive('dropdownList', function ($rootScope, $timeout) {
             };
 
             scope.chooseStead = function (stead) {
+                $rootScope.downloadMessage = "";
                 parentGuid = stead.steadguid;
                 scope.search = 'участок ' + stead.number;
                 $rootScope.typeOfLastObject = "STEAD";
@@ -205,6 +236,7 @@ user.directive('dropdownList', function ($rootScope, $timeout) {
             };
 
             scope.chooseRoom = function (room) {
+                $rootScope.downloadMessage = "";
                 parentGuid = room.roomguid;
                 scope.search = room.type + ' ' + room.flatnumber;
                 $rootScope.typeOfLastObject = "ROOM";
@@ -273,22 +305,25 @@ user.directive('nameSearch', function ($rootScope, $http, $timeout) {
             };
 
             scope.getAddrObjectsByName = function () {
-                if (scope.nameSearch.length > 2) {
-                    scope.downloadingMessage = "Downloading...";
+                if (scope.nameSearch !== undefined && scope.nameSearch.length > 2) {
+                    $rootScope.downloadMessage = "";
+                    $rootScope.downloadingMessage = "Загрузка...";
                     $http.get(urlPrefix + "addr-objects-name?name=" + scope.nameSearch + "&type="
                         + scope.getNameSearchType(scope.type) + "&isActual=" + $rootScope.actualAdvancedSearch, config)
                         .then(function (response) {
-                            scope.downloadingMessage = "";
+                            $rootScope.downloadingMessage = "";
                             if (response.data.length > 0) {
                                 scope.addrObjectsByName = response.data;
                                 list.addClass('showAddresses');
-                            }
+                            } else $rootScope.downloadMessage = "Не найдено";
                         });
-                } else scope.addrObjectsByName = [];
+                } else {
+                    $rootScope.downloadMessage = "Введите минимум три символа";
+                    scope.addrObjectsByName = [];
+                }
             };
 
             scope.type = "all";
-            scope.downloadingMessage = "";
             scope.searchTypes = ["Город", "Область", "Район", "Край", "Республика", "Автономный округ",
                 "Автономная область", "Улица", "Проспект", "Село", "Деревня", "Поселок", "Поселок городского типа"];
 

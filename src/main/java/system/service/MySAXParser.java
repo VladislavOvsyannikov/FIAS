@@ -39,7 +39,7 @@ public class MySAXParser extends DefaultHandler {
                 String field = attributes.getLocalName(i);
                 String value = attributes.getValue(i);
                 if (field.endsWith("ID") || field.endsWith("DATE") || field.endsWith("NORMDOC"))
-                    value = value.replaceAll("-", "");
+                    value = value.replace("-", "");
                 ReflectionHelper.setFieldValue(object, field, value);
             }
             objects[++index] = object;

@@ -115,7 +115,6 @@ public class FiasServiceIT extends AbstractTestNGSpringContextTests {
 
         assertThat(addrObjects.size()).isEqualTo(1);
         assertThat(addrObjects.get(0).getFORMALNAME()).isEqualTo("Спб");
-        assertThat(addrObjects.get(0).getLIVESTATUS()).isEqualTo(1);
     }
 
     @Test
@@ -145,12 +144,12 @@ public class FiasServiceIT extends AbstractTestNGSpringContextTests {
     @Test
     public void searchObjectsByParametersTest() {
         List<Object> objects = fiasService
-                .searchObjectsByParameters("02-h" + guidPart, null, Collections.singletonList(ParameterSearchType.ALL), false);
+                .searchObjectsByParameters("02-h" + guidPart, null, null, null, null, null, null, Collections.singletonList(ParameterSearchType.ALL), false);
 
         assertThat(objects.size()).isEqualTo(1);
 
         objects = fiasService
-                .searchObjectsByParameters("02-h", null, null, null);
+                .searchObjectsByParameters("02-h", null, null, null, null, null, null, null, null);
 
         assertThat(objects.size()).isEqualTo(0);
     }

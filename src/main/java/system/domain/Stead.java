@@ -19,14 +19,22 @@ import javax.persistence.Transient;
         @Index(columnList = "parentguid", name = "parentguidstead"),
         @Index(columnList = "steadguid", name = "steadguid"),
         @Index(columnList = "postalcode", name = "postalcode")})
+//        @Index(columnList = "parentguid", name = "steadIndex1"),
+//        @Index(columnList = "steadguid", name = "steadIndex2"),
+//        @Index(columnList = "postalcode", name = "steadIndex3"),
+//        @Index(columnList = "ifnsfl", name = "steadIndex4"),
+//        @Index(columnList = "ifnsul", name = "steadIndex5"),
+//        @Index(columnList = "okato", name = "steadIndex6"),
+//        @Index(columnList = "oktmo", name = "steadIndex7"),
+//        @Index(columnList = "cadnum", name = "steadIndex8")})
 @Data
 @EqualsAndHashCode(of = "STEADID", callSuper = false)
 public class Stead extends AbstractFiasObject {
 
-    public Stead(){
+    public Stead() {
     }
 
-    public Stead(String steadGuid, String number, int endDate){
+    public Stead(String steadGuid, String number, int endDate) {
         this.STEADGUID = steadGuid;
         this.NUMBER = number;
         this.ENDDATE = endDate;
@@ -84,11 +92,15 @@ public class Stead extends AbstractFiasObject {
     @Column(name = "cadnum", length = 100)
     private String CADNUM;
 
+    //Внешний ключ на нормативный документ
+    @Column(name = "normdoc", length = 32)
+    private String NORMDOC;
+
     @Transient
     private String fullAddress;
 
     @Override
-    public String getGuid(){
+    public String getGuid() {
         return STEADGUID;
     }
 }

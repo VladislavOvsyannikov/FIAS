@@ -19,14 +19,18 @@ import javax.persistence.Transient;
         @Index(columnList = "houseguid", name = "houseguidroom"),
         @Index(columnList = "roomguid", name = "roomguid"),
         @Index(columnList = "postalcode", name = "postalcode")})
+//        @Index(columnList = "houseguid", name = "roomIndex1"),
+//        @Index(columnList = "roomguid", name = "roomIndex2"),
+//        @Index(columnList = "postalcode", name = "roomIndex3"),
+//        @Index(columnList = "cadnum", name = "roomIndex4")})
 @Data
 @EqualsAndHashCode(of = "ROOMID", callSuper = false)
 public class Room extends AbstractFiasObject {
 
-    public Room(){
+    public Room() {
     }
 
-    public Room(String roomGuid, int endDate, int flatType, String flatNumber){
+    public Room(String roomGuid, int endDate, int flatType, String flatNumber) {
         this.ROOMGUID = roomGuid;
         this.ENDDATE = endDate;
         this.FLATTYPE = flatType;
@@ -77,6 +81,10 @@ public class Room extends AbstractFiasObject {
     @Column(name = "enddate", length = 8)
     private int ENDDATE;
 
+//    //Внешний ключ на нормативный документ
+//    @Column(name = "normdoc", length = 32)
+//    private String NORMDOC;
+
     @Transient
     private String IFNSFL;
 
@@ -99,7 +107,7 @@ public class Room extends AbstractFiasObject {
     private String houseStateStatus;
 
     @Override
-    public String getGuid(){
+    public String getGuid() {
         return ROOMGUID;
     }
 }

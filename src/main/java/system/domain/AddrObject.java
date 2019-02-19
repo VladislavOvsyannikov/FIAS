@@ -20,6 +20,14 @@ import javax.persistence.Transient;
         @Index(columnList = "aoguid", name = "aoguid"),
         @Index(columnList = "postalcode", name = "postalcode"),
         @Index(columnList = "formalname", name = "formalname")})
+//        @Index(columnList = "parentguid", name = "addrObjectIndex1"),
+//        @Index(columnList = "aoguid", name = "addrObjectIndex2"),
+//        @Index(columnList = "postalcode", name = "addrObjectIndex3"),
+//        @Index(columnList = "formalname", name = "addrObjectIndex4"),
+//        @Index(columnList = "ifnsfl", name = "addrObjectIndex5"),
+//        @Index(columnList = "ifnsul", name = "addrObjectIndex6"),
+//        @Index(columnList = "okato", name = "addrObjectIndex7"),
+//        @Index(columnList = "oktmo", name = "addrObjectIndex8")})
 @Data
 @EqualsAndHashCode(of = "AOID", callSuper = false)
 public class AddrObject extends AbstractFiasObject {
@@ -105,6 +113,10 @@ public class AddrObject extends AbstractFiasObject {
     //Окончание действия записи
     @Column(name = "enddate", length = 8)
     private int ENDDATE;
+
+    //Внешний ключ на нормативный документ
+    @Column(name = "normdoc", length = 32)
+    private String NORMDOC;
 
     @Transient
     private String fullAddress;

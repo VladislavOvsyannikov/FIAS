@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Информация по сведениям по нормативным документам,
@@ -26,4 +27,7 @@ public class NormativeDocument {
     //Тип документа
     @Column(name = "doctype", length = 3)
     private int DOCTYPE;
+
+    @Transient
+    private String type;
 }

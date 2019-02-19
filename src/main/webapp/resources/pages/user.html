@@ -24,13 +24,14 @@
     </div>
     <div class="row">
         <div class="col-5" ng-init="initLists(); getObjectsByParentGuid()">
-            <label>Расширенный поиск: {{downloadingMessage}}</label>
+            <label>Расширенный поиск: {{downloadingMessage}}{{downloadMessage}}</label>
             <div ng-repeat="flag in showDropdownList">
                 <dropdown-list></dropdown-list>
                 <br>
             </div>
             <div class="form-check-inline">
-                <button class="btn" type="submit" ng-click="getLastObjectInformation()">
+                <button class="btn" type="submit" ng-click="getLastObjectInformation()"
+                        ng-disabled="downloadingMessage != ''">
                     Данные об объекте
                 </button>
                 <div class="form-check">
@@ -43,17 +44,51 @@
             <hr class="style">
             <div class="row">
                 <div class="col-8">
-                    <label>Поиск по параметрам:</label>
-                    <input type="text" class="form-control" ng-model="guidSearch" placeholder="GUID"/>
+                    <label>Поиск по параметрам: {{searchingMessage}}{{searchMessage}}</label>
+                    <input type="text" class="form-control" ng-model="guidSearch" ng-disabled="searchingMessage != ''"
+                           placeholder="GUID"/>
                     <br>
-                    <input type="text" class="form-control" ng-model="postcodeSearch" placeholder="Почтовый индекс"/>
+                    <div class="row">
+                        <div class="col-8">
+                            <input type="text" class="form-control" ng-model="postcodeSearch"
+                                   ng-disabled="searchingMessage != ''" placeholder="Почтовый индекс"/>
+                        </div>
+                        <div class="col-4">
+                            <input type="text" class="form-control" ng-model="flSearch"
+                                   ng-disabled="searchingMessage != ''" placeholder="ИФНС ФЛ"/>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-8">
+                            <input type="text" class="form-control" ng-model="cadnumSearch"
+                                   ng-disabled="searchingMessage != ''" placeholder="Кадастровый номер"/>
+                        </div>
+                        <div class="col-4">
+                            <input type="text" class="form-control" ng-model="ulSearch"
+                                   ng-disabled="searchingMessage != ''" placeholder="ИФНС ЮЛ"/>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-6">
+                            <input type="text" class="form-control" ng-model="okatoSearch"
+                                   ng-disabled="searchingMessage != ''" placeholder="OKATO"/>
+                        </div>
+                        <div class="col-6">
+                            <input type="text" class="form-control" ng-model="oktmoSearch"
+                                   ng-disabled="searchingMessage != ''" placeholder="OKTMO"/>
+                        </div>
+                    </div>
                     <br>
                     <div class="form-check-inline">
-                        <button class="btn" type="submit" ng-click="searchObjects()">Поиск</button>
+                        <button class="btn" type="submit" ng-click="searchObjects()"
+                                ng-disabled="searchingMessage != ''">Поиск
+                        </button>
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="actual2"
                                    ng-init="actualSearch=true" ng-model="actualSearch">
-                            <label class="form-check-label" for="actual2">Только актуальные</label>
+                            <label class="form-check-label" for="actual2">Только актуальные </label>
                         </div>
                     </div>
                 </div>
@@ -88,26 +123,43 @@
     </div>
     <br>
     <div class="row">
-        <div ng-init="searchMessage= ''" ng-show="searchMessage != ''">
-            {{searchMessage}}
-        </div>
         <table ng-show="resultObjects.length > 0" class="table">
             <thead>
             <tr class="row m-0">
-                <th class="d-inline-block col-2 text-center">Полный адрес</th>
-                <th class="d-inline-block col-1 text-center">GUID</th>
-                <th class="d-inline-block col-1 text-center">Статус</th>
-                <th class="d-inline-block col-1 text-center">Почтовый индекс</th>
-                <th class="d-inline-block col-1 text-center">ОКАТО</th>
-                <th class="d-inline-block col-1 text-center">ОКТМО</th>
-                <th class="d-inline-block col-1 text-center">ИФНС ФЛ</th>
-                <th class="d-inline-block col-1 text-center">ИФНС ЮЛ</th>
-                <th class="d-inline-block col-2 text-center">Кадастровый номер</th>
-                <th class="d-inline-block col-1 text-center">Состояние дома</th>
+                <th class="d-inline-block col-2 text-center"
+                    ng-click="orderByField='fullAddress'; reverseSort = !reverseSort">Полный адрес
+                </th>
+                <th class="d-inline-block col-1 text-center"
+                    ng-click="orderByField=getGuid; reverseSort = !reverseSort">GUID
+                </th>
+                <th class="d-inline-block col-1 text-center"
+                    ng-click="orderByField=getStatus; reverseSort = !reverseSort">Статус
+                </th>
+                <th class="d-inline-block col-1 text-center"
+                    ng-click="orderByField='postalcode'; reverseSort = !reverseSort">Почтовый индекс
+                </th>
+                <th class="d-inline-block col-1 text-center"
+                    ng-click="orderByField='okato'; reverseSort = !reverseSort">ОКАТО
+                </th>
+                <th class="d-inline-block col-1 text-center"
+                    ng-click="orderByField='oktmo'; reverseSort = !reverseSort">ОКТМО
+                </th>
+                <th class="d-inline-block col-1 text-center"
+                    ng-click="orderByField='ifnsfl'; reverseSort = !reverseSort">ИФНС ФЛ
+                </th>
+                <th class="d-inline-block col-1 text-center"
+                    ng-click="orderByField='ifnsul'; reverseSort = !reverseSort">ИФНС ЮЛ
+                </th>
+                <th class="d-inline-block col-2 text-center"
+                    ng-click="orderByField='cadnum'; reverseSort = !reverseSort">Кадастровый номер
+                </th>
+                <th class="d-inline-block col-1 text-center"
+                    ng-click="orderByField='houseStateStatus'; reverseSort = !reverseSort">Состояние дома
+                </th>
             </tr>
             </thead>
             <tbody>
-            <tr class="row m-0" ng-repeat="object in resultObjects">
+            <tr class="row m-0" ng-repeat="object in pagedObjects|orderBy:orderByField:reverseSort">
                 <td class="d-inline-block col-sm-2 text-center h6 small">{{object.fullAddress}}</td>
                 <td class="d-inline-block col-sm-1 text-center h6 small">{{getGuid(object)}}</td>
                 <td class="d-inline-block col-sm-1 text-center h6 small">{{getStatus(object)}}</td>
@@ -121,6 +173,15 @@
             </tr>
             </tbody>
         </table>
+    </div>
+    <div class="row">
+        <div ng-show="resultObjects.length > pageSize">
+            <button class="btn" ng-disabled="pageButtonDisabled(-1)" ng-click="paginate(-1)">Предыдущая</button>
+            <button class="btn" ng-disabled="pageButtonDisabled(1)" ng-click="paginate(1)">Следующая</button>
+            Страница {{currentPage + 1}} из {{totalPages()}}.
+            Всего найдено {{resultObjects.length}}
+            <div><br><br></div>
+        </div>
     </div>
 </div>
 </body>

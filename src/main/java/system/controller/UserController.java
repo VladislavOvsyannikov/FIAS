@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import springfox.documentation.annotations.ApiIgnore;
 import system.dto.AddrObjectDto;
 import system.dto.HouseDto;
+import system.dto.NormativeDocumentDto;
 import system.dto.RoomDto;
 import system.dto.SteadDto;
 import system.service.CustomPair;
@@ -37,9 +38,14 @@ public class UserController {
     List<Object> searchObjectsByParameters(
             @RequestParam(value = "guid", required = false) String guid,
             @RequestParam(value = "postalcode", required = false) String postalcode,
+            @RequestParam(value = "cadnum", required = false) String cadnum,
+            @RequestParam(value = "okato", required = false) String okato,
+            @RequestParam(value = "oktmo", required = false) String oktmo,
+            @RequestParam(value = "fl", required = false) String fl,
+            @RequestParam(value = "ul", required = false) String ul,
             @RequestParam(value = "searchTypes", required = false) List<ParameterSearchType> types,
             @RequestParam(value = "isActual", required = false) Boolean isActual) {
-        return fiasService.searchObjectsByParameters(guid, postalcode, types, isActual);
+        return fiasService.searchObjectsByParameters(guid, postalcode, cadnum, okato, oktmo, fl, ul, types, isActual);
     }
 
     @ResponseBody
@@ -129,6 +135,13 @@ public class UserController {
     @ApiOperation("Полный адрес объекта")
     String[] getFullAddressByGuid(@PathVariable(value = "guid") String guid) {
         return new String[]{fiasService.getFullAddress(guid)};
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/normative-document/{id}")
+    @ApiOperation("Нормативный документ")
+    NormativeDocumentDto getNormativeDocument(@PathVariable(value = "id") String id) {
+        return fiasService.getNormativeDocument(id);
     }
 
     @ApiIgnore

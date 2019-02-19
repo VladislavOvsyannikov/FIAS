@@ -16,21 +16,27 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import system.domain.AddrObject;
 import system.domain.House;
+import system.domain.NormativeDocument;
+import system.domain.NormativeDocumentType;
 import system.domain.Room;
 import system.domain.Stead;
 import system.domain.User;
 import system.dto.AddrObjectDto;
 import system.dto.HouseDto;
+import system.dto.NormativeDocumentDto;
 import system.dto.RoomDto;
 import system.dto.SteadDto;
 import system.dto.UserDto;
 import system.mapper.AddrObjectMapper;
 import system.mapper.HouseMapper;
+import system.mapper.NormativeDocumentMapper;
 import system.mapper.RoomMapper;
 import system.mapper.SteadMapper;
 import system.mapper.UserMapper;
 import system.repository.AddrObjectRepository;
 import system.repository.HouseRepository;
+import system.repository.NormativeDocumentRepository;
+import system.repository.NormativeDocumentTypeRepository;
 import system.repository.RoomRepository;
 import system.repository.SteadRepository;
 import system.repository.UserRepository;
@@ -83,6 +89,9 @@ public class FiasService {
     private final RoomMapper roomMapper;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final NormativeDocumentRepository normativeDocumentRepository;
+    private final NormativeDocumentMapper normativeDocumentMapper;
+    private final NormativeDocumentTypeRepository normativeDocumentTypeRepository;
     private final TokenAuthenticationManager tokenAuthenticationManager;
 
     public void installComplete() {
@@ -283,19 +292,11 @@ public class FiasService {
         return new CustomPair(addrObjectMapper.toDto(old), addrObjectMapper.toDto(actual));
     }
 
-    public List<Object> searchObjectsByParameters(String guid, String postalcode, List<ParameterSearchType> types, Boolean isActual) {
-        if (isNull(guid) && isNull(postalcode)) return new ArrayList<>();
-        LinkedHashMap<String, String> params = new LinkedHashMap<>();
-        if (nonNull(guid)) {
-            guid = guid.replaceAll("-", "").toLowerCase();
-            if (guid.length() != 32) return new ArrayList<>();
-            else params.put("guid", guid);
-        }
-        if (nonNull(postalcode)) {
-            if (postalcode.length() != 6) return new ArrayList<>();
-            else params.put("postalcode", postalcode);
-        }
-        if (params.isEmpty()) return new ArrayList<>();
+    public List<Object> searchObjectsByParameters(String guid, String postalcode, String cadnum, String okato,
+                                                  String oktmo, String fl, String ul, List<ParameterSearchType> types,
+                                                  Boolean isActual) {
+        LinkedHashMap<String, String> params = getParameters(guid, postalcode, cadnum, okato, oktmo, fl, ul);
+        if (isNull(params) || params.isEmpty()) return new ArrayList<>();
         if (isNull(isActual)) isActual = false;
         if (isNull(types)) types = Collections.singletonList(ParameterSearchType.ALL);
 
@@ -317,6 +318,38 @@ public class FiasService {
             if (!rooms.isEmpty()) res.addAll(roomMapper.toDto(rooms));
         }
         return res;
+    }
+
+    private LinkedHashMap<String, String> getParameters(String guid, String postalcode, String cadnum, String okato,
+                                                       String oktmo, String fl, String ul) {
+        LinkedHashMap<String, String> params = new LinkedHashMap<>();
+        if (nonNull(guid)) {
+            guid = guid.replace("-", "").toLowerCase();
+            if (guid.length() != 32) return null;
+            else params.put("guid", guid);
+        }
+        if (nonNull(postalcode)) {
+            if (postalcode.length() != 6) return null;
+            else params.put("postalcode", postalcode);
+        }
+        if (nonNull(cadnum) && cadnum.length() > 10) params.put("cadnum", cadnum);
+        if (nonNull(okato)) {
+            if (okato.length() != 11) return null;
+            else params.put("okato", okato);
+        }
+        if (nonNull(oktmo)) {
+            if (oktmo.length() != 8 && oktmo.length() != 11) return null;
+            else params.put("oktmo", oktmo);
+        }
+        if (nonNull(fl)) {
+            if (fl.length() != 4) return null;
+            else params.put("ifnsfl", fl);
+        }
+        if (nonNull(ul)) {
+            if (ul.length() != 4) return null;
+            else params.put("ifnsul", ul);
+        }
+        return params;
     }
 
     public Object searchObjectByGuid(String guid) {
@@ -405,5 +438,15 @@ public class FiasService {
         return Files.lines(Paths.get(MAIN_PATH + "fiasLogs/lastLog.log"), Charsets.UTF_8)
                 .reduce("", (str1, str2) -> str1 + "<br>" + str2)
                 .replaceFirst("<br>", "");
+    }
+
+    public NormativeDocumentDto getNormativeDocument(String id) {
+        id = id.replaceAll("-", "").toLowerCase();
+        if (id.length() != 32) return null;
+        NormativeDocument document = normativeDocumentRepository.findById(id).orElse(null);
+        if (isNull(document)) return null;
+        document.setType(normativeDocumentTypeRepository.findById(document.getDOCTYPE())
+                .orElse(new NormativeDocumentType()).getNAME());
+        return normativeDocumentMapper.toDto(document);
     }
 }

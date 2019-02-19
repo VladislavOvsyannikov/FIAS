@@ -169,6 +169,10 @@ public class FiasHelper {
     }
 
     List<Room> getRoomsByParams(LinkedHashMap<String, String> params, Boolean isActual) {
+        params.remove("okato");
+        params.remove("oktmo");
+        params.remove("ifnsfl");
+        params.remove("ifnsul");
         List<Room> rooms = entityManager.createQuery("select o from Room o where "
                 + getQueryPart(params, isActual, "ROOM"), Room.class).getResultList();
         if (!isActual) rooms = getObjectsWithMaxEnddate(rooms);
@@ -191,11 +195,13 @@ public class FiasHelper {
     }
 
     List<AddrObject> getAddrObjectsByParams(LinkedHashMap<String, String> params, Boolean isActual) {
+        String cadnum = params.remove("cadnum");
         List<AddrObject> addrObjects = entityManager.createQuery("select o from AddrObject o where "
                 + getQueryPart(params, isActual, "AO"), AddrObject.class).getResultList();
         if (!isActual) addrObjects = getObjectsWithMaxEnddate(addrObjects);
         for (AddrObject addrObject : addrObjects)
             addrObject.setFullAddress(getFullAddress(addrObject, addrObject.getPOSTALCODE()));
+        if (nonNull(cadnum)) params.put("cadnum", cadnum);
         return addrObjects;
     }
 
