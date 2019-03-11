@@ -1,8 +1,11 @@
 package config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jndi.JndiTemplate;
@@ -19,9 +22,13 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
+@RequiredArgsConstructor
 @ComponentScan("system")
+@PropertySource("classpath:jndi.properties")
 @EnableJpaRepositories(basePackages = "system.repository")
 public class HibernateConfig {
+
+    private final Environment environment;
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws NamingException {
@@ -35,7 +42,7 @@ public class HibernateConfig {
 
     @Bean
     public DataSource dataSource() throws NamingException {
-        return (DataSource) new JndiTemplate().lookup("java:comp/env/jdbc/MysqlDatabase");
+        return (DataSource) new JndiTemplate().lookup(environment.getProperty("jdbc.url"));
     }
 
     @Bean

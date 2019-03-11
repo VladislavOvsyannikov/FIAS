@@ -9,6 +9,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,7 +43,7 @@ import system.repository.RoomRepository;
 import system.repository.SteadRepository;
 import system.repository.UserRepository;
 import system.repository.VersionRepository;
-import system.security.TokenAuthenticationManager;
+import system.security.TokenManager;
 
 import javax.persistence.EntityManager;
 import java.io.BufferedReader;
@@ -65,11 +67,9 @@ import static java.util.Objects.nonNull;
 
 @Log4j2
 @Service
+@PropertySource({"classpath:fias.properties", "classpath:log4j2.properties"})
 @RequiredArgsConstructor
 public class FiasService {
-
-    static final boolean AUTO_UPDATE = false;
-    private static final String MAIN_PATH = "D:/Fias/";
 
     private FiasModuleStatus fiasModuleStatus = FiasModuleStatus.WORKING;
     private final Downloader downloader;
@@ -92,7 +92,8 @@ public class FiasService {
     private final NormativeDocumentRepository normativeDocumentRepository;
     private final NormativeDocumentMapper normativeDocumentMapper;
     private final NormativeDocumentTypeRepository normativeDocumentTypeRepository;
-    private final TokenAuthenticationManager tokenAuthenticationManager;
+    private final TokenManager tokenManager;
+    private final Environment environment;
 
     public void installComplete() {
         if (isNull(getCurrentVersion())) {
@@ -138,8 +139,9 @@ public class FiasService {
     }
 
     String getMainPath() {
-        if (new File(MAIN_PATH).exists()) return MAIN_PATH;
-        log.warn(String.format("Путь %s не найдён", MAIN_PATH));
+        String mainPath = environment.getProperty("path");
+        if (new File(mainPath).exists()) return mainPath;
+        log.warn(String.format("Путь %s не найдён", mainPath));
         return System.getProperty("java.io.tmpdir");
     }
 
@@ -321,7 +323,7 @@ public class FiasService {
     }
 
     private LinkedHashMap<String, String> getParameters(String guid, String postalcode, String cadnum, String okato,
-                                                       String oktmo, String fl, String ul) {
+                                                        String oktmo, String fl, String ul) {
         LinkedHashMap<String, String> params = new LinkedHashMap<>();
         if (nonNull(guid)) {
             guid = guid.replace("-", "").toLowerCase();
@@ -408,9 +410,8 @@ public class FiasService {
     }
 
     public Boolean signIn(String name, String password) {
-        SecurityContextHolder.getContext().setAuthentication(tokenAuthenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(name, password)));
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = tokenManager.authenticate(new UsernamePasswordAuthenticationToken(name, password));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         return nonNull(authentication);
     }
 
@@ -430,12 +431,12 @@ public class FiasService {
     }
 
     public List<String> getCurrentUserInfo() {
-        return tokenAuthenticationManager.getCurrentUserInfo();
+        return tokenManager.getCurrentUserInfo();
     }
 
     @SneakyThrows
     public String lastLog() {
-        return Files.lines(Paths.get(MAIN_PATH + "fiasLogs/lastLog.log"), Charsets.UTF_8)
+        return Files.lines(Paths.get(environment.getProperty("property.path") + "/lastLog.log"), Charsets.UTF_8)
                 .reduce("", (str1, str2) -> str1 + "<br>" + str2)
                 .replaceFirst("<br>", "");
     }

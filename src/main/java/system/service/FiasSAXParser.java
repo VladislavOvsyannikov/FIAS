@@ -13,7 +13,7 @@ import javax.persistence.EntityTransaction;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class MySAXParser extends DefaultHandler {
+public class FiasSAXParser extends DefaultHandler {
 
     private final EntityManagerFactory entityManagerFactory;
     private String fileName;

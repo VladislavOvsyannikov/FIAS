@@ -18,7 +18,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .addFilterAfter(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(tokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin().loginPage("/fias/signin")
                 .and()
                 .exceptionHandling().accessDeniedPage("/fias/signin")
@@ -31,7 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean(name = "tokenAuthenticationFilter")
-    public TokenAuthenticationFilter tokenAuthenticationFilter() {
-        return new TokenAuthenticationFilter();
+    public TokenFilter tokenFilter() {
+        return new TokenFilter();
     }
 }

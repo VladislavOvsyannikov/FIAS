@@ -5,13 +5,13 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
-public class TokenAuthentication implements Authentication {
+public class Token implements Authentication {
 
     private String token;
     private Collection<? extends GrantedAuthority> authorities;
     private boolean isAuthenticated;
 
-    TokenAuthentication(String token, Collection<GrantedAuthority> authorities, boolean isAuthenticated) {
+    Token(String token, Collection<GrantedAuthority> authorities, boolean isAuthenticated) {
         this.token = token;
         this.authorities = authorities;
         this.isAuthenticated = isAuthenticated;

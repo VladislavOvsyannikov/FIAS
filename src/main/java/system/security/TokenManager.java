@@ -30,7 +30,7 @@ import static java.util.Objects.nonNull;
 
 @Service
 @RequiredArgsConstructor
-public class TokenAuthenticationManager implements AuthenticationManager {
+public class TokenManager implements AuthenticationManager {
 
     private static final SecretKey KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     private final UserRepository userRepository;
@@ -39,12 +39,12 @@ public class TokenAuthenticationManager implements AuthenticationManager {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         if (authentication instanceof UsernamePasswordAuthenticationToken)
             return createNewTokenAuthentication(authentication);
-        if (authentication instanceof TokenAuthentication)
-            return checkTokenAuthentication((TokenAuthentication) authentication);
+        if (authentication instanceof Token)
+            return checkTokenAuthentication((Token) authentication);
         return null;
     }
 
-    private Authentication checkTokenAuthentication(TokenAuthentication authentication) {
+    private Authentication checkTokenAuthentication(Token authentication) {
         String token = authentication.getToken();
         Claims claims = (DefaultClaims) Jwts.parser().setSigningKey(KEY).parse(token).getBody();
         if (claims.get("endDate", Long.class) > new Date().getTime()) {
@@ -68,15 +68,15 @@ public class TokenAuthenticationManager implements AuthenticationManager {
             List<GrantedAuthority> grantedAuth = new ArrayList<>();
             grantedAuth.add(new SimpleGrantedAuthority(user.getRole()));
             if (user.getRole().equals("ROLE_ADMIN")) grantedAuth.add(new SimpleGrantedAuthority("ROLE_USER"));
-            return new TokenAuthentication(token, grantedAuth, true);
+            return new Token(token, grantedAuth, true);
         } else return null;
     }
 
     public List<String> getCurrentUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof TokenAuthentication) {
+        if (authentication instanceof Token) {
             List<String> res = new ArrayList<>();
-            String token = ((TokenAuthentication) authentication).getToken();
+            String token = ((Token) authentication).getToken();
             Claims claims = (DefaultClaims) Jwts.parser().setSigningKey(KEY).parse(token).getBody();
             res.add(claims.get("username", String.class));
             res.add(claims.get("role", String.class));

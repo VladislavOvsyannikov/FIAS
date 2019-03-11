@@ -17,7 +17,7 @@ import java.util.Objects;
 public class Installer {
 
     private final VersionRepository versionRepository;
-    private final MySAXParser mySAXParser;
+    private final FiasSAXParser fiasSAXParser;
 
     public void installLastComplete(String mainPath, String lastVersion) throws FiasException {
         File folder = new File(mainPath + "complete" + lastVersion);
@@ -33,22 +33,22 @@ public class Installer {
         if (folder.exists()) {
             try {
                 SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
-                mySAXParser.setAction(action);
-                mySAXParser.setNumberOfObjects(numberOfObjects);
+                fiasSAXParser.setAction(action);
+                fiasSAXParser.setNumberOfObjects(numberOfObjects);
                 for (File file : Objects.requireNonNull(folder.listFiles())) {
                     String fileName = file.getName();
                     if (!fileName.contains("_DEL_")) {
-                        mySAXParser.setFileName(fileName);
-                        saxParser.parse(file, mySAXParser);
+                        fiasSAXParser.setFileName(fileName);
+                        saxParser.parse(file, fiasSAXParser);
                     }
                 }
-                mySAXParser.setAction(DatabaseAction.DELETE);
-                mySAXParser.setNumberOfObjects(1000);
+                fiasSAXParser.setAction(DatabaseAction.DELETE);
+                fiasSAXParser.setNumberOfObjects(1000);
                 for (File file : Objects.requireNonNull(folder.listFiles())) {
                     String fileName = file.getName();
                     if (fileName.contains("_DEL_")) {
-                        mySAXParser.setFileName(fileName);
-                        saxParser.parse(file, mySAXParser);
+                        fiasSAXParser.setFileName(fileName);
+                        saxParser.parse(file, fiasSAXParser);
                     }
                 }
                 Version ver = new Version();
