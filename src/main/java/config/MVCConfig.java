@@ -10,7 +10,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan("system")
+@ComponentScan({"fias", "security"})
 public class MVCConfig implements WebMvcConfigurer {
 
     @Bean

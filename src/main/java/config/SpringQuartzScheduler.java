@@ -1,5 +1,6 @@
 package config;
 
+import fias.service.AutoUpdate;
 import org.quartz.JobDetail;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
@@ -13,12 +14,11 @@ import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
-import system.service.AutoUpdate;
 
 import java.sql.Time;
 
 @Configuration
-@ComponentScan("system")
+@ComponentScan({"fias", "security"})
 public class SpringQuartzScheduler {
 
     private ApplicationContext applicationContext;

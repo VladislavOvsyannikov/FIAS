@@ -23,9 +23,9 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @RequiredArgsConstructor
-@ComponentScan("system")
+@ComponentScan({"fias", "security"})
 @PropertySource("classpath:jndi.properties")
-@EnableJpaRepositories(basePackages = "system.repository")
+@EnableJpaRepositories(basePackages = {"fias.repository", "security.user"})
 public class HibernateConfig {
 
     private final Environment environment;
@@ -34,7 +34,7 @@ public class HibernateConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws NamingException {
         final LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
         emf.setDataSource(dataSource());
-        emf.setPackagesToScan("system.domain");
+        emf.setPackagesToScan("fias.domain", "security.user");
         emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         emf.setJpaProperties(additionalProperties());
         return emf;

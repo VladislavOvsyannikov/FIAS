@@ -8,10 +8,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import security.TokenFilter;
 
 @Configuration
 @EnableWebSecurity
-@ComponentScan("system")
+@ComponentScan({"fias", "security"})
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -30,7 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable();
     }
 
-    @Bean(name = "tokenAuthenticationFilter")
+    @Bean(name = "tokenFilter")
     public TokenFilter tokenFilter() {
         return new TokenFilter();
     }
