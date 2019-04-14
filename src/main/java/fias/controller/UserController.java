@@ -43,7 +43,7 @@ public class UserController {
             @RequestParam(value = "oktmo", required = false) String oktmo,
             @RequestParam(value = "fl", required = false) String fl,
             @RequestParam(value = "ul", required = false) String ul,
-            @RequestParam(value = "searchTypes", required = false) List<ParameterSearchType> types,
+            @RequestParam(value = "types", required = false) List<ParameterSearchType> types,
             @RequestParam(value = "actual", required = false) Boolean isActual) {
         return fiasService.searchObjectsByParameters(guid, postalcode, cadnum, okato, oktmo, fl, ul, types, isActual);
     }

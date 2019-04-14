@@ -16,7 +16,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
     $rootScope.actualAdvancedSearch = true;
     $scope.getObjectsByParentGuid = function () {
         $rootScope.downloadingMessage = "Загрузка...";
-        $http.get(urlPrefix + "addr-objects-parent?guid=" + parentGuid + "&isActual=" + $rootScope.actualAdvancedSearch, config)
+        $http.get(urlPrefix + "addr-objects-parent?guid=" + parentGuid + "&actual=" + $rootScope.actualAdvancedSearch, config)
             .then(function (response) {
                 $rootScope.objectsList = response.data;
                 $rootScope.downloadingMessage = "";
@@ -31,7 +31,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
     $scope.getSteadsByParentGuid = function () {
         let data = {guid: parentGuid, onlyActual: $rootScope.actualAdvancedSearch};
         $rootScope.downloadingMessage = "Загрузка...";
-        $http.get(urlPrefix + "steads-parent?guid=" + parentGuid + "&isActual=" + $rootScope.actualAdvancedSearch, config)
+        $http.get(urlPrefix + "steads-parent?guid=" + parentGuid + "&actual=" + $rootScope.actualAdvancedSearch, config)
             .then(function (response) {
                 $rootScope.steadsList = response.data;
             });
@@ -39,7 +39,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
 
     $scope.getHousesByParentGuid = function () {
         let data = {guid: parentGuid, onlyActual: $rootScope.actualAdvancedSearch};
-        $http.get(urlPrefix + "houses-parent?guid=" + parentGuid + "&isActual=" + $rootScope.actualAdvancedSearch, config)
+        $http.get(urlPrefix + "houses-parent?guid=" + parentGuid + "&actual=" + $rootScope.actualAdvancedSearch, config)
             .then(function (response) {
                 $rootScope.housesList = response.data;
                 $rootScope.downloadingMessage = "";
@@ -50,7 +50,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
     $scope.getRoomsListByParentGuid = function () {
         let data = {guid: parentGuid, onlyActual: $rootScope.actualAdvancedSearch};
         $rootScope.downloadingMessage = "Загрузка...";
-        $http.get(urlPrefix + "rooms-parent?guid=" + parentGuid + "&isActual=" + $rootScope.actualAdvancedSearch, config)
+        $http.get(urlPrefix + "rooms-parent?guid=" + parentGuid + "&actual=" + $rootScope.actualAdvancedSearch, config)
             .then(function (response) {
                 $rootScope.roomsList = response.data;
                 $rootScope.steadsList = [];
@@ -94,7 +94,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
             if ($scope.houseCheck) types.push("HOUSE");
             if ($scope.steadCheck) types.push("STEAD");
             if ($scope.roomCheck) types.push("ROOM");
-            $http.get(urlPrefix + "objects-parameters?" + queryPart + "&isActual=" + $scope.actualSearch
+            $http.get(urlPrefix + "objects-parameters?" + queryPart + "&actual=" + $scope.actualSearch
                 + ((types.length > 0) ? "&searchTypes=" + types.join(",") : ""), config).then(function (response) {
                 $scope.searchingMessage = "";
                 if (response.data.length > 0) {
@@ -116,7 +116,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
             $rootScope.downloadMessage = "";
             $rootScope.downloadingMessage = "Загрузка...";
             $http.get(urlPrefix + "objects-parameters?guid=" + parentGuid + "&searchTypes="
-                + $rootScope.typeOfLastObject + "&isActual=" + $rootScope.actualAdvancedSearch, config).then(function (response) {
+                + $rootScope.typeOfLastObject + "&actual=" + $rootScope.actualAdvancedSearch, config).then(function (response) {
                 $scope.resultObjects = response.data;
                 $scope.pagedObjects = $scope.resultObjects;
                 $rootScope.downloadingMessage = "";
@@ -309,7 +309,7 @@ user.directive('nameSearch', function ($rootScope, $http, $timeout) {
                     $rootScope.downloadMessage = "";
                     $rootScope.downloadingMessage = "Загрузка...";
                     $http.get(urlPrefix + "addr-objects-name?name=" + scope.nameSearch + "&type="
-                        + scope.getNameSearchType(scope.type) + "&isActual=" + $rootScope.actualAdvancedSearch, config)
+                        + scope.getNameSearchType(scope.type) + "&actual=" + $rootScope.actualAdvancedSearch, config)
                         .then(function (response) {
                             $rootScope.downloadingMessage = "";
                             if (response.data.length > 0) {
