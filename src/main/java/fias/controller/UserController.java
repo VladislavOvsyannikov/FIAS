@@ -44,7 +44,7 @@ public class UserController {
             @RequestParam(value = "fl", required = false) String fl,
             @RequestParam(value = "ul", required = false) String ul,
             @RequestParam(value = "searchTypes", required = false) List<ParameterSearchType> types,
-            @RequestParam(value = "isActual", required = false) Boolean isActual) {
+            @RequestParam(value = "actual", required = false) Boolean isActual) {
         return fiasService.searchObjectsByParameters(guid, postalcode, cadnum, okato, oktmo, fl, ul, types, isActual);
     }
 
@@ -61,7 +61,7 @@ public class UserController {
     List<AddrObjectDto> getAddrObjectsByName(
             @RequestParam(value = "name") String name,
             @RequestParam(value = "type", required = false) NameSearchType type,
-            @RequestParam(value = "isActual", required = false) Boolean isActual) {
+            @RequestParam(value = "actual", required = false) Boolean isActual) {
         return fiasService.getAddrObjectsByName(name, type, isActual);
     }
 
@@ -90,7 +90,7 @@ public class UserController {
     @ApiOperation("Дочерние адресные объекты по родительскому GUID")
     List<AddrObjectDto> getAddrObjectsByParentGuid(
             @RequestParam(value = "guid") String guid,
-            @RequestParam(value = "isActual", required = false) Boolean isActual) {
+            @RequestParam(value = "actual", required = false) Boolean isActual) {
         return (guid.equals("")) ? fiasService.getAddrObjectsStartList() :
                 fiasService.getAddrObjectsByParentGuid(guid, isActual);
     }
@@ -100,7 +100,7 @@ public class UserController {
     @ApiOperation("Дочерние участки по родительскому GUID")
     List<SteadDto> getSteadsByParentGuid(
             @RequestParam(value = "guid") String guid,
-            @RequestParam(value = "isActual", required = false) Boolean isActual) {
+            @RequestParam(value = "actual", required = false) Boolean isActual) {
         return fiasService.getSteadsByParentGuid(guid, isActual);
     }
 
@@ -109,7 +109,7 @@ public class UserController {
     @ApiOperation("Дочерние дома по родительскому GUID")
     List<HouseDto> getHousesByParentGuid(
             @RequestParam(value = "guid") String guid,
-            @RequestParam(value = "isActual", required = false) Boolean isActual) {
+            @RequestParam(value = "actual", required = false) Boolean isActual) {
         return fiasService.getHousesByParentGuid(guid, isActual);
     }
 
@@ -118,7 +118,7 @@ public class UserController {
     @ApiOperation("Дочерние квартиры по родительскому GUID")
     List<RoomDto> getRoomsListByParentGuid(
             @RequestParam(value = "guid") String guid,
-            @RequestParam(value = "isActual", required = false) Boolean isActual) {
+            @RequestParam(value = "actual", required = false) Boolean isActual) {
 
         return fiasService.getRoomsListByParentGuid(guid, isActual);
     }
