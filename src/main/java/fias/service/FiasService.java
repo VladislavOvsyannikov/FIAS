@@ -270,7 +270,7 @@ public class FiasService {
     public List<AddrObjectDto> getAddrObjectsByName(String name, NameSearchType type, Boolean isActual) {
         if (isNull(isActual)) isActual = false;
         if (isNull(type)) type = NameSearchType.ALL;
-        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+        name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
         String queryPart = isActual ? " and a.LIVESTATUS=1" : "";
         queryPart += type.getQueryPart();
         List<AddrObject> addrObjects = entityManager.createQuery(
