@@ -92,7 +92,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
             if ($scope.steadCheck) types.push("STEAD");
             if ($scope.roomCheck) types.push("ROOM");
             $http.get(urlPrefix + "objects-parameters?" + queryPart + "&actual=" + $scope.actualSearch
-                + ((types.length > 0) ? "&searchTypes=" + types.join(",") : ""), config).then(function (response) {
+                + ((types.length > 0) ? "&types=" + types.join(",") : ""), config).then(function (response) {
                 $scope.searchingMessage = "";
                 if (response.data.length > 0) {
                     $scope.searchMessage = "";
@@ -112,7 +112,7 @@ user.controller('userController', function ($rootScope, $scope, $http) {
         if (parentGuid !== "") {
             $rootScope.downloadMessage = "";
             $rootScope.downloadingMessage = "Загрузка...";
-            $http.get(urlPrefix + "objects-parameters?guid=" + parentGuid + "&searchTypes="
+            $http.get(urlPrefix + "objects-parameters?guid=" + parentGuid + "&types="
                 + $rootScope.typeOfLastObject + "&actual=" + $rootScope.actualAdvancedSearch, config).then(function (response) {
                 $scope.resultObjects = response.data;
                 $scope.pagedObjects = $scope.resultObjects;
