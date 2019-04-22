@@ -29,7 +29,6 @@ user.controller('userController', function ($rootScope, $scope, $http) {
     };
 
     $scope.getSteadsByParentGuid = function () {
-        let data = {guid: parentGuid, onlyActual: $rootScope.actualAdvancedSearch};
         $rootScope.downloadingMessage = "Загрузка...";
         $http.get(urlPrefix + "steads-parent?guid=" + parentGuid + "&actual=" + $rootScope.actualAdvancedSearch, config)
             .then(function (response) {
@@ -38,7 +37,6 @@ user.controller('userController', function ($rootScope, $scope, $http) {
     };
 
     $scope.getHousesByParentGuid = function () {
-        let data = {guid: parentGuid, onlyActual: $rootScope.actualAdvancedSearch};
         $http.get(urlPrefix + "houses-parent?guid=" + parentGuid + "&actual=" + $rootScope.actualAdvancedSearch, config)
             .then(function (response) {
                 $rootScope.housesList = response.data;
@@ -48,7 +46,6 @@ user.controller('userController', function ($rootScope, $scope, $http) {
     };
 
     $scope.getRoomsListByParentGuid = function () {
-        let data = {guid: parentGuid, onlyActual: $rootScope.actualAdvancedSearch};
         $rootScope.downloadingMessage = "Загрузка...";
         $http.get(urlPrefix + "rooms-parent?guid=" + parentGuid + "&actual=" + $rootScope.actualAdvancedSearch, config)
             .then(function (response) {
@@ -283,10 +280,6 @@ user.directive('nameSearch', function ($rootScope, $http, $timeout) {
                     list.removeClass('showAddresses')
                 }, 150);
             });
-            // element.find('button').bind('blur', function () {
-            //     $timeout(function () {
-            //         list.removeClass('showAddresses')}, 150);
-            // });
 
             scope.chooseAddress = function (object) {
                 scope.nameSearch = object.fullAddress;
@@ -315,7 +308,10 @@ user.directive('nameSearch', function ($rootScope, $http, $timeout) {
                             if (response.data.length > 0) {
                                 scope.addrObjectsByName = response.data;
                                 list.addClass('showAddresses');
-                            } else $rootScope.downloadMessage = "Не найдено";
+                            } else {
+                                $rootScope.downloadMessage = "Не найдено";
+                                scope.addrObjectsByName = [];
+                            }
                         });
                 } else {
                     $rootScope.downloadMessage = "Введите минимум три символа";

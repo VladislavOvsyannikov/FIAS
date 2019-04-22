@@ -11,6 +11,7 @@ import fias.service.NameSearchType;
 import fias.service.ParameterSearchType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -72,7 +73,8 @@ public class UserController {
         return NameSearchType.values();
     }
 
-    @GetMapping(value = "/old-addr-objects/{guid}")
+    @ResponseBody
+    @GetMapping(value = "/old-objects/{guid}")
     @ApiOperation("Старые и актуальный адресные объекты")
     CustomPair searchOldAddrObjectsByGuid(@PathVariable(value = "guid") String guid) {
         return fiasService.searchOldAddrObjectsByGuid(guid);
@@ -132,8 +134,8 @@ public class UserController {
 
     @ResponseBody
     @GetMapping(value = "/full-address/{guid}")
-    @ApiOperation("Полный адрес объекта")
-    String[] getFullAddressByGuid(@PathVariable(value = "guid") String guid) {
+    @ApiOperation("Полный адрес объекта по GUID")
+    String[] getFullAddressByGuid(@ApiParam(value = "GUID объекта") @PathVariable(value = "guid") String guid) {
         return new String[]{fiasService.getFullAddress(guid)};
     }
 
