@@ -7,13 +7,9 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import security.user.UserDto;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
@@ -74,35 +70,6 @@ public class AdminController {
     @ApiOperation("Установка всех обновлений базы ФИАС")
     void installUpdates() {
         fiasService.installUpdates(false);
-    }
-
-    @ApiIgnore
-    @ResponseBody
-    @GetMapping(value = "/sign-up")
-    Boolean signUp(@RequestParam(value = "name") String name,
-                   @RequestParam(value = "password") String password) {
-        return fiasService.signUp(name, password);
-    }
-
-    @ApiIgnore
-    @ResponseBody
-    @GetMapping(value = "/users")
-    List<UserDto> getAllUsersWithoutPasswords() {
-        return fiasService.getAllUsersWithoutPasswords();
-    }
-
-    @ApiIgnore
-    @ResponseBody
-    @DeleteMapping(value = "/user")
-    void deleteUser(@RequestParam(value = "id") Integer id) {
-        fiasService.deleteUser(id);
-    }
-
-    @ApiIgnore
-    @ResponseBody
-    @PostMapping(value = "/user")
-    void blockUser(@RequestParam(value = "id") Integer id) {
-        fiasService.blockUser(id);
     }
 
     @ApiIgnore

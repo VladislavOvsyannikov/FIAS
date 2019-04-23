@@ -147,13 +147,6 @@ public class UserController {
     }
 
     @ApiIgnore
-    @ResponseBody
-    @RequestMapping(value = "/user-info")
-    public List<String> getCurrentUserInfo() {
-        return fiasService.getCurrentUserInfo();
-    }
-
-    @ApiIgnore
     @GetMapping(value = "/user")
     String user() {
         return "user.html";

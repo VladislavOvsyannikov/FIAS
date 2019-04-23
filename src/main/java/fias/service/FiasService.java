@@ -34,16 +34,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-import security.TokenManager;
-import security.user.User;
-import security.user.UserDto;
-import security.user.UserMapper;
-import security.user.UserRepository;
 
 import javax.persistence.EntityManager;
 import java.io.BufferedReader;
@@ -87,12 +78,9 @@ public class FiasService {
     private final HouseMapper houseMapper;
     private final SteadMapper steadMapper;
     private final RoomMapper roomMapper;
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
     private final NormativeDocumentRepository normativeDocumentRepository;
     private final NormativeDocumentMapper normativeDocumentMapper;
     private final NormativeDocumentTypeRepository normativeDocumentTypeRepository;
-    private final TokenManager tokenManager;
     private final Environment environment;
 
     public void installComplete() {
@@ -393,54 +381,6 @@ public class FiasService {
         return fiasModuleStatus;
     }
 
-    public boolean signUp(String name, String password) {
-        if (name.replaceAll(" ", "").equals("") ||
-                password.replaceAll(" ", "").equals("")) return false;
-        User oldUser = userRepository.findByName(name).orElse(null);
-        if (isNull(oldUser)) {
-            User newUser = new User();
-            newUser.setName(name);
-            newUser.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
-            newUser.setRole("ROLE_USER");
-            newUser.setIsEnable(true);
-            userRepository.save(newUser);
-            return true;
-        }
-        return false;
-    }
-
-    public Boolean signIn(String name, String password) {
-        Authentication authentication = tokenManager.authenticate(new UsernamePasswordAuthenticationToken(name, password));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return nonNull(authentication);
-    }
-
-    public List<UserDto> getAllUsersWithoutPasswords() {
-        return userMapper.toDto(userRepository.getByRole("ROLE_USER"));
-    }
-
-    public void deleteUser(Integer id) {
-        userRepository.deleteById(id);
-    }
-
-    public void blockUser(Integer id) {
-        User user = userRepository.findById(id).orElse(null);
-        if (isNull(user)) return;
-        user.setIsEnable(!user.getIsEnable());
-        userRepository.save(user);
-    }
-
-    public List<String> getCurrentUserInfo() {
-        return tokenManager.getCurrentUserInfo();
-    }
-
-    @SneakyThrows
-    public String lastLog() {
-        return Files.lines(Paths.get(environment.getProperty("property.path") + "/lastLog.log"), Charsets.UTF_8)
-                .reduce("", (str1, str2) -> str1 + "<br>" + str2)
-                .replaceFirst("<br>", "");
-    }
-
     public NormativeDocumentDto getNormativeDocument(String id) {
         id = id.replaceAll("-", "").toLowerCase();
         if (id.length() != 32) return null;
@@ -449,5 +389,12 @@ public class FiasService {
         document.setType(normativeDocumentTypeRepository.findById(document.getDOCTYPE())
                 .orElse(new NormativeDocumentType()).getNAME());
         return normativeDocumentMapper.toDto(document);
+    }
+
+    @SneakyThrows
+    public String lastLog() {
+        return Files.lines(Paths.get(environment.getProperty("property.path") + "/lastLog.log"), Charsets.UTF_8)
+                .reduce("", (str1, str2) -> str1 + "<br>" + str2)
+                .replaceFirst("<br>", "");
     }
 }
