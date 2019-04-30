@@ -134,7 +134,7 @@ public class FiasService {
     }
 
     public String getCurrentVersion() {
-        return versionRepository.getCurrentVersion();
+        return versionRepository.getVersions().get(0);
     }
 
     public String getLastVersion() {
